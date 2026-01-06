@@ -8,7 +8,14 @@ const nextConfig: NextConfig = {
     },
   },
   images: {
-    domains: ['startmybusiness.us'],
+    domains: ['startmybusiness.us', 'cdn.prod.website-files.com'],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'cdn.prod.website-files.com',
+        pathname: '/**',
+      },
+    ],
   },
 };
 

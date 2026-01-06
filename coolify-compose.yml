@@ -32,14 +32,14 @@ services:
     container_name: speaker-split-backend
     build:
       context: ./backend
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.cpu
     ports:
       - "8100:8000"  # Unique port to avoid conflicts
     environment:
       - HF_TOKEN=${HF_TOKEN}
       - UPLOAD_DIR=/app/uploads
-      - WHISPER_MODEL=${WHISPER_MODEL:-large-v2}
-      - DEVICE=${DEVICE:-cuda}
+      - WHISPER_MODEL=${WHISPER_MODEL:-small}
+      - DEVICE=${DEVICE:-cpu}
     volumes:
       - speaker-split-uploads:/app/uploads
     networks:
@@ -48,13 +48,6 @@ services:
     labels:
       - "coolify.managed=true"
       - "coolify.app=speaker-split"
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: 1
-              capabilities: [gpu]
 
 # Isolated network for Speaker Split
 networks:

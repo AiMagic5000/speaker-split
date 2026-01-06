@@ -1,6 +1,7 @@
 import { Header } from "@/components/Header"
 import { AudioUploader } from "@/components/AudioUploader"
 import { AudioWaveform, Mic2, Split, FileText, CheckCircle } from "lucide-react"
+import Image from "next/image"
 
 export default function Home() {
   return (
@@ -109,12 +110,16 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
-                <AudioWaveform className="w-6 h-6 text-white" />
-              </div>
-              <div>
+              <Image
+                src="https://cdn.prod.website-files.com/6784053e7b7422e48efa5a84/6833a36f90c60fba010cee72_start_my_business_logo-removebg-preview.png"
+                alt="Start My Business Inc."
+                width={140}
+                height={35}
+                className="h-9 w-auto brightness-0 invert"
+                unoptimized
+              />
+              <div className="border-l border-gray-600 pl-3">
                 <p className="font-bold">Speaker Split</p>
-                <p className="text-sm text-gray-400">by Start My Business Inc.</p>
               </div>
             </div>
             <div className="flex items-center gap-6 text-sm text-gray-400">

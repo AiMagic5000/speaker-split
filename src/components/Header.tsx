@@ -1,7 +1,8 @@
 "use client"
 
-import { AudioWaveform, Phone } from "lucide-react"
+import { Phone } from "lucide-react"
 import Link from "next/link"
+import Image from "next/image"
 
 export function Header() {
   return (
@@ -10,12 +11,16 @@ export function Header() {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
-              <AudioWaveform className="w-6 h-6 text-white" />
-            </div>
-            <div>
+            <Image
+              src="https://cdn.prod.website-files.com/6784053e7b7422e48efa5a84/6833a36f90c60fba010cee72_start_my_business_logo-removebg-preview.png"
+              alt="Start My Business Inc."
+              width={160}
+              height={40}
+              className="h-10 w-auto"
+              unoptimized
+            />
+            <div className="border-l border-gray-300 pl-3">
               <h1 className="text-lg font-bold text-navy">Speaker Split</h1>
-              <p className="text-xs text-gray-500">by Start My Business Inc.</p>
             </div>
           </Link>
 
