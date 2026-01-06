@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - UPLOAD_DIR=/app/uploads
+      - BACKEND_URL=http://backend:8000
+      - N8N_WEBHOOK_URL=${N8N_WEBHOOK_URL}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+    volumes:
+      - uploads:/app/uploads
+    depends_on:
+      - backend
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - HF_TOKEN=${HF_TOKEN}
+      - UPLOAD_DIR=/app/uploads
+      - WHISPER_MODEL=${WHISPER_MODEL:-large-v2}
+      - DEVICE=${DEVICE:-cuda}
+    volumes:
+      - uploads:/app/uploads
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
+volumes:
+  uploads:

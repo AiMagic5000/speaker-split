@@ -1,0 +1,20 @@
+# FastAPI backend
+fastapi==0.109.0
+uvicorn[standard]==0.27.0
+python-multipart==0.0.6
+pydantic==2.5.3
+
+# Audio processing
+pydub==0.25.1
+pandas==2.1.4
+
+# PyTorch (GPU version - adjust for CPU if needed)
+--extra-index-url https://download.pytorch.org/whl/cu121
+torch==2.1.2
+torchaudio==2.1.2
+
+# WhisperX (from GitHub)
+# pip install git+https://github.com/m-bain/whisperx.git
+
+# pyannote.audio (for speaker diarization)
+pyannote.audio==3.1.1

@@ -1,65 +1,187 @@
-import Image from "next/image";
+import { Header } from "@/components/Header"
+import { AudioUploader } from "@/components/AudioUploader"
+import { AudioWaveform, Mic2, Split, FileText, CheckCircle } from "lucide-react"
 
 export default function Home() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+      <Header />
+
+      {/* Hero Section */}
+      <section className="relative overflow-hidden">
+        {/* Background decoration */}
+        <div className="absolute inset-0 -z-10">
+          <div className="absolute top-0 right-0 w-96 h-96 bg-primary/5 rounded-full blur-3xl" />
+          <div className="absolute bottom-0 left-0 w-96 h-96 bg-secondary/5 rounded-full blur-3xl" />
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-20">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            {/* Left Column - Info */}
+            <div className="space-y-8">
+              <div>
+                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-semibold mb-6">
+                  <AudioWaveform className="w-4 h-4" />
+                  AI-Powered Audio Processing
+                </div>
+                <h1 className="text-4xl sm:text-5xl font-bold text-navy leading-tight">
+                  Split & Transcribe
+                  <span className="gradient-text block">Your Conversations</span>
+                </h1>
+                <p className="text-lg text-gray-600 mt-6 leading-relaxed">
+                  Upload any audio file and let our AI identify each speaker, transcribe the conversation,
+                  and generate separate audio tracks. Perfect for business consultations, interviews, and meetings.
+                </p>
+              </div>
+
+              {/* Features */}
+              <div className="grid sm:grid-cols-2 gap-4">
+                <FeatureItem
+                  icon={<Mic2 className="w-5 h-5" />}
+                  title="Speaker Recognition"
+                  description="Automatically identify up to 6 speakers"
+                />
+                <FeatureItem
+                  icon={<Split className="w-5 h-5" />}
+                  title="Audio Separation"
+                  description="Get individual audio files per speaker"
+                />
+                <FeatureItem
+                  icon={<FileText className="w-5 h-5" />}
+                  title="Full Transcript"
+                  description="Word-level timestamps & speaker labels"
+                />
+                <FeatureItem
+                  icon={<CheckCircle className="w-5 h-5" />}
+                  title="Reference Documents"
+                  description="Generate professional HTML summaries"
+                />
+              </div>
+            </div>
+
+            {/* Right Column - Upload Form */}
+            <div className="lg:pl-8">
+              <div className="bg-white rounded-3xl shadow-xl shadow-gray-200/50 p-6 sm:p-8 border border-gray-100">
+                <div className="text-center mb-6">
+                  <h2 className="text-2xl font-bold text-navy">Upload Your Audio</h2>
+                  <p className="text-gray-500 mt-1">Start processing in seconds</p>
+                </div>
+                <AudioUploader />
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* How It Works */}
+      <section className="bg-navy py-16 sm:py-24">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-white">How It Works</h2>
+            <p className="text-gray-400 mt-2">Three simple steps to transform your audio</p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8">
+            <StepCard
+              number="1"
+              title="Upload Audio"
+              description="Drag and drop your audio file. We support MP3, WAV, M4A, FLAC, and more."
+              color="primary"
             />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+            <StepCard
+              number="2"
+              title="AI Processing"
+              description="Our AI transcribes the conversation and identifies each speaker automatically."
+              color="secondary"
+            />
+            <StepCard
+              number="3"
+              title="Get Results"
+              description="Download transcripts, separated audio files, and generate reference documents."
+              color="primary"
+            />
+          </div>
         </div>
-      </main>
+      </section>
+
+      {/* Footer */}
+      <footer className="bg-charcoal text-white py-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
+                <AudioWaveform className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <p className="font-bold">Speaker Split</p>
+                <p className="text-sm text-gray-400">by Start My Business Inc.</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-6 text-sm text-gray-400">
+              <a href="https://startmybusiness.us" target="_blank" rel="noopener" className="hover:text-white">
+                startmybusiness.us
+              </a>
+              <span>|</span>
+              <a href="tel:+18885344145" className="hover:text-white">
+                (888) 534-4145
+              </a>
+            </div>
+          </div>
+          <div className="mt-8 pt-8 border-t border-gray-800 text-center text-sm text-gray-500">
+            <p>&copy; {new Date().getFullYear()} Start My Business Inc. All rights reserved.</p>
+          </div>
+        </div>
+      </footer>
     </div>
-  );
+  )
+}
+
+function FeatureItem({
+  icon,
+  title,
+  description
+}: {
+  icon: React.ReactNode
+  title: string
+  description: string
+}) {
+  return (
+    <div className="flex items-start gap-3 p-4 rounded-xl bg-white border border-gray-100 hover:border-primary/30 hover:shadow-md transition-all">
+      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary flex-shrink-0">
+        {icon}
+      </div>
+      <div>
+        <p className="font-semibold text-navy">{title}</p>
+        <p className="text-sm text-gray-500">{description}</p>
+      </div>
+    </div>
+  )
+}
+
+function StepCard({
+  number,
+  title,
+  description,
+  color
+}: {
+  number: string
+  title: string
+  description: string
+  color: 'primary' | 'secondary'
+}) {
+  return (
+    <div className="relative p-6 rounded-2xl bg-navy-light/50 border border-gray-700/50 hover:border-gray-600 transition-all group">
+      <div className={`
+        absolute -top-4 -left-2 w-12 h-12 rounded-xl flex items-center justify-center text-xl font-bold text-white
+        ${color === 'primary' ? 'bg-primary' : 'bg-secondary'}
+        group-hover:scale-110 transition-transform
+      `}>
+        {number}
+      </div>
+      <div className="pt-6">
+        <h3 className="text-xl font-bold text-white mb-2">{title}</h3>
+        <p className="text-gray-400">{description}</p>
+      </div>
+    </div>
+  )
 }
