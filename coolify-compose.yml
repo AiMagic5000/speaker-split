@@ -32,7 +32,7 @@ services:
     container_name: speaker-split-backend
     build:
       context: ./backend
-      dockerfile: Dockerfile.cpu
+      dockerfile: Dockerfile
     ports:
       - "8100:8000"  # Unique port to avoid conflicts
     environment:

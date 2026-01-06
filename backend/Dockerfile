@@ -1,24 +1,19 @@
-# Backend Dockerfile
-FROM nvidia/cuda:12.1-base-ubuntu22.04
+# Backend Dockerfile - CPU Version (no GPU required)
+FROM python:3.11-slim
 
-# Install Python and system dependencies
+# Install system dependencies
 RUN apt-get update && apt-get install -y \
-    python3.11 \
-    python3-pip \
-    python3.11-venv \
     ffmpeg \
+    git \
     && rm -rf /var/lib/apt/lists/*
-
-# Set Python alias
-RUN ln -sf /usr/bin/python3.11 /usr/bin/python
 
 WORKDIR /app
 
 # Copy requirements first for caching
 COPY requirements.txt .
 
-# Install PyTorch with CUDA
-RUN pip install --no-cache-dir torch torchaudio --index-url https://download.pytorch.org/whl/cu121
+# Install PyTorch CPU version
+RUN pip install --no-cache-dir torch torchaudio --index-url https://download.pytorch.org/whl/cpu
 
 # Install WhisperX
 RUN pip install --no-cache-dir git+https://github.com/m-bain/whisperx.git
