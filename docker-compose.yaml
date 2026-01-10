@@ -1,0 +1,64 @@
+# Coolify-specific Docker Compose for isolated deployment
+# This creates an isolated network and uses unique container names
+
+version: '3.8'
+
+services:
+  speaker-split-frontend:
+    container_name: speaker-split-frontend
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3100:3000"  # Unique port to avoid conflicts
+    environment:
+      - NODE_ENV=production
+      - UPLOAD_DIR=/app/uploads
+      - BACKEND_URL=http://speaker-split-backend:8000
+      - N8N_WEBHOOK_URL=${N8N_WEBHOOK_URL:-https://n8n.srv836017.hstgr.cloud/webhook/transcript-to-html}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+    volumes:
+      - speaker-split-uploads:/app/uploads
+    networks:
+      - speaker-split-network
+    depends_on:
+      - speaker-split-backend
+    restart: unless-stopped
+    labels:
+      - "coolify.managed=true"
+      - "coolify.app=speaker-split"
+
+  speaker-split-backend:
+    container_name: speaker-split-backend
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "8100:8000"  # Unique port to avoid conflicts
+    environment:
+      - HF_TOKEN=${HF_TOKEN}
+      - UPLOAD_DIR=/app/uploads
+      - WHISPER_MODEL=${WHISPER_MODEL:-small}
+      - DEVICE=${DEVICE:-cpu}
+    volumes:
+      - speaker-split-uploads:/app/uploads
+    networks:
+      - speaker-split-network
+    restart: unless-stopped
+    labels:
+      - "coolify.managed=true"
+      - "coolify.app=speaker-split"
+
+# Isolated network for Speaker Split
+networks:
+  speaker-split-network:
+    name: speaker-split-network
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.30.0.0/16
+
+# Isolated volume for uploads
+volumes:
+  speaker-split-uploads:
+    name: speaker-split-uploads
