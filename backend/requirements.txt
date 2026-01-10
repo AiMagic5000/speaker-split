@@ -8,13 +8,13 @@ pydantic==2.5.3
 pydub==0.25.1
 pandas==2.1.4
 
-# PyTorch (GPU version - adjust for CPU if needed)
---extra-index-url https://download.pytorch.org/whl/cu121
-torch==2.1.2
-torchaudio==2.1.2
+# PyTorch and ML dependencies are installed in Dockerfile
+# to ensure correct CPU version and dependency order
 
-# WhisperX (from GitHub)
-# pip install git+https://github.com/m-bain/whisperx.git
-
-# pyannote.audio (for speaker diarization)
-pyannote.audio==3.1.1
+# Additional dependencies for pyannote
+asteroid-filterbanks>=0.4.0
+pytorch-lightning>=2.0.0
+pyannote.core>=5.0.0
+pyannote.database>=5.0.0
+pyannote.metrics>=3.2.0
+speechbrain>=0.5.0

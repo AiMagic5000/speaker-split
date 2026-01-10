@@ -12,14 +12,18 @@ WORKDIR /app
 # Copy requirements first for caching
 COPY requirements.txt .
 
-# Install PyTorch CPU version
-RUN pip install --no-cache-dir torch torchaudio --index-url https://download.pytorch.org/whl/cpu
+# Install PyTorch CPU version first (pinned versions for compatibility)
+RUN pip install --no-cache-dir \
+    torch==2.1.2 \
+    torchaudio==2.1.2 \
+    --index-url https://download.pytorch.org/whl/cpu
 
-# Install WhisperX
-RUN pip install --no-cache-dir git+https://github.com/m-bain/whisperx.git
+# Install WhisperX with pinned version for stability
+RUN pip install --no-cache-dir "whisperx @ git+https://github.com/m-bain/whisperx.git@v3.1.1"
 
-# Install other requirements
-RUN pip install --no-cache-dir -r requirements.txt
+# Install other requirements (skip torch since already installed)
+RUN pip install --no-cache-dir --no-deps pyannote.audio==3.1.1 && \
+    pip install --no-cache-dir -r requirements.txt
 
 # Copy application code
 COPY . .
