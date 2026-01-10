@@ -1,8 +1,40 @@
 # Speaker Split - Claude Session Documentation
 
-**Session Date:** January 6, 2026
 **Project:** Speaker Split - AI Speaker Diarization and Audio Processing App
-**Status:** Code Complete, Awaiting Deployment on New Server
+**Repository:** https://github.com/AiMagic5000/speaker-split
+**Live URL:** https://speakersplit.alwaysencrypted.com
+
+---
+
+## Session History
+
+| Date | Status | Summary |
+|------|--------|---------|
+| January 6, 2026 | Code Complete | Initial development, awaiting deployment |
+| January 10, 2026 | **DEPLOYED** | Successfully deployed to R730 via Coolify |
+
+---
+
+## Current Deployment Status (January 10, 2026)
+
+### Live Application
+- **Public URL:** https://speakersplit.alwaysencrypted.com
+- **Frontend Port:** 3100 (internal 3000)
+- **Backend Port:** 8100 (internal 8000)
+- **Server:** Dell R730 (Coolify at https://coolify.alwaysencrypted.com)
+- **Status:** Running, UI accessible, audio processing requires HF_TOKEN
+
+### What's Working
+- Frontend UI fully functional
+- Drag-and-drop audio upload
+- Speaker count selection
+- Client information form
+- Backend API responding
+- Cloudflare Tunnel routing
+
+### What's Pending
+- **HuggingFace Token (HF_TOKEN)** - Required for pyannote.audio speaker diarization
+- Without HF_TOKEN, audio processing will fail with authentication error
 
 ---
 
@@ -22,287 +54,419 @@ Speaker Split is a web application for Start My Business Inc. that processes aud
 - SMB branding (blue #4493f2, teal #4dc0b5, navy #132743)
 
 ### Tech Stack
-- **Frontend:** Next.js 14 (App Router), TypeScript, Tailwind CSS, Zustand
+- **Frontend:** Next.js 16.1.1 (App Router), TypeScript, Tailwind CSS, Zustand
 - **Backend:** Python FastAPI, WhisperX, pyannote.audio
 - **AI:** Anthropic Claude API for HTML document generation
-- **Deployment:** Docker, Docker Compose, Coolify
+- **Deployment:** Docker, Docker Compose, Coolify v4.0.0-beta.460
+- **CDN/Tunnel:** Cloudflare Tunnel (r730-tunnel)
 
 ---
 
-## Repository
+## January 10, 2026 Session - Full Deployment Log
 
-**GitHub:** https://github.com/AiMagic5000/speaker-split
-**Branch:** main
+### Session Overview
+This session completed the deployment of Speaker Split to the new Dell R730 server running Coolify. The deployment involved troubleshooting multiple issues with Coolify, Docker networking, and Cloudflare Tunnel configuration.
 
----
+### Timeline of Events
 
-## Project Structure
+#### 1. Initial Assessment (5:00 AM)
+- User requested to continue the Speaker Split build
+- Identified two project folders:
+  - `/mnt/c/Users/flowc/Documents/speaker-split-app` (main project)
+  - `/mnt/c/Users/flowc/Documents/Speacker Split Project` (empty/unused)
+- Reviewed CLAUDE-SESSION.md from January 6 session
+- Status was "Code Complete, Awaiting Deployment on New Server"
 
-```
-speaker-split-app/
-├── src/
-│   ├── app/
-│   │   ├── page.tsx                 # Landing page with SMB branding
-│   │   ├── layout.tsx               # Root layout
-│   │   ├── globals.css              # Global styles with SMB colors
-│   │   ├── job/[id]/page.tsx        # Job processing & results page
-│   │   └── api/
-│   │       ├── upload/route.ts      # File upload handler
-│   │       ├── jobs/[id]/route.ts   # Job status API
-│   │       └── generate-html/route.ts # HTML document generation
-│   ├── components/
-│   │   ├── Header.tsx               # Header with SMB logo
-│   │   └── AudioUploader.tsx        # Drag-and-drop uploader
-│   └── lib/
-│       └── store.ts                 # Zustand state management
-├── backend/
-│   ├── main.py                      # FastAPI server
-│   ├── requirements.txt             # Python dependencies
-│   ├── Dockerfile                   # CPU version (default)
-│   └── Dockerfile.gpu               # GPU version (CUDA)
-├── coolify-compose.yml              # Isolated deployment config
-├── Dockerfile                       # Frontend Dockerfile
-├── docker-compose.yml               # Local development
-├── DEPLOYMENT.md                    # Deployment guide
-└── package.json                     # Node dependencies
-```
+#### 2. Local Development Test (5:05 AM)
+- Started Next.js frontend locally on port 3000
+- Started Python FastAPI backend locally on port 8000
+- Installed Python dependencies (fastapi, uvicorn, pandas, pydub)
+- Confirmed both servers running and responding
+- Frontend: http://localhost:3000
+- Backend: http://localhost:8000/health returning `{"status":"healthy"}`
 
----
+#### 3. Coolify API Token Issues (5:10 AM)
+- Attempted to use existing API token from CLAUDE.md
+- Token `2|72NMKNKta81WG1wisjdEAWNhhXlJ8hjCaCwVs6z74e91a8ea` returned "Unauthenticated"
+- User generated new token in Coolify UI: `2|Y6HOD6I2eazgSG0pZ5Dd81W80Urq3HauN3WEN7HQ9a5ea0fa`
+- New token also returned "Unauthenticated" - API tokens not working
+- Decision: Proceed with Coolify UI deployment instead
 
-## Configuration Files
+#### 4. Old Project Cleanup Issues (5:15 AM)
+- Found existing "Speaker-Split" project in Coolify with orphaned apps
+- Apps referenced deleted server (old 72.60.119.182)
+- Clicking on apps caused 500 error: "Attempt to read property 'server' on null"
+- Could not delete apps - Coolify bug with orphaned resources
+- Terminal websocket timed out
+- **Solution:** Create new project with different name
 
-### coolify-compose.yml (Production - CPU Mode)
-```yaml
-version: '3.8'
+#### 5. New Project Creation (5:25 AM)
+- Created new Coolify project: **"SpeakerSplit"** (no hyphen)
+- Selected "Public Repository" resource type
+- Configured:
+  - Repository: `https://github.com/AiMagic5000/speaker-split`
+  - Branch: `main`
+  - Build Pack: Docker Compose
 
-services:
-  speaker-split-frontend:
-    container_name: speaker-split-frontend
-    build:
-      context: .
-      dockerfile: Dockerfile
-    ports:
-      - "3100:3000"
-    environment:
-      - NODE_ENV=production
-      - UPLOAD_DIR=/app/uploads
-      - BACKEND_URL=http://speaker-split-backend:8000
-      - N8N_WEBHOOK_URL=${N8N_WEBHOOK_URL}
-      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
-    volumes:
-      - speaker-split-uploads:/app/uploads
-    networks:
-      - speaker-split-network
-    depends_on:
-      - speaker-split-backend
-    restart: unless-stopped
+#### 6. Docker Compose File Issue (5:27 AM)
+- Coolify couldn't find docker-compose file
+- Default location `/docker-compose.yaml` didn't exist
+- Our file was named `coolify-compose.yml`
+- Coolify UI bug: field reverted when clicking Save
+- Docker Compose Content (raw) editor was read-only
+- **Solution:** Pushed `docker-compose.yaml` to GitHub repo
 
-  speaker-split-backend:
-    container_name: speaker-split-backend
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
-    ports:
-      - "8100:8000"
-    environment:
-      - HF_TOKEN=${HF_TOKEN}
-      - UPLOAD_DIR=/app/uploads
-      - WHISPER_MODEL=${WHISPER_MODEL:-small}
-      - DEVICE=${DEVICE:-cpu}
-    volumes:
-      - speaker-split-uploads:/app/uploads
-    networks:
-      - speaker-split-network
-    restart: unless-stopped
-
-networks:
-  speaker-split-network:
-    name: speaker-split-network
-    driver: bridge
-    ipam:
-      config:
-        - subnet: 172.30.0.0/16
-
-volumes:
-  speaker-split-uploads:
-    name: speaker-split-uploads
-```
-
-### Environment Variables Required
-
-| Variable | Service | Description |
-|----------|---------|-------------|
-| `ANTHROPIC_API_KEY` | Frontend | Claude API for HTML generation |
-| `N8N_WEBHOOK_URL` | Frontend | n8n webhook for transcript processing |
-| `HF_TOKEN` | Backend | HuggingFace token for pyannote models |
-| `WHISPER_MODEL` | Backend | Model size: `small` (CPU) or `large-v2` (GPU) |
-| `DEVICE` | Backend | `cpu` or `cuda` |
-
-### Actual Values (from CLAUDE.md)
-```
-ANTHROPIC_API_KEY=<see CLAUDE.md for actual key>
-N8N_WEBHOOK_URL=https://n8n.srv836017.hstgr.cloud/webhook/transcript-to-html
-HF_TOKEN=<needs to be obtained from user's HuggingFace account>
-WHISPER_MODEL=small
-DEVICE=cpu
-```
-
----
-
-## Coolify Configuration (Old Server - 72.60.119.182)
-
-### Project Created
-- **Project UUID:** `m8kc88kcwogkk4skggkko00c`
-- **Project Name:** Speaker-Split
-- **Environment:** production (`f84ww0ow8o480okww40g40gs`)
-
-### Applications Created
-| App | UUID | Port | Status |
-|-----|------|------|--------|
-| speaker-split-frontend | `zwkw4w0o80s8ccskw4ckgg4k` | 3100:3000 | Pending (server issue) |
-| speaker-split-backend | `vsswoscoo4wgws8s0scw4444` | 8100:8000 | Pending (server issue) |
-
-### Environment Variables Configured (Frontend)
-- `NODE_ENV=production`
-- `ANTHROPIC_API_KEY=<configured in Coolify>`
-- `N8N_WEBHOOK_URL=https://n8n.srv836017.hstgr.cloud/webhook/transcript-to-html`
-- `BACKEND_URL=http://speaker-split-backend:8000`
-
-### Environment Variables Configured (Backend)
-- `WHISPER_MODEL=small`
-- `DEVICE=cpu`
-- `UPLOAD_DIR=/app/uploads`
-
----
-
-## Current Deployment Issue
-
-### Problem
-The existing Coolify server (72.60.119.182) has:
-1. **100% CPU usage** - causing all operations to fail
-2. **Malicious files warning** - indicates potential compromise
-3. **Server Status:** "Not reachable & Not usable by Coolify"
-
-### Root Cause
-- Likely infected/compromised server
-- Possibly vulnerable Next.js version in existing apps
-- Stuck Docker containers consuming resources
-
-### Solution
-User is getting a **new server today**. Plan is to:
-1. Install Coolify fresh on new server
-2. Deploy Speaker-Split first
-3. Migrate other apps later
-4. Clean/decommission old server
-
----
-
-## Coolify API Reference
-
-### Base URLs
-- **Old Server:** `http://72.60.119.182:8000/api/v1`
-- **Via Domain:** `https://coolify.cognabase.com/api/v1`
-
-### API Tokens
-- **Primary:** `3|4GHjWg0s1A9AF6IJbgj3OjrXzt3N6p1G54sZzhMu561d9a1c`
-- **Secondary:** `2|72NMKNKta81WG1wisjdEAWNhhXlJ8hjCaCwVs6z74e91a8ea`
-
-### Common API Calls
 ```bash
-# List projects
-curl -s -X GET "https://coolify.cognabase.com/api/v1/projects" \
-  -H "Authorization: Bearer 3|4GHjWg0s1A9AF6IJbgj3OjrXzt3N6p1G54sZzhMu561d9a1c"
+cd /mnt/c/Users/flowc/Documents/speaker-split-app
+cp coolify-compose.yml docker-compose.yaml
+git add docker-compose.yaml
+git commit -m "Add docker-compose.yaml for Coolify deployment"
+git push
+```
 
-# Create project
-curl -s -X POST "https://coolify.cognabase.com/api/v1/projects" \
-  -H "Authorization: Bearer $TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{"name": "Speaker-Split", "description": "AI Speaker Diarization App"}'
+- Commit: `5bf4fe9`
 
-# Create application
-curl -s -X POST "https://coolify.cognabase.com/api/v1/applications/public" \
-  -H "Authorization: Bearer $TOKEN" \
+#### 7. Environment Variables Configuration (5:30 AM)
+- Coolify auto-loaded variables from docker-compose.yaml
+- All required variables already existed:
+  - `ANTHROPIC_API_KEY` - Claude API key for HTML generation
+  - `N8N_WEBHOOK_URL` - n8n webhook (https://n8n.alwaysencrypted.com/webhook/transcript-to-html)
+  - `HF_TOKEN` - Placeholder (needs real token)
+  - `WHISPER_MODEL` - small
+  - `DEVICE` - cpu
+
+#### 8. Deployment Build (5:35 AM - 6:05 AM)
+- Clicked Deploy in Coolify
+- Build took approximately 30 minutes
+- Build stages:
+  1. Importing AiMagic5000/speaker-split:main
+  2. Added 28 ARG declarations to Dockerfile for frontend (multi-stage, 4 stages)
+  3. Added 7 ARG declarations to Dockerfile for backend
+  4. Pulling & building required images (longest step - PyTorch/ML dependencies)
+  5. Removing old containers
+  6. Starting new application
+  7. New container started
+- Final status: **Running**
+
+#### 9. HuggingFace MCP Server (5:18 AM)
+- User asked about Rube/Composio HuggingFace access
+- Rube has OpenRouter (for LLM inference) but not direct HF token access
+- Added HuggingFace MCP server to Claude Code:
+```bash
+claude mcp add hf-mcp-server -t http "https://huggingface.co/mcp?login"
+```
+- MCP server requires OAuth authentication at: https://huggingface.co/mcp?login
+- User completed browser OAuth but session restart needed for token pickup
+
+#### 10. Domain Configuration (6:40 AM)
+- User added domain `speakersplit.alwaysencrypted.com` in Coolify
+- Server IP changed due to new Netgate router - old IPs no longer valid
+
+#### 11. Cloudflare Tunnel Configuration (6:45 AM)
+
+##### Getting Current Tunnel Config
+```bash
+curl -s -X GET "https://api.cloudflare.com/client/v4/accounts/82f3c6e0ba2e585cd0fe3492151de1a0/cfd_tunnel/d4b5f6f4-a09b-4c0b-9cbb-a80659ea775c/configurations" \
+  -H "X-Auth-Email: Coreypearsonemail@gmail.com" \
+  -H "X-Auth-Key: 922460400012ed8596f9188ad3a21aac2918e"
+```
+
+##### Adding Speaker Split to Tunnel
+First attempt - container name (failed - bad gateway):
+```json
+{"hostname": "speakersplit.alwaysencrypted.com", "service": "http://speaker-split-frontend:3000"}
+```
+
+Second attempt - host.docker.internal (failed - bad gateway):
+```json
+{"hostname": "speakersplit.alwaysencrypted.com", "service": "http://host.docker.internal:3100"}
+```
+
+Third attempt - Docker bridge IP (SUCCESS):
+```json
+{"hostname": "speakersplit.alwaysencrypted.com", "service": "http://172.17.0.1:3100"}
+```
+
+##### Creating DNS Record
+```bash
+curl -s -X POST "https://api.cloudflare.com/client/v4/zones/3cf1dd25568da563acc750eef0c9f87d/dns_records" \
+  -H "X-Auth-Email: Coreypearsonemail@gmail.com" \
+  -H "X-Auth-Key: 922460400012ed8596f9188ad3a21aac2918e" \
   -H "Content-Type: application/json" \
   -d '{
-    "project_uuid": "PROJECT_UUID",
-    "environment_name": "production",
-    "server_uuid": "SERVER_UUID",
-    "name": "speaker-split-frontend",
-    "git_repository": "https://github.com/AiMagic5000/speaker-split",
-    "git_branch": "main",
-    "build_pack": "dockerfile",
-    "ports_exposes": "3000"
+    "type": "CNAME",
+    "name": "speakersplit",
+    "content": "d4b5f6f4-a09b-4c0b-9cbb-a80659ea775c.cfargotunnel.com",
+    "proxied": true
   }'
+```
 
-# Add environment variable
-curl -s -X POST "https://coolify.cognabase.com/api/v1/applications/APP_UUID/envs" \
-  -H "Authorization: Bearer $TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{"key": "NODE_ENV", "value": "production"}'
+- DNS Record ID: `4bc676ca65dc1ef10f1a32f7b0895378`
+- Created: 2026-01-10T14:47:03.043985Z
 
-# Deploy application
-curl -s -X GET "https://coolify.cognabase.com/api/v1/deploy?uuid=APP_UUID&force=true" \
-  -H "Authorization: Bearer $TOKEN"
+#### 12. Final Verification (6:50 AM)
+- **https://speakersplit.alwaysencrypted.com** - CONNECTED
+- Application successfully accessible via public URL
+- Frontend rendering correctly with SMB branding
 
-# Check deployment status
-curl -s -X GET "https://coolify.cognabase.com/api/v1/deployments/DEPLOYMENT_UUID" \
-  -H "Authorization: Bearer $TOKEN"
+---
+
+## Infrastructure Details
+
+### Dell R730 Server (Current)
+- **SSH:** `ssh admin1@<new-ip>` (IP changed with Netgate router)
+- **Specs:** 2x Xeon E5-2690 v4 (28c/56t), 94GB RAM, 2x1TB NVMe
+- **Platform:** Coolify v4.0.0-beta.460, Ubuntu 22.04
+- **Coolify URL:** https://coolify.alwaysencrypted.com
+
+### Cloudflare Tunnel
+- **Tunnel Name:** r730-tunnel
+- **Tunnel ID:** `d4b5f6f4-a09b-4c0b-9cbb-a80659ea775c`
+- **Status:** Healthy (4 active connections)
+- **Config Version:** 16 (after adding speakersplit)
+
+### Speaker Split Tunnel Entry
+```json
+{
+  "hostname": "speakersplit.alwaysencrypted.com",
+  "service": "http://172.17.0.1:3100"
+}
+```
+
+### Network Architecture
+```
+Internet
+    │
+    ▼
+Cloudflare (Proxy)
+    │
+    ▼
+Cloudflare Tunnel (r730-tunnel)
+    │
+    ▼
+Docker Bridge (172.17.0.1:3100)
+    │
+    ▼
+speaker-split-frontend container (:3000)
+    │
+    ▼
+speaker-split-backend container (:8000)
 ```
 
 ---
 
-## CPU Mode vs GPU Mode
+## Coolify Project Configuration
 
-### CPU Mode (Current Configuration)
-- **Dockerfile:** `backend/Dockerfile` (uses python:3.11-slim)
-- **Whisper Model:** `small` (244M parameters)
-- **Processing Time:** ~2-5x slower than GPU
-- **Memory:** ~2-4GB RAM
-- **Accuracy:** Good, slightly lower than large model
+### Project Details
+- **Project Name:** SpeakerSplit (note: no hyphen to avoid old broken project)
+- **Environment:** production
+- **Server:** localhost (R730)
+- **Build Pack:** Docker Compose
+- **Docker Compose File:** `/docker-compose.yaml`
 
-### GPU Mode (For Future Use)
-- **Dockerfile:** `backend/Dockerfile.gpu` (uses nvidia/cuda:12.1)
-- **Whisper Model:** `large-v2` (1.5B parameters)
-- **Requirements:** NVIDIA GPU with 10GB+ VRAM, nvidia-docker2
-- **Processing Time:** Real-time or faster
-- **Accuracy:** Best available
+### Container Details
+| Container | Internal Port | External Port | Network |
+|-----------|---------------|---------------|---------|
+| speaker-split-frontend | 3000 | 3100 | speaker-split-network |
+| speaker-split-backend | 8000 | 8100 | speaker-split-network |
 
-To switch to GPU mode:
-1. Rename `Dockerfile.gpu` to `Dockerfile` in backend/
-2. Set `WHISPER_MODEL=large-v2`
-3. Set `DEVICE=cuda`
-4. Ensure server has NVIDIA GPU with drivers
+### Environment Variables (Production)
+| Variable | Value | Description |
+|----------|-------|-------------|
+| `ANTHROPIC_API_KEY` | sk-ant-api03-... | Claude API for HTML generation |
+| `N8N_WEBHOOK_URL` | https://n8n.alwaysencrypted.com/webhook/transcript-to-html | Webhook for transcript processing |
+| `HF_TOKEN` | placeholder | **NEEDS REAL TOKEN** - HuggingFace access |
+| `WHISPER_MODEL` | small | WhisperX model size |
+| `DEVICE` | cpu | Processing device |
+| `NODE_ENV` | production | Node environment |
+| `UPLOAD_DIR` | /app/uploads | Upload directory |
+| `BACKEND_URL` | http://speaker-split-backend:8000 | Backend API URL |
 
 ---
 
-## n8n Workflow Integration
+## Processing Time Estimates
 
-### Webhook URL
-`https://n8n.srv836017.hstgr.cloud/webhook/transcript-to-html`
+### CPU Mode (Current - R730 without GPU)
+| Audio Length | Model | Estimated Time |
+|--------------|-------|----------------|
+| 10 minutes | small | 10-20 minutes |
+| 30 minutes | small | 30-60 minutes |
+| 60 minutes | small | 60-120 minutes |
+| 60 minutes | large-v2 | 3-5 hours |
 
-### Workflow ID
-`r6w8uFfpY5Gi1bY9`
+### GPU Mode (Future - if GPU added)
+| Audio Length | Model | Estimated Time |
+|--------------|-------|----------------|
+| 10 minutes | small | 1-2 minutes |
+| 30 minutes | small | 3-5 minutes |
+| 60 minutes | large-v2 | 10-20 minutes |
 
-### Purpose
-Converts transcript JSON to formatted HTML document with:
-- Client information header
-- Speaker-labeled transcript
-- Professional SMB styling
+---
 
-### Fallback
-If n8n webhook fails, the app falls back to direct Claude API call in `src/app/api/generate-html/route.ts`
+## HuggingFace Token Setup (REQUIRED)
+
+Audio processing will fail until HF_TOKEN is configured. Follow these steps:
+
+### Step 1: Create HuggingFace Account
+1. Go to https://huggingface.co/join
+2. Create account or sign in
+
+### Step 2: Accept Model Agreements
+Visit each URL and click "Agree and access repository":
+1. https://huggingface.co/pyannote/speaker-diarization-3.1
+2. https://huggingface.co/pyannote/segmentation-3.0
+
+### Step 3: Generate Access Token
+1. Go to https://huggingface.co/settings/tokens
+2. Click **New token**
+3. Name: `speaker-split`
+4. Type: **Read**
+5. Click Create
+6. Copy token (starts with `hf_...`)
+
+### Step 4: Update Coolify Environment Variable
+1. Go to https://coolify.alwaysencrypted.com
+2. Projects → SpeakerSplit → production
+3. Click on the application
+4. Environment Variables
+5. Find `HF_TOKEN` and update value from `placeholder` to your actual token
+6. Click Save
+7. Redeploy the application
+
+---
+
+## Files Changed This Session (January 10, 2026)
+
+| File | Action | Description |
+|------|--------|-------------|
+| `docker-compose.yaml` | Created | Copy of coolify-compose.yml for Coolify compatibility |
+| `CLAUDE-SESSION.md` | Updated | This comprehensive documentation |
+
+### Git Commits
+```
+5bf4fe9 Add docker-compose.yaml for Coolify deployment
+```
+
+---
+
+## Troubleshooting Guide
+
+### Bad Gateway Error
+**Symptoms:** Cloudflare returns 502 Bad Gateway
+**Causes:**
+1. Docker networks not connected
+2. Container not running
+3. Wrong service URL in tunnel config
+
+**Solutions:**
+1. Check container status in Coolify
+2. Verify tunnel config uses correct IP/port
+3. For Speaker Split, use `http://172.17.0.1:3100` (Docker bridge)
+
+### Coolify API Token "Unauthenticated"
+**Symptoms:** API calls return `{"message":"Unauthenticated."}`
+**Causes:**
+1. Token expired
+2. Token not properly created
+3. API access may need enabling in settings
+
+**Solutions:**
+1. Generate new token in Coolify → Keys & Tokens
+2. Ensure root permissions selected
+3. Use UI deployment as fallback
+
+### Orphaned Applications (500 Error)
+**Symptoms:** Clicking on app shows 500 error about null server
+**Causes:** Apps reference deleted server
+
+**Solutions:**
+1. Create new project with different name
+2. Use Coolify Terminal to clean database (if accessible):
+```php
+App\Models\Application::whereNull('server_id')->delete();
+```
+
+### Docker Compose File Not Found
+**Symptoms:** Coolify can't find docker-compose file
+**Causes:**
+1. File named differently (coolify-compose.yml vs docker-compose.yaml)
+2. Wrong path specified
+
+**Solutions:**
+1. Rename file to `docker-compose.yaml` (Coolify default)
+2. Or manually set path in Coolify UI
+
+### Audio Processing Fails
+**Symptoms:** Job starts but fails during "Loading AI models"
+**Causes:**
+1. Missing HF_TOKEN
+2. pyannote model access not granted
+3. Insufficient memory
+
+**Solutions:**
+1. Add valid HuggingFace token
+2. Accept model agreements on HuggingFace website
+3. Ensure server has 4GB+ RAM available
+
+---
+
+## API Reference
+
+### Speaker Split Backend Endpoints
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/` | GET | API info |
+| `/health` | GET | Health check |
+| `/process` | POST | Start audio processing job |
+| `/jobs/{job_id}` | GET | Get job status |
+| `/files/{job_id}/{path}` | GET | Download output files |
+
+### Process Request Body
+```json
+{
+  "jobId": "uuid-string",
+  "audioPath": "/app/uploads/uuid/audio.mp3",
+  "speakerCount": 2,
+  "outputDir": "/app/uploads/uuid/output"
+}
+```
+
+### Job Status Response
+```json
+{
+  "status": "complete",
+  "progress": 100,
+  "stage": "Processing complete!",
+  "speakers": [
+    {"id": "SPEAKER_00", "label": "Speaker 1", "name": "", "color": "#4493f2"}
+  ],
+  "transcript": [
+    {"speaker": "SPEAKER_00", "text": "Hello", "start": 0.0, "end": 1.5}
+  ],
+  "outputs": {
+    "json": "/api/files/uuid/output/audio_diarized.json",
+    "txt": "/api/files/uuid/output/audio_transcript.txt",
+    "srt": "/api/files/uuid/output/audio_subtitles.srt",
+    "speakerAudios": [
+      {"speaker": "SPEAKER_00", "url": "/api/files/uuid/output/audio_SPEAKER_00.wav"}
+    ]
+  }
+}
+```
 
 ---
 
 ## Branding (Start My Business Inc.)
 
 ### Colors
-- **Primary Blue:** #4493f2
-- **Secondary Teal:** #4dc0b5
-- **Navy:** #132743
-- **Charcoal:** #1a1a2e
+| Color | Hex | Usage |
+|-------|-----|-------|
+| Primary Blue | #4493f2 | Buttons, links, accents |
+| Secondary Teal | #4dc0b5 | Speaker highlights |
+| Navy | #132743 | Headers, dark backgrounds |
+| Charcoal | #1a1a2e | Body background |
 
-### Logo
+### Logo URL
 ```
 https://cdn.prod.website-files.com/6784053e7b7422e48efa5a84/6833a36f90c60fba010cee72_start_my_business_logo-removebg-preview.png
 ```
@@ -313,82 +477,29 @@ https://cdn.prod.website-files.com/6784053e7b7422e48efa5a84/6833a36f90c60fba010c
 
 ---
 
-## Next Steps (When New Server Arrives)
+## Related Documentation
 
-### User to Provide:
-1. New server IP address
-2. SSH root credentials
-3. Desired domain for Speaker-Split
-
-### Deployment Steps:
-1. SSH into new server
-2. Install Coolify:
-   ```bash
-   curl -fsSL https://cdn.coollabs.io/coolify/install.sh | bash
-   ```
-3. Access Coolify dashboard (port 8000)
-4. Create Speaker-Split project
-5. Add frontend application (GitHub source)
-6. Add backend application (GitHub source)
-7. Configure environment variables
-8. Deploy both services
-9. Configure domain and SSL
-10. Test end-to-end functionality
-
-### Estimated Time: 15-20 minutes
+- **Main CLAUDE.md:** `/home/flowc/.claude/CLAUDE.md` - Global configuration and credentials
+- **Deployment Guide:** `/mnt/c/Users/flowc/Documents/speaker-split-app/DEPLOYMENT.md`
+- **Local Project:** `/mnt/c/Users/flowc/Documents/speaker-split-app/`
 
 ---
 
-## Files Changed This Session
+## Next Steps
 
-| File | Action | Description |
-|------|--------|-------------|
-| `src/components/Header.tsx` | Modified | Added SMB logo from CDN |
-| `src/app/page.tsx` | Modified | Added SMB logo to footer |
-| `next.config.ts` | Modified | Added CDN domain for images |
-| `backend/Dockerfile` | Renamed | Now contains CPU version |
-| `backend/Dockerfile.gpu` | Created | Original GPU version preserved |
-| `coolify-compose.yml` | Modified | CPU mode, standard Dockerfile |
-| `DEPLOYMENT.md` | Created | Deployment documentation |
-| `CLAUDE-SESSION.md` | Created | This file |
+### Immediate (Required for Audio Processing)
+1. [ ] Obtain HuggingFace token
+2. [ ] Accept pyannote model agreements
+3. [ ] Update HF_TOKEN in Coolify
+4. [ ] Redeploy application
+5. [ ] Test audio processing end-to-end
 
----
-
-## Git Commits This Session
-
-```
-c53bff4 Add SMB logo and configure CPU mode deployment
-38619b6 Add Coolify deployment documentation
-8bec767 Add Coolify deployment configuration
-153a2ee Remove uploads from tracking
-cac6f55 Initial Speaker Split application
-541bab5 Initial commit from Create Next App
-```
-
----
-
-## Troubleshooting
-
-### "Server not reachable" in Coolify
-- Check Docker is running: `systemctl status docker`
-- Restart Docker: `systemctl restart docker`
-- Validate server in Coolify UI or via API
-
-### Deployment fails with timeout
-- Check server CPU/memory
-- Reduce concurrent builds in Coolify settings
-- Use smaller Whisper model
-
-### Audio processing slow
-- Expected on CPU mode
-- Consider upgrading to GPU server
-- Use `small` model instead of `large-v2`
-
-### HuggingFace authentication error
-1. Create account at huggingface.co
-2. Accept pyannote model agreements
-3. Generate access token
-4. Set as `HF_TOKEN` environment variable
+### Future Enhancements
+1. [ ] Add GPU support when NVIDIA GPU available
+2. [ ] Configure larger WhisperX model (large-v2) for better accuracy
+3. [ ] Add monitoring/alerting for processing jobs
+4. [ ] Implement job queue for multiple concurrent uploads
+5. [ ] Add user authentication
 
 ---
 
@@ -396,9 +507,30 @@ cac6f55 Initial Speaker Split application
 
 - **Project Owner:** Start My Business Inc.
 - **Repository:** https://github.com/AiMagic5000/speaker-split
+- **Live URL:** https://speakersplit.alwaysencrypted.com
 - **Website:** https://startmybusiness.us
 - **Phone:** (888) 534-4145
 
 ---
 
-*Generated by Claude Code on January 6, 2026*
+## Session Log Summary
+
+### January 6, 2026 - Initial Development
+- Created Next.js frontend with SMB branding
+- Created Python FastAPI backend with WhisperX/pyannote integration
+- Configured Docker Compose for deployment
+- Pushed to GitHub repository
+- Blocked by compromised old server (72.60.119.182)
+
+### January 10, 2026 - Successful Deployment
+- Deployed to Dell R730 via Coolify
+- Resolved Coolify UI bugs and orphaned project issues
+- Configured Cloudflare Tunnel routing
+- Troubleshot Docker networking (container name → bridge IP)
+- Application live at https://speakersplit.alwaysencrypted.com
+- Pending: HuggingFace token for audio processing
+
+---
+
+*Last Updated: January 10, 2026 at 6:55 AM CST*
+*Generated by Claude Code (Opus 4.5)*
