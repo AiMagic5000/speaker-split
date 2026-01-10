@@ -14,7 +14,7 @@ services:
     environment:
       - NODE_ENV=production
       - UPLOAD_DIR=/app/uploads
-      - BACKEND_URL=http://speaker-split-backend:8000
+      - BACKEND_URL=${BACKEND_URL:-http://speaker-split-backend:8000}
       - N8N_WEBHOOK_URL=${N8N_WEBHOOK_URL:-https://n8n.srv836017.hstgr.cloud/webhook/transcript-to-html}
       - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
     volumes:
