@@ -1,17 +1,28 @@
-import { Header } from "@/components/Header"
 import { AudioUploader } from "@/components/AudioUploader"
 import { AudioWaveform, Mic2, Split, FileText, CheckCircle } from "lucide-react"
-import Image from "next/image"
 
 export default function Home() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
-      <Header />
-
-      {/* Hero Section */}
+      {/* Hero Section with Video Background */}
       <section className="relative overflow-hidden">
-        {/* Background decoration */}
-        <div className="absolute inset-0 -z-10">
+        {/* Background Video */}
+        <div className="absolute inset-0 -z-10 overflow-hidden">
+          <video
+            autoPlay
+            muted
+            loop
+            playsInline
+            className="absolute top-1/2 left-1/2 min-w-full min-h-full w-auto h-auto transform -translate-x-1/2 -translate-y-1/2 object-cover opacity-20"
+          >
+            <source src="https://seafile.alwaysencrypted.com/seafhttp/f/5e3bd8a3f72b46f48f32/" type="video/mp4" />
+          </video>
+          {/* Gradient overlay */}
+          <div className="absolute inset-0 bg-gradient-to-b from-white/80 via-white/60 to-white" />
+        </div>
+
+        {/* Decorative blurs */}
+        <div className="absolute inset-0 -z-10 pointer-events-none">
           <div className="absolute top-0 right-0 w-96 h-96 bg-primary/5 rounded-full blur-3xl" />
           <div className="absolute bottom-0 left-0 w-96 h-96 bg-secondary/5 rounded-full blur-3xl" />
         </div>
@@ -104,39 +115,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-
-      {/* Footer */}
-      <footer className="bg-charcoal text-white py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-            <div className="flex items-center gap-3">
-              <Image
-                src="https://cdn.prod.website-files.com/6784053e7b7422e48efa5a84/6833a36f90c60fba010cee72_start_my_business_logo-removebg-preview.png"
-                alt="Start My Business Inc."
-                width={140}
-                height={35}
-                className="h-9 w-auto brightness-0 invert"
-                unoptimized
-              />
-              <div className="border-l border-gray-600 pl-3">
-                <p className="font-bold">Speaker Split</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-6 text-sm text-gray-400">
-              <a href="https://startmybusiness.us" target="_blank" rel="noopener" className="hover:text-white">
-                startmybusiness.us
-              </a>
-              <span>|</span>
-              <a href="tel:+18885344145" className="hover:text-white">
-                (888) 534-4145
-              </a>
-            </div>
-          </div>
-          <div className="mt-8 pt-8 border-t border-gray-800 text-center text-sm text-gray-500">
-            <p>&copy; {new Date().getFullYear()} Start My Business Inc. All rights reserved.</p>
-          </div>
-        </div>
-      </footer>
     </div>
   )
 }
