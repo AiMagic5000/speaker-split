@@ -1,11 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { readFile, access } from 'fs/promises'
-import path from 'path'
 
-const UPLOAD_DIR = process.env.UPLOAD_DIR || './uploads'
-
-// In-memory job store (in production, use a database)
-const jobStore: Map<string, any> = new Map()
+const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:8000'
 
 export async function GET(
   request: NextRequest,
@@ -14,35 +9,39 @@ export async function GET(
   const { id: jobId } = await params
 
   try {
-    // Check if job status file exists
-    const statusPath = path.join(UPLOAD_DIR, jobId, 'status.json')
+    // Fetch job status from backend
+    const response = await fetch(`${BACKEND_URL}/jobs/${jobId}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      // Don't cache job status
+      cache: 'no-store',
+    })
 
-    try {
-      await access(statusPath)
-      const statusData = await readFile(statusPath, 'utf-8')
-      const status = JSON.parse(statusData)
-      return NextResponse.json(status)
-    } catch {
-      // No status file yet, return current in-memory status or default
-      const memoryStatus = jobStore.get(jobId)
-      if (memoryStatus) {
-        return NextResponse.json(memoryStatus)
+    if (!response.ok) {
+      // If backend doesn't have the job yet, return default status
+      if (response.status === 404) {
+        return NextResponse.json({
+          status: 'processing',
+          progress: 10,
+          stage: 'Initializing...',
+        })
       }
-
-      // Return default processing status
-      return NextResponse.json({
-        status: 'processing',
-        progress: 35,
-        stage: 'Initializing AI models...',
-      })
+      throw new Error(`Backend returned ${response.status}`)
     }
+
+    const status = await response.json()
+    return NextResponse.json(status)
 
   } catch (error) {
     console.error('Job status error:', error)
-    return NextResponse.json(
-      { error: 'Failed to get job status' },
-      { status: 500 }
-    )
+    // Return processing status on error (backend might still be starting)
+    return NextResponse.json({
+      status: 'processing',
+      progress: 5,
+      stage: 'Connecting to processing server...',
+    })
   }
 }
 
@@ -55,9 +54,18 @@ export async function PUT(
   try {
     const updates = await request.json()
 
-    // Update in-memory store
-    const existing = jobStore.get(jobId) || {}
-    jobStore.set(jobId, { ...existing, ...updates })
+    // Forward update to backend
+    const response = await fetch(`${BACKEND_URL}/jobs/${jobId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(updates),
+    })
+
+    if (!response.ok) {
+      throw new Error(`Backend returned ${response.status}`)
+    }
 
     return NextResponse.json({ success: true })
 

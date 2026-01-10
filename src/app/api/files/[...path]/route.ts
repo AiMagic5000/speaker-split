@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { readFile, access } from 'fs/promises'
-import path from 'path'
 
-const UPLOAD_DIR = process.env.UPLOAD_DIR || './uploads'
+const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:8000'
 
 export async function GET(
   request: NextRequest,
@@ -10,46 +8,37 @@ export async function GET(
 ) {
   try {
     const { path: pathSegments } = await params
-    const filePath = path.join(UPLOAD_DIR, ...pathSegments)
+    const filePath = pathSegments.join('/')
 
-    // Security: Ensure the path is within UPLOAD_DIR
-    const resolvedPath = path.resolve(filePath)
-    const resolvedUploadDir = path.resolve(UPLOAD_DIR)
-
-    if (!resolvedPath.startsWith(resolvedUploadDir)) {
-      return NextResponse.json({ error: 'Invalid path' }, { status: 403 })
-    }
-
-    // Check file exists
-    try {
-      await access(resolvedPath)
-    } catch {
-      return NextResponse.json({ error: 'File not found' }, { status: 404 })
-    }
-
-    // Read file
-    const fileBuffer = await readFile(resolvedPath)
-
-    // Determine content type
-    const ext = path.extname(resolvedPath).toLowerCase()
-    const contentTypes: Record<string, string> = {
-      '.json': 'application/json',
-      '.txt': 'text/plain',
-      '.srt': 'text/plain',
-      '.html': 'text/html',
-      '.wav': 'audio/wav',
-      '.mp3': 'audio/mpeg',
-      '.m4a': 'audio/mp4',
-    }
-    const contentType = contentTypes[ext] || 'application/octet-stream'
-
-    // Return file
-    return new NextResponse(fileBuffer, {
-      headers: {
-        'Content-Type': contentType,
-        'Content-Disposition': `inline; filename="${path.basename(resolvedPath)}"`,
-      },
+    // Proxy request to backend
+    const response = await fetch(`${BACKEND_URL}/files/${filePath}`, {
+      method: 'GET',
+      // Don't cache files
+      cache: 'no-store',
     })
+
+    if (!response.ok) {
+      if (response.status === 404) {
+        return NextResponse.json({ error: 'File not found' }, { status: 404 })
+      }
+      throw new Error(`Backend returned ${response.status}`)
+    }
+
+    // Get content type from backend response
+    const contentType = response.headers.get('content-type') || 'application/octet-stream'
+    const contentDisposition = response.headers.get('content-disposition')
+
+    // Stream the response
+    const data = await response.arrayBuffer()
+
+    const headers: Record<string, string> = {
+      'Content-Type': contentType,
+    }
+    if (contentDisposition) {
+      headers['Content-Disposition'] = contentDisposition
+    }
+
+    return new NextResponse(data, { headers })
 
   } catch (error) {
     console.error('File serve error:', error)
