@@ -21,9 +21,17 @@ RUN pip install --no-cache-dir \
 # Install WhisperX with pinned version for stability
 RUN pip install --no-cache-dir "whisperx @ git+https://github.com/m-bain/whisperx.git@v3.1.1"
 
-# Install other requirements (skip torch since already installed)
-RUN pip install --no-cache-dir --no-deps pyannote.audio==3.1.1 && \
-    pip install --no-cache-dir -r requirements.txt
+# Install pyannote.audio without deps (torch already installed)
+RUN pip install --no-cache-dir --no-deps pyannote.audio==3.1.1
+
+# Install speechbrain and pytorch-lightning without letting them reinstall torch
+RUN pip install --no-cache-dir --no-deps speechbrain==0.5.16 pytorch-lightning==2.1.3
+
+# Install remaining requirements (without torch-dependent packages)
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Verify torch is properly installed
+RUN python -c "import torch; print(f'PyTorch version: {torch.__version__}')"
 
 # Copy application code
 COPY . .
