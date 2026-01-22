@@ -1,13 +1,15 @@
 import { TranscriptionUploader } from "@/components/TranscriptionUploader"
 import { SpeakerSplitUploader } from "@/components/SpeakerSplitUploader"
 import { DocumentGeneratorSection } from "@/components/DocumentGeneratorSection"
+import { AuthGate } from "@/components/AuthGate"
+import { FAQ, TRANSCRIPTION_FAQ, SPEAKER_SPLIT_FAQ, DOCUMENT_GENERATOR_FAQ } from "@/components/FAQ"
 import { AudioWaveform, Mic2, Split, FileText } from "lucide-react"
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-950">
+    <div className="min-h-screen bg-white dark:bg-slate-900">
       {/* Hero Section */}
-      <section className="relative overflow-hidden">
+      <section className="relative overflow-hidden bg-gradient-to-b from-slate-50 to-white dark:from-slate-800 dark:to-slate-900">
         {/* Background Video */}
         <div className="absolute inset-0 -z-10 overflow-hidden">
           <video
@@ -15,24 +17,24 @@ export default function Home() {
             muted
             loop
             playsInline
-            className="absolute top-1/2 left-1/2 min-w-full min-h-full w-auto h-auto transform -translate-x-1/2 -translate-y-1/2 object-cover opacity-20"
+            className="absolute top-1/2 left-1/2 min-w-full min-h-full w-auto h-auto transform -translate-x-1/2 -translate-y-1/2 object-cover opacity-10 dark:opacity-20"
           >
             <source src="https://seafile.alwaysencrypted.com/seafhttp/f/5e3bd8a3f72b46f48f32/" type="video/mp4" />
           </video>
-          <div className="absolute inset-0 bg-gradient-to-b from-white/80 via-white/60 to-white dark:from-gray-900/80 dark:via-gray-900/60 dark:to-gray-900" />
+          <div className="absolute inset-0 bg-gradient-to-b from-white/90 via-white/70 to-white dark:from-slate-900/90 dark:via-slate-900/70 dark:to-slate-900" />
         </div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
           <div className="text-center max-w-3xl mx-auto">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-semibold mb-6">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400 text-sm font-semibold mb-6">
               <AudioWaveform className="w-4 h-4" />
               AI-Powered Audio Processing Suite
             </div>
-            <h1 className="text-4xl sm:text-5xl font-bold text-navy dark:text-white leading-tight">
+            <h1 className="text-4xl sm:text-5xl font-bold text-slate-900 dark:text-white leading-tight">
               Transcribe, Split &
-              <span className="gradient-text block">Generate Documents</span>
+              <span className="block bg-gradient-to-r from-blue-600 to-teal-500 bg-clip-text text-transparent">Generate Documents</span>
             </h1>
-            <p className="text-lg text-gray-600 dark:text-gray-400 mt-6 leading-relaxed">
+            <p className="text-lg text-slate-600 dark:text-slate-300 mt-6 leading-relaxed">
               Three powerful tools in one place. Transcribe conversations with speaker labels,
               separate audio by speaker, and generate professional reference documents.
             </p>
@@ -66,7 +68,7 @@ export default function Home() {
       </section>
 
       {/* Section 1: Transcription */}
-      <section id="transcription" className="py-12 sm:py-16 scroll-mt-20">
+      <section id="transcription" className="py-12 sm:py-16 scroll-mt-20 bg-white dark:bg-slate-900">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <SectionHeader
             number="1"
@@ -76,18 +78,22 @@ export default function Home() {
             color="primary"
           />
           <div className="mt-8">
-            <TranscriptionUploader />
+            <AuthGate featureName="Audio Transcription">
+              <TranscriptionUploader />
+            </AuthGate>
           </div>
+          {/* FAQ visible to everyone */}
+          <FAQ items={TRANSCRIPTION_FAQ} accentColor="primary" />
         </div>
       </section>
 
       {/* Divider */}
       <div className="max-w-4xl mx-auto px-4">
-        <div className="h-px bg-gradient-to-r from-transparent via-gray-300 dark:via-gray-700 to-transparent" />
+        <div className="h-px bg-gradient-to-r from-transparent via-slate-300 dark:via-slate-700 to-transparent" />
       </div>
 
       {/* Section 2: Speaker Split */}
-      <section id="speaker-split" className="py-12 sm:py-16 scroll-mt-20">
+      <section id="speaker-split" className="py-12 sm:py-16 scroll-mt-20 bg-white dark:bg-slate-900">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <SectionHeader
             number="2"
@@ -97,18 +103,22 @@ export default function Home() {
             color="secondary"
           />
           <div className="mt-8">
-            <SpeakerSplitUploader />
+            <AuthGate featureName="Speaker Split">
+              <SpeakerSplitUploader />
+            </AuthGate>
           </div>
+          {/* FAQ visible to everyone */}
+          <FAQ items={SPEAKER_SPLIT_FAQ} accentColor="secondary" />
         </div>
       </section>
 
       {/* Divider */}
       <div className="max-w-4xl mx-auto px-4">
-        <div className="h-px bg-gradient-to-r from-transparent via-gray-300 dark:via-gray-700 to-transparent" />
+        <div className="h-px bg-gradient-to-r from-transparent via-slate-300 dark:via-slate-700 to-transparent" />
       </div>
 
       {/* Section 3: Document Generator */}
-      <section id="document-generator" className="py-12 sm:py-16 scroll-mt-20">
+      <section id="document-generator" className="py-12 sm:py-16 scroll-mt-20 bg-white dark:bg-slate-900">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <SectionHeader
             number="3"
@@ -118,13 +128,17 @@ export default function Home() {
             color="accent"
           />
           <div className="mt-8">
-            <DocumentGeneratorSection />
+            <AuthGate featureName="Document Generator">
+              <DocumentGeneratorSection />
+            </AuthGate>
           </div>
+          {/* FAQ visible to everyone */}
+          <FAQ items={DOCUMENT_GENERATOR_FAQ} accentColor="amber" />
         </div>
       </section>
 
       {/* Footer spacing */}
-      <div className="h-16" />
+      <div className="h-16 bg-white dark:bg-slate-900" />
     </div>
   )
 }
@@ -143,9 +157,9 @@ function QuickNavCard({
   href: string
 }) {
   const colorClasses = {
-    primary: 'bg-primary/10 text-primary border-primary/20 hover:border-primary/40',
-    secondary: 'bg-secondary/10 text-secondary border-secondary/20 hover:border-secondary/40',
-    accent: 'bg-amber-500/10 text-amber-600 border-amber-500/20 hover:border-amber-500/40',
+    primary: 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-800 hover:border-blue-400 dark:hover:border-blue-600',
+    secondary: 'bg-teal-50 dark:bg-teal-900/30 text-teal-600 dark:text-teal-400 border-teal-200 dark:border-teal-800 hover:border-teal-400 dark:hover:border-teal-600',
+    accent: 'bg-amber-50 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 border-amber-200 dark:border-amber-800 hover:border-amber-400 dark:hover:border-amber-600',
   }
 
   return (
@@ -153,11 +167,11 @@ function QuickNavCard({
       href={href}
       className={`flex flex-col items-center text-center p-6 rounded-2xl border-2 transition-all hover:shadow-lg ${colorClasses[color]}`}
     >
-      <div className="w-12 h-12 rounded-xl bg-white dark:bg-gray-800 flex items-center justify-center shadow-sm mb-3">
+      <div className="w-12 h-12 rounded-xl bg-white dark:bg-slate-800 flex items-center justify-center shadow-sm mb-3">
         {icon}
       </div>
-      <h3 className="font-bold text-navy dark:text-white">{title}</h3>
-      <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{description}</p>
+      <h3 className="font-bold text-slate-900 dark:text-white">{title}</h3>
+      <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">{description}</p>
     </a>
   )
 }
@@ -176,15 +190,15 @@ function SectionHeader({
   color: 'primary' | 'secondary' | 'accent'
 }) {
   const colorClasses = {
-    primary: 'bg-primary text-white',
-    secondary: 'bg-secondary text-white',
+    primary: 'bg-blue-600 text-white',
+    secondary: 'bg-teal-600 text-white',
     accent: 'bg-amber-500 text-white',
   }
 
   const iconColorClasses = {
-    primary: 'text-primary',
-    secondary: 'text-secondary',
-    accent: 'text-amber-500',
+    primary: 'text-blue-600 dark:text-blue-400',
+    secondary: 'text-teal-600 dark:text-teal-400',
+    accent: 'text-amber-500 dark:text-amber-400',
   }
 
   return (
@@ -195,9 +209,9 @@ function SectionHeader({
       <div>
         <div className="flex items-center gap-2">
           <span className={iconColorClasses[color]}>{icon}</span>
-          <h2 className="text-2xl font-bold text-navy dark:text-white">{title}</h2>
+          <h2 className="text-2xl font-bold text-slate-900 dark:text-white">{title}</h2>
         </div>
-        <p className="text-gray-600 dark:text-gray-400 mt-1">{subtitle}</p>
+        <p className="text-slate-600 dark:text-slate-400 mt-1">{subtitle}</p>
       </div>
     </div>
   )

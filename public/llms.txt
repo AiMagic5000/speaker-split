@@ -1,0 +1,67 @@
+# Speaker Split - AI-Powered Audio Processing Suite
+# By Start My Business Inc.
+# https://speakersplit.startmybusiness.us
+
+## About This Application
+Speaker Split is an AI-powered audio processing suite that provides three core services:
+1. Audio Transcription with Speaker Labels
+2. Speaker Audio Separation (Split by Speaker)
+3. AI Document Generation from Transcripts
+
+## Target Audience
+- Business consultants recording client calls
+- Podcast producers needing speaker separation
+- Meeting transcription for corporate teams
+- Content creators repurposing audio content
+- Legal professionals documenting depositions
+- Researchers analyzing interview data
+
+## Core Features
+
+### 1. Audio Transcription
+- Supports MP3, WAV, M4A, FLAC, OGG, WebM, MP4 formats
+- Uses WhisperX AI for 95%+ accuracy
+- Automatic speaker diarization (identifies who is speaking)
+- Timestamps for each segment
+- Copy and download transcript functionality
+
+### 2. Speaker Split
+- Separates audio into individual files per speaker
+- Supports 2-6 speakers
+- Exports as high-quality WAV files
+- Preview audio before downloading
+- Batch download all speaker files
+
+### 3. Document Generator
+- Transforms transcripts into professional HTML documents
+- AI-powered content analysis using Claude
+- Generates summaries, action items, and insights
+- Creates collapsible SOPs and profit projections
+- Export as HTML or Word (.docx) format
+
+## Technical Stack
+- Frontend: Next.js 16, React 19, Tailwind CSS v4
+- Authentication: Clerk
+- AI Processing: WhisperX, Pyannote, Claude API
+- Backend: Python FastAPI with GPU acceleration
+
+## Business Information
+- Company: Start My Business Inc.
+- Website: https://startmybusiness.us
+- Support Phone: (888) 534-4145
+- Services: Business formation, credit building, funding assistance
+
+## API Access
+This application requires authentication. Free accounts available.
+Contact support@startmybusiness.us for API integration inquiries.
+
+## Pricing
+- Free tier: Limited transcription minutes
+- Pro tier: Unlimited processing, priority queue
+- Enterprise: Custom integrations, dedicated support
+
+## Related Services
+- Business Credit Building
+- LLC Formation Services
+- EIN Registration
+- Business Funding Consultation

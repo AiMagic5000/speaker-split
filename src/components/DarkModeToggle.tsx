@@ -36,7 +36,7 @@ export function DarkModeToggle() {
   if (!mounted) {
     return (
       <button
-        className="p-2 rounded-lg bg-muted hover:bg-muted/80 transition-colors"
+        className="p-2 rounded-lg bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors"
         aria-label="Toggle dark mode"
       >
         <div className="w-5 h-5" />
@@ -47,14 +47,14 @@ export function DarkModeToggle() {
   return (
     <button
       onClick={toggleDarkMode}
-      className="p-2 rounded-lg bg-[var(--muted)] hover:bg-[var(--muted)]/80 transition-colors"
+      className="p-2 rounded-lg bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors"
       aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
       title={isDark ? "Switch to light mode" : "Switch to dark mode"}
     >
       {isDark ? (
         <Sun className="w-5 h-5 text-yellow-400" />
       ) : (
-        <Moon className="w-5 h-5 text-[var(--navy)]" />
+        <Moon className="w-5 h-5 text-slate-700" />
       )}
     </button>
   )

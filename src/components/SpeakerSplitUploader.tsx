@@ -13,7 +13,6 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { cn, formatFileSize } from "@/lib/utils"
-import { FAQ, SPEAKER_SPLIT_FAQ } from "./FAQ"
 
 interface SpeakerAudio {
   speaker: string
@@ -197,7 +196,7 @@ export function SpeakerSplitUploader() {
       {/* Dropzone */}
       <Card className={cn(
         "border-2 border-dashed transition-all duration-300 cursor-pointer",
-        isDragActive ? "border-secondary bg-secondary/5" : "border-gray-300 dark:border-gray-700 hover:border-secondary/50",
+        isDragActive ? "border-secondary bg-secondary/5" : "border-slate-300 dark:border-slate-600 dark:border-slate-700 hover:border-secondary/50",
         file && "border-secondary bg-secondary/5"
       )}>
         <CardContent className="p-0">
@@ -209,8 +208,8 @@ export function SpeakerSplitUploader() {
                   <FileAudio className="w-8 h-8 text-secondary" />
                 </div>
                 <div>
-                  <p className="font-semibold text-navy dark:text-white">{file.name}</p>
-                  <p className="text-sm text-gray-500">{formatFileSize(file.size)}</p>
+                  <p className="font-semibold text-slate-900 dark:text-white">{file.name}</p>
+                  <p className="text-sm text-slate-500 dark:text-slate-400">{formatFileSize(file.size)}</p>
                 </div>
                 <Button
                   variant="ghost"
@@ -228,17 +227,17 @@ export function SpeakerSplitUploader() {
                   <Upload className="w-8 h-8 text-secondary" />
                 </div>
                 <div>
-                  <p className="text-lg font-semibold text-navy dark:text-white">
+                  <p className="text-lg font-semibold text-slate-900 dark:text-white">
                     {isDragActive ? "Drop your audio file here" : "Drag & drop your audio file"}
                   </p>
-                  <p className="text-sm text-gray-500 mt-1">or click to browse</p>
+                  <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">or click to browse</p>
                 </div>
-                <div className="flex flex-wrap justify-center gap-2 text-xs text-gray-400">
-                  <span className="px-2 py-1 rounded bg-gray-100 dark:bg-gray-800">MP3</span>
-                  <span className="px-2 py-1 rounded bg-gray-100 dark:bg-gray-800">WAV</span>
-                  <span className="px-2 py-1 rounded bg-gray-100 dark:bg-gray-800">M4A</span>
-                  <span className="px-2 py-1 rounded bg-gray-100 dark:bg-gray-800">FLAC</span>
-                  <span className="px-2 py-1 rounded bg-gray-100 dark:bg-gray-800">MP4</span>
+                <div className="flex flex-wrap justify-center gap-2 text-xs text-slate-400 dark:text-slate-500">
+                  <span className="px-2 py-1 rounded bg-slate-100 dark:bg-slate-800">MP3</span>
+                  <span className="px-2 py-1 rounded bg-slate-100 dark:bg-slate-800">WAV</span>
+                  <span className="px-2 py-1 rounded bg-slate-100 dark:bg-slate-800">M4A</span>
+                  <span className="px-2 py-1 rounded bg-slate-100 dark:bg-slate-800">FLAC</span>
+                  <span className="px-2 py-1 rounded bg-slate-100 dark:bg-slate-800">MP4</span>
                 </div>
               </div>
             )}
@@ -265,13 +264,13 @@ export function SpeakerSplitUploader() {
                 )}
               </div>
               <div>
-                <p className="font-semibold text-navy dark:text-white">
+                <p className="font-semibold text-slate-900 dark:text-white">
                   Estimated Time: {formatTimeEstimate(
                     estimateProcessingTime(file.size).min,
                     estimateProcessingTime(file.size).max
                   )}
                 </p>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                <p className="text-sm text-gray-600 dark:text-slate-400 dark:text-slate-500 mt-1">
                   File size: {formatFileSize(file.size)} • Includes transcription + audio separation
                 </p>
               </div>
@@ -290,8 +289,8 @@ export function SpeakerSplitUploader() {
                   <Users className="w-5 h-5 text-secondary" />
                 </div>
                 <div>
-                  <p className="font-semibold text-navy dark:text-white">Number of Speakers</p>
-                  <p className="text-sm text-gray-500">How many people are talking?</p>
+                  <p className="font-semibold text-slate-900 dark:text-white">Number of Speakers</p>
+                  <p className="text-sm text-slate-500 dark:text-slate-400">How many people are talking?</p>
                 </div>
               </div>
               <Select value={speakerCount} onValueChange={setSpeakerCount}>
@@ -317,11 +316,11 @@ export function SpeakerSplitUploader() {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <Loader2 className="w-5 h-5 animate-spin text-secondary" />
-                  <span className="font-medium text-navy dark:text-white">{stage}</span>
+                  <span className="font-medium text-slate-900 dark:text-white">{stage}</span>
                 </div>
                 <span className="text-secondary font-semibold">{Math.round(progress)}%</span>
               </div>
-              <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+              <div className="h-2 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
                 <div
                   className="h-full bg-gradient-to-r from-secondary to-primary transition-all duration-300"
                   style={{ width: `${progress}%` }}
@@ -356,7 +355,7 @@ export function SpeakerSplitUploader() {
         <Card>
           <CardContent className="p-6">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="font-bold text-navy dark:text-white">Speaker Audio Files</h3>
+              <h3 className="font-bold text-slate-900 dark:text-white">Speaker Audio Files</h3>
               <Button variant="outline" size="sm" onClick={downloadAll}>
                 <Download className="w-4 h-4 mr-1" />
                 Download All
@@ -369,7 +368,7 @@ export function SpeakerSplitUploader() {
                 return (
                   <div
                     key={index}
-                    className="flex items-center justify-between p-4 rounded-xl bg-gray-50 dark:bg-gray-800"
+                    className="flex items-center justify-between p-4 rounded-xl bg-slate-50 dark:bg-slate-800"
                   >
                     <div className="flex items-center gap-3">
                       <button
@@ -385,7 +384,7 @@ export function SpeakerSplitUploader() {
                       </button>
                       <div>
                         <p className="font-semibold" style={{ color }}>Speaker {index + 1}</p>
-                        <p className="text-xs text-gray-500">WAV Audio</p>
+                        <p className="text-xs text-slate-500 dark:text-slate-400">WAV Audio</p>
                       </div>
                     </div>
                     <a
@@ -409,9 +408,6 @@ export function SpeakerSplitUploader() {
           Process Another File
         </Button>
       )}
-
-      {/* FAQ Section */}
-      <FAQ items={SPEAKER_SPLIT_FAQ} accentColor="secondary" />
     </div>
   )
 }

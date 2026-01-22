@@ -33,7 +33,7 @@ export function FAQ({ items, accentColor = 'primary' }: FAQProps) {
     <div className="mt-8 space-y-3">
       <div className="flex items-center gap-2 mb-4">
         <HelpCircle className={cn("w-5 h-5", colorClasses[accentColor].split(' ')[0])} />
-        <h4 className="font-semibold text-navy dark:text-white">Common Questions</h4>
+        <h4 className="font-semibold text-slate-900 dark:text-white">Common Questions</h4>
       </div>
       {items.map((item, index) => (
         <div
@@ -47,7 +47,7 @@ export function FAQ({ items, accentColor = 'primary' }: FAQProps) {
             className="w-full flex items-center justify-between p-4 text-left"
             onClick={() => setOpenIndex(openIndex === index ? null : index)}
           >
-            <span className="font-medium text-navy dark:text-white pr-4">{item.question}</span>
+            <span className="font-medium text-slate-900 dark:text-white pr-4">{item.question}</span>
             <ChevronDown
               className={cn(
                 "w-5 h-5 flex-shrink-0 transition-transform",
@@ -57,7 +57,7 @@ export function FAQ({ items, accentColor = 'primary' }: FAQProps) {
           </button>
           {openIndex === index && (
             <div className={cn("px-4 pb-4", bgClasses[accentColor])}>
-              <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed">
+              <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">
                 {item.answer}
               </p>
             </div>

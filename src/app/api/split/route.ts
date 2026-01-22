@@ -1,13 +1,22 @@
-import { NextRequest } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { writeFile, mkdir } from 'fs/promises'
 import { existsSync } from 'fs'
 import path from 'path'
 import { v4 as uuidv4 } from 'uuid'
+import { auth } from '@clerk/nextjs/server'
 
 const UPLOAD_DIR = process.env.UPLOAD_DIR || './uploads'
 const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:8000'
 
 export async function POST(request: NextRequest) {
+  // Check authentication
+  const { userId } = await auth()
+  if (!userId) {
+    return NextResponse.json(
+      { error: 'Please sign in to use this feature', requiresAuth: true },
+      { status: 401 }
+    )
+  }
   const encoder = new TextEncoder()
 
   const stream = new ReadableStream({
@@ -88,36 +97,17 @@ export async function POST(request: NextRequest) {
             }
           }
         } catch (error) {
-          // If backend isn't available, use mock data for development
           console.error('Backend error:', error)
+          const errorMessage = error instanceof Error ? error.message : 'Unknown error'
 
-          send({ progress: 25, stage: 'Transcribing audio...' })
-          await new Promise(resolve => setTimeout(resolve, 1000))
-
-          send({ progress: 45, stage: 'Identifying speakers...' })
-          await new Promise(resolve => setTimeout(resolve, 1000))
-
-          send({ progress: 65, stage: 'Separating audio tracks...' })
-          await new Promise(resolve => setTimeout(resolve, 1500))
-
-          send({ progress: 85, stage: 'Generating audio files...' })
-          await new Promise(resolve => setTimeout(resolve, 1000))
-
-          send({ progress: 95, stage: 'Finalizing...' })
-          await new Promise(resolve => setTimeout(resolve, 500))
-
-          // Mock speaker audios for development
-          const numSpeakers = parseInt(speakerCount) || 2
-          const speakerAudios = Array.from({ length: numSpeakers }, (_, i) => ({
-            speaker: `SPEAKER_${i}`,
-            url: `/api/files/${jobId}/output/speaker_${i}.wav`,
-          }))
-
-          send({
-            progress: 100,
-            stage: 'Complete',
-            speakerAudios
-          })
+          // Check if backend is not running or endpoint not found
+          if (errorMessage.includes('fetch failed') || errorMessage.includes('ECONNREFUSED')) {
+            send({ error: 'Backend server is not running. Please start the Python backend on port 8000.' })
+          } else if (errorMessage.includes('Speaker split failed')) {
+            send({ error: 'Speaker split endpoint not available. Please restart the backend server with the latest code.' })
+          } else {
+            send({ error: `Backend processing failed: ${errorMessage}` })
+          }
         }
 
         controller.close()

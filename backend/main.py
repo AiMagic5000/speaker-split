@@ -8,6 +8,10 @@ import os
 import json
 import asyncio
 from pathlib import Path
+
+# Load environment variables from .env file
+from dotenv import load_dotenv
+load_dotenv()
 from typing import Optional
 from datetime import datetime
 import logging

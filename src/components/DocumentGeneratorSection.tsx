@@ -1,13 +1,14 @@
 "use client"
 
 import { useState } from "react"
-import { FileText, Upload, Loader2, Download, Globe, Users, Building, Link, StickyNote, Eye } from "lucide-react"
+import { FileText, Loader2, Download, Users, Building, Link, StickyNote, Eye, Globe, FileIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { cn } from "@/lib/utils"
-import { FAQ, DOCUMENT_GENERATOR_FAQ } from "./FAQ"
+
+type OutputFormat = "html" | "docx"
 
 interface FormData {
   businessOwners: string
@@ -25,8 +26,10 @@ export function DocumentGeneratorSection() {
     additionalNotes: "",
     transcript: "",
   })
+  const [outputFormat, setOutputFormat] = useState<OutputFormat>("html")
   const [isGenerating, setIsGenerating] = useState(false)
   const [generatedDoc, setGeneratedDoc] = useState<string | null>(null)
+  const [generatedDocx, setGeneratedDocx] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [showPreview, setShowPreview] = useState(false)
 
@@ -51,12 +54,13 @@ export function DocumentGeneratorSection() {
     setIsGenerating(true)
     setError(null)
     setGeneratedDoc(null)
+    setGeneratedDocx(null)
 
     try {
       const response = await fetch("/api/generate-document", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({ ...formData, format: outputFormat }),
       })
 
       if (!response.ok) {
@@ -64,11 +68,22 @@ export function DocumentGeneratorSection() {
         throw new Error(data.error || "Failed to generate document")
       }
 
-      const data = await response.json()
-      setGeneratedDoc(data.html)
-      setShowPreview(true)
+      if (outputFormat === "docx") {
+        // For Word docs, response is base64 encoded
+        const data = await response.json()
+        setGeneratedDocx(data.docx)
+      } else {
+        const data = await response.json()
+        setGeneratedDoc(data.html)
+        setShowPreview(true)
+      }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Generation failed")
+      if (err instanceof TypeError && err.message.includes('fetch')) {
+        setError("Network error - please make sure you're accessing the app at http://localhost:3003")
+      } else {
+        setError(err instanceof Error ? err.message : "Generation failed")
+      }
+      console.error("Document generation error:", err)
     } finally {
       setIsGenerating(false)
     }
@@ -85,10 +100,31 @@ export function DocumentGeneratorSection() {
     URL.revokeObjectURL(url)
   }
 
+  const downloadDocx = () => {
+    if (!generatedDocx) return
+    // Decode base64 and create blob
+    const byteCharacters = atob(generatedDocx)
+    const byteNumbers = new Array(byteCharacters.length)
+    for (let i = 0; i < byteCharacters.length; i++) {
+      byteNumbers[i] = byteCharacters.charCodeAt(i)
+    }
+    const byteArray = new Uint8Array(byteNumbers)
+    const blob = new Blob([byteArray], { type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document" })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement("a")
+    a.href = url
+    a.download = `${formData.businessName || "document"}-reference.docx`
+    a.click()
+    URL.revokeObjectURL(url)
+  }
+
   const resetForm = () => {
     setGeneratedDoc(null)
+    setGeneratedDocx(null)
     setShowPreview(false)
   }
+
+  const hasGeneratedContent = generatedDoc || generatedDocx
 
   return (
     <div className="space-y-6">
@@ -99,7 +135,7 @@ export function DocumentGeneratorSection() {
             <div className="space-y-2">
               <Label htmlFor="businessOwners" className="flex items-center gap-2 text-sm">
                 <Users className="w-4 h-4 text-amber-500" />
-                Business Owner(s)
+                Business Owner(s) <span className="text-slate-400 dark:text-slate-500 font-normal">(Optional)</span>
               </Label>
               <Input
                 id="businessOwners"
@@ -111,7 +147,7 @@ export function DocumentGeneratorSection() {
             <div className="space-y-2">
               <Label htmlFor="businessName" className="flex items-center gap-2 text-sm">
                 <Building className="w-4 h-4 text-amber-500" />
-                Business Name
+                Business Name <span className="text-slate-400 dark:text-slate-500 font-normal">(Optional)</span>
               </Label>
               <Input
                 id="businessName"
@@ -125,7 +161,7 @@ export function DocumentGeneratorSection() {
           <div className="space-y-2">
             <Label htmlFor="relatedWebsites" className="flex items-center gap-2 text-sm">
               <Link className="w-4 h-4 text-amber-500" />
-              Related Websites
+              Related Websites <span className="text-slate-400 dark:text-slate-500 font-normal">(Optional)</span>
             </Label>
             <Input
               id="relatedWebsites"
@@ -138,7 +174,7 @@ export function DocumentGeneratorSection() {
           <div className="space-y-2">
             <Label htmlFor="additionalNotes" className="flex items-center gap-2 text-sm">
               <StickyNote className="w-4 h-4 text-amber-500" />
-              Additional Notes
+              Additional Notes <span className="text-slate-400 dark:text-slate-500 font-normal">(Optional)</span>
             </Label>
             <Input
               id="additionalNotes"
@@ -150,15 +186,72 @@ export function DocumentGeneratorSection() {
         </CardContent>
       </Card>
 
+      {/* Output Format Selection */}
+      <Card>
+        <CardContent className="p-6">
+          <Label className="flex items-center gap-2 mb-4 text-sm font-medium">
+            <FileIcon className="w-4 h-4 text-amber-500" />
+            Output Format
+          </Label>
+          <div className="flex gap-4">
+            <label className={cn(
+              "flex items-center gap-3 p-4 rounded-lg border-2 cursor-pointer transition-all flex-1",
+              outputFormat === "html"
+                ? "border-amber-500 bg-amber-50 dark:bg-amber-950/20"
+                : "border-slate-200 dark:border-slate-700 hover:border-amber-300"
+            )}>
+              <input
+                type="radio"
+                name="outputFormat"
+                value="html"
+                checked={outputFormat === "html"}
+                onChange={() => setOutputFormat("html")}
+                className="w-4 h-4 text-amber-500 focus:ring-amber-500"
+              />
+              <div>
+                <div className="flex items-center gap-2">
+                  <Globe className="w-5 h-5 text-amber-500" />
+                  <span className="font-medium">HTML Web Page</span>
+                </div>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Interactive with dropdowns, works in any browser</p>
+              </div>
+            </label>
+
+            <label className={cn(
+              "flex items-center gap-3 p-4 rounded-lg border-2 cursor-pointer transition-all flex-1",
+              outputFormat === "docx"
+                ? "border-amber-500 bg-amber-50 dark:bg-amber-950/20"
+                : "border-slate-200 dark:border-slate-700 hover:border-amber-300"
+            )}>
+              <input
+                type="radio"
+                name="outputFormat"
+                value="docx"
+                checked={outputFormat === "docx"}
+                onChange={() => setOutputFormat("docx")}
+                className="w-4 h-4 text-amber-500 focus:ring-amber-500"
+              />
+              <div>
+                <div className="flex items-center gap-2">
+                  <FileText className="w-5 h-5 text-blue-600" />
+                  <span className="font-medium">Word Document</span>
+                </div>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Professional .docx format, editable in Word</p>
+              </div>
+            </label>
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Transcript Input Card */}
       <Card className={cn(
         "border-2 border-dashed transition-all",
-        formData.transcript ? "border-amber-500 bg-amber-50/50 dark:bg-amber-950/20" : "border-gray-300 dark:border-gray-700"
+        formData.transcript ? "border-amber-500 bg-amber-50/50 dark:bg-amber-950/20" : "border-slate-300 dark:border-slate-600 dark:border-slate-700"
       )}>
         <CardContent className="p-6">
           <Label className="flex items-center gap-2 mb-3">
             <FileText className="w-4 h-4 text-amber-500" />
-            Transcript
+            Transcript <span className="text-red-500">*</span>
           </Label>
           <div
             className="min-h-[200px]"
@@ -166,7 +259,7 @@ export function DocumentGeneratorSection() {
             onDragOver={(e) => e.preventDefault()}
           >
             <textarea
-              className="w-full h-full min-h-[200px] bg-transparent border-none outline-none resize-none text-sm text-gray-700 dark:text-gray-300 placeholder-gray-400"
+              className="w-full h-full min-h-[200px] bg-transparent border-none outline-none resize-none text-sm text-slate-700 dark:text-slate-300 placeholder-slate-400 dark:placeholder-slate-500"
               placeholder="Paste your transcript here...
 
 Example format:
@@ -196,7 +289,7 @@ Tip: Copy the transcript from Section 1 (Transcription) and paste it here!"
       )}
 
       {/* Generate Button */}
-      {!generatedDoc && (
+      {!hasGeneratedContent && (
         <Button
           size="lg"
           className="w-full bg-amber-500 hover:bg-amber-600 text-white"
@@ -206,25 +299,29 @@ Tip: Copy the transcript from Section 1 (Transcription) and paste it here!"
           {isGenerating ? (
             <>
               <Loader2 className="w-5 h-5 animate-spin mr-2" />
-              Generating Document with AI...
+              Generating {outputFormat === "docx" ? "Word Document" : "HTML Document"} with AI...
             </>
           ) : (
             <>
-              <FileText className="w-5 h-5 mr-2" />
-              Generate Reference Document
+              {outputFormat === "docx" ? (
+                <FileText className="w-5 h-5 mr-2" />
+              ) : (
+                <Globe className="w-5 h-5 mr-2" />
+              )}
+              Generate {outputFormat === "docx" ? "Word Document" : "HTML Document"}
             </>
           )}
         </Button>
       )}
 
-      {/* Generated Document */}
+      {/* Generated HTML Document */}
       {generatedDoc && (
         <Card>
           <CardContent className="p-6">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="font-bold text-navy dark:text-white flex items-center gap-2">
-                <FileText className="w-5 h-5 text-amber-500" />
-                Generated Document
+              <h3 className="font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                <Globe className="w-5 h-5 text-amber-500" />
+                Generated HTML Document
               </h3>
               <div className="flex gap-2">
                 <Button variant="outline" size="sm" onClick={() => setShowPreview(!showPreview)}>
@@ -258,15 +355,47 @@ Tip: Copy the transcript from Section 1 (Transcription) and paste it here!"
         </Card>
       )}
 
+      {/* Generated Word Document */}
+      {generatedDocx && (
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                <FileText className="w-5 h-5 text-blue-600" />
+                Generated Word Document
+              </h3>
+              <Button variant="outline" size="sm" onClick={downloadDocx}>
+                <Download className="w-4 h-4 mr-1" />
+                Download .docx
+              </Button>
+            </div>
+
+            <div className="p-6 bg-blue-50 dark:bg-blue-950/20 rounded-lg border border-blue-200 dark:border-blue-800 text-center">
+              <FileText className="w-16 h-16 text-blue-600 mx-auto mb-3" />
+              <p className="text-blue-700 dark:text-blue-400 font-medium">
+                Professional Word Document Ready
+              </p>
+              <p className="text-blue-600 dark:text-blue-300 text-sm mt-1">
+                Click download to save your .docx file. Open in Microsoft Word, Google Docs, or any compatible editor.
+              </p>
+            </div>
+
+            <div className="mt-4 p-4 bg-green-50 dark:bg-green-950/20 rounded-lg border border-green-200 dark:border-green-800">
+              <p className="text-green-700 dark:text-green-400 text-sm">
+                <strong>Document ready!</strong> Your professional Word document includes formatted sections,
+                tables, and all the key information from the transcript.
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Generate Another */}
-      {generatedDoc && (
+      {hasGeneratedContent && (
         <Button variant="outline" className="w-full" onClick={resetForm}>
           Generate Another Document
         </Button>
       )}
-
-      {/* FAQ Section */}
-      <FAQ items={DOCUMENT_GENERATOR_FAQ} accentColor="amber" />
     </div>
   )
 }

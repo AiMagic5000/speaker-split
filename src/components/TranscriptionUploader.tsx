@@ -13,7 +13,6 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { cn, formatFileSize } from "@/lib/utils"
-import { FAQ, TRANSCRIPTION_FAQ } from "./FAQ"
 
 interface TranscriptSegment {
   speaker: string
@@ -182,7 +181,7 @@ export function TranscriptionUploader() {
       {/* Dropzone */}
       <Card className={cn(
         "border-2 border-dashed transition-all duration-300 cursor-pointer",
-        isDragActive ? "border-primary bg-primary/5" : "border-gray-300 dark:border-gray-700 hover:border-primary/50",
+        isDragActive ? "border-primary bg-primary/5" : "border-slate-300 dark:border-slate-600 dark:border-slate-700 hover:border-primary/50",
         file && "border-primary bg-primary/5"
       )}>
         <CardContent className="p-0">
@@ -194,8 +193,8 @@ export function TranscriptionUploader() {
                   <FileAudio className="w-8 h-8 text-primary" />
                 </div>
                 <div>
-                  <p className="font-semibold text-navy dark:text-white">{file.name}</p>
-                  <p className="text-sm text-gray-500">{formatFileSize(file.size)}</p>
+                  <p className="font-semibold text-slate-900 dark:text-white">{file.name}</p>
+                  <p className="text-sm text-slate-500 dark:text-slate-400">{formatFileSize(file.size)}</p>
                 </div>
                 <Button
                   variant="ghost"
@@ -213,17 +212,17 @@ export function TranscriptionUploader() {
                   <Upload className="w-8 h-8 text-primary" />
                 </div>
                 <div>
-                  <p className="text-lg font-semibold text-navy dark:text-white">
+                  <p className="text-lg font-semibold text-slate-900 dark:text-white">
                     {isDragActive ? "Drop your audio file here" : "Drag & drop your audio file"}
                   </p>
-                  <p className="text-sm text-gray-500 mt-1">or click to browse</p>
+                  <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">or click to browse</p>
                 </div>
-                <div className="flex flex-wrap justify-center gap-2 text-xs text-gray-400">
-                  <span className="px-2 py-1 rounded bg-gray-100 dark:bg-gray-800">MP3</span>
-                  <span className="px-2 py-1 rounded bg-gray-100 dark:bg-gray-800">WAV</span>
-                  <span className="px-2 py-1 rounded bg-gray-100 dark:bg-gray-800">M4A</span>
-                  <span className="px-2 py-1 rounded bg-gray-100 dark:bg-gray-800">FLAC</span>
-                  <span className="px-2 py-1 rounded bg-gray-100 dark:bg-gray-800">MP4</span>
+                <div className="flex flex-wrap justify-center gap-2 text-xs text-slate-400 dark:text-slate-500">
+                  <span className="px-2 py-1 rounded bg-slate-100 dark:bg-slate-800">MP3</span>
+                  <span className="px-2 py-1 rounded bg-slate-100 dark:bg-slate-800">WAV</span>
+                  <span className="px-2 py-1 rounded bg-slate-100 dark:bg-slate-800">M4A</span>
+                  <span className="px-2 py-1 rounded bg-slate-100 dark:bg-slate-800">FLAC</span>
+                  <span className="px-2 py-1 rounded bg-slate-100 dark:bg-slate-800">MP4</span>
                 </div>
               </div>
             )}
@@ -250,13 +249,13 @@ export function TranscriptionUploader() {
                 )}
               </div>
               <div>
-                <p className="font-semibold text-navy dark:text-white">
+                <p className="font-semibold text-slate-900 dark:text-white">
                   Estimated Time: {formatTimeEstimate(
                     estimateProcessingTime(file.size).min,
                     estimateProcessingTime(file.size).max
                   )}
                 </p>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                <p className="text-sm text-gray-600 dark:text-slate-400 dark:text-slate-500 mt-1">
                   File size: {formatFileSize(file.size)}
                 </p>
               </div>
@@ -275,8 +274,8 @@ export function TranscriptionUploader() {
                   <Users className="w-5 h-5 text-primary" />
                 </div>
                 <div>
-                  <p className="font-semibold text-navy dark:text-white">Number of Speakers</p>
-                  <p className="text-sm text-gray-500">How many people are talking?</p>
+                  <p className="font-semibold text-slate-900 dark:text-white">Number of Speakers</p>
+                  <p className="text-sm text-slate-500 dark:text-slate-400">How many people are talking?</p>
                 </div>
               </div>
               <Select value={speakerCount} onValueChange={setSpeakerCount}>
@@ -302,11 +301,11 @@ export function TranscriptionUploader() {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <Loader2 className="w-5 h-5 animate-spin text-primary" />
-                  <span className="font-medium text-navy dark:text-white">{stage}</span>
+                  <span className="font-medium text-slate-900 dark:text-white">{stage}</span>
                 </div>
                 <span className="text-primary font-semibold">{Math.round(progress)}%</span>
               </div>
-              <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+              <div className="h-2 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
                 <div
                   className="h-full bg-gradient-to-r from-primary to-secondary transition-all duration-300"
                   style={{ width: `${progress}%` }}
@@ -341,7 +340,7 @@ export function TranscriptionUploader() {
         <Card>
           <CardContent className="p-6">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="font-bold text-navy dark:text-white">Transcript</h3>
+              <h3 className="font-bold text-slate-900 dark:text-white">Transcript</h3>
               <div className="flex gap-2">
                 <Button variant="outline" size="sm" onClick={copyTranscript}>
                   {copied ? <Check className="w-4 h-4 mr-1" /> : <Copy className="w-4 h-4 mr-1" />}
@@ -368,11 +367,11 @@ export function TranscriptionUploader() {
                         <span className="text-sm font-semibold" style={{ color }}>
                           Speaker {speakerNum + 1}
                         </span>
-                        <span className="text-xs text-gray-400">
+                        <span className="text-xs text-slate-400 dark:text-slate-500">
                           {formatDuration(segment.start)}
                         </span>
                       </div>
-                      <p className="text-sm text-gray-700 dark:text-gray-300">{segment.text}</p>
+                      <p className="text-sm text-slate-700 dark:text-slate-300">{segment.text}</p>
                     </div>
                   </div>
                 )
@@ -388,9 +387,6 @@ export function TranscriptionUploader() {
           Process Another File
         </Button>
       )}
-
-      {/* FAQ Section */}
-      <FAQ items={TRANSCRIPTION_FAQ} accentColor="primary" />
     </div>
   )
 }

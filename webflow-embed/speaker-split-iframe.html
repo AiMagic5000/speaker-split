@@ -1,0 +1,130 @@
+<!-- Speaker Split - Full App Iframe Embed for Webflow -->
+<!-- Use this on a dedicated tools page to embed the full application -->
+<!-- Update the src URL to your deployed Speaker Split URL -->
+
+<style>
+.ss-app-container {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+.ss-app-header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.ss-app-title {
+  font-size: 32px;
+  font-weight: 700;
+  color: #1E3A5F;
+  margin: 0 0 8px 0;
+}
+
+.ss-app-subtitle {
+  font-size: 16px;
+  color: #64748b;
+  margin: 0;
+}
+
+.ss-iframe-wrapper {
+  position: relative;
+  width: 100%;
+  min-height: 800px;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+  background: #f8fafc;
+}
+
+.ss-iframe {
+  width: 100%;
+  height: 100%;
+  min-height: 800px;
+  border: none;
+  border-radius: 16px;
+}
+
+.ss-loading {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  color: #64748b;
+}
+
+.ss-loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #e2e8f0;
+  border-top-color: #D4A84B;
+  border-radius: 50%;
+  animation: ss-spin 1s linear infinite;
+  margin: 0 auto 12px;
+}
+
+@keyframes ss-spin {
+  to { transform: rotate(360deg); }
+}
+
+.ss-open-new {
+  display: block;
+  text-align: center;
+  margin-top: 16px;
+  color: #2563eb;
+  font-size: 14px;
+  text-decoration: none;
+}
+
+.ss-open-new:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+  .ss-app-container {
+    padding: 12px;
+  }
+
+  .ss-app-title {
+    font-size: 24px;
+  }
+
+  .ss-iframe-wrapper {
+    min-height: 600px;
+  }
+
+  .ss-iframe {
+    min-height: 600px;
+  }
+}
+</style>
+
+<div class="ss-app-container">
+  <div class="ss-app-header">
+    <h1 class="ss-app-title">Speaker Split Tool</h1>
+    <p class="ss-app-subtitle">AI-Powered Audio Transcription & Speaker Separation</p>
+  </div>
+
+  <div class="ss-iframe-wrapper" id="ss-iframe-wrapper">
+    <div class="ss-loading" id="ss-loading">
+      <div class="ss-loading-spinner"></div>
+      <p>Loading Speaker Split...</p>
+    </div>
+    <iframe
+      id="ss-iframe"
+      class="ss-iframe"
+      src="https://speakersplit.startmybusiness.us"
+      title="Speaker Split - Audio Transcription Tool"
+      loading="lazy"
+      allow="microphone; clipboard-write"
+      onload="document.getElementById('ss-loading').style.display='none';"
+    ></iframe>
+  </div>
+
+  <a href="https://speakersplit.startmybusiness.us" target="_blank" rel="noopener" class="ss-open-new">
+    Open in new tab for full experience →
+  </a>
+</div>

@@ -1,64 +1,21 @@
 @import "tailwindcss";
 
+/* Enable class-based dark mode for Tailwind v4 */
+@custom-variant dark (&:is(.dark *));
+
 :root {
-  /* SMB Brand Colors */
-  --primary: #4493f2;
-  --primary-dark: #2d7ad4;
-  --primary-light: #7bb3f7;
-  --secondary: #4dc0b5;
-  --secondary-dark: #38a89d;
-  --navy: #132743;
-  --navy-light: #1e3a5f;
-  --charcoal: #1e1e1e;
-
-  /* Neutrals - Light Mode */
-  --background: #fafbfc;
-  --foreground: #132743;
-  --muted: #f1f5f9;
-  --muted-foreground: #64748b;
-  --border: #e2e8f0;
-  --ring: #4493f2;
-  --card-bg: #ffffff;
-  --header-bg: rgba(255, 255, 255, 0.8);
-}
-
-/* Dark Mode */
-.dark {
-  --background: #0f172a;
-  --foreground: #e2e8f0;
-  --muted: #1e293b;
-  --muted-foreground: #94a3b8;
-  --border: #334155;
-  --card-bg: #1e293b;
-  --header-bg: rgba(15, 23, 42, 0.8);
-  --navy: #e2e8f0;
-  --navy-light: #94a3b8;
-}
-
-@theme inline {
-  --color-primary: var(--primary);
-  --color-primary-dark: var(--primary-dark);
-  --color-primary-light: var(--primary-light);
-  --color-secondary: var(--secondary);
-  --color-secondary-dark: var(--secondary-dark);
-  --color-navy: var(--navy);
-  --color-navy-light: var(--navy-light);
-  --color-charcoal: var(--charcoal);
+  /* Brand Colors */
+  --primary: #2563eb;
+  --primary-dark: #1d4ed8;
+  --secondary: #0d9488;
+  --secondary-dark: #0f766e;
+  --accent: #f59e0b;
 }
 
 body {
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  background: var(--background);
-  color: var(--foreground);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-}
-
-/* Smooth animations */
-* {
-  transition-property: background-color, border-color, color, fill, stroke, opacity, box-shadow, transform;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  transition-duration: 150ms;
 }
 
 /* Custom scrollbar */
@@ -68,17 +25,29 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--muted);
+  background: #f1f5f9;
   border-radius: 4px;
 }
 
+.dark ::-webkit-scrollbar-track {
+  background: #1e293b;
+}
+
 ::-webkit-scrollbar-thumb {
-  background: var(--primary);
+  background: #94a3b8;
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--primary-dark);
+  background: #64748b;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: #475569;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #64748b;
 }
 
 /* File drop zone animation */
@@ -89,112 +58,12 @@ body {
 @keyframes pulse-border {
   0%, 100% {
     border-color: var(--primary);
-    box-shadow: 0 0 0 0 rgba(68, 147, 242, 0.4);
+    box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.4);
   }
   50% {
     border-color: var(--secondary);
-    box-shadow: 0 0 0 8px rgba(68, 147, 242, 0);
+    box-shadow: 0 0 0 8px rgba(37, 99, 235, 0);
   }
-}
-
-/* Processing animation */
-.processing-wave {
-  animation: wave 1.5s ease-in-out infinite;
-}
-
-@keyframes wave {
-  0%, 100% { transform: scaleY(1); }
-  50% { transform: scaleY(1.5); }
-}
-
-/* Gradient text */
-.gradient-text {
-  background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-/* Glass effect */
-.glass {
-  background: var(--header-bg);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-}
-
-/* Dark mode card backgrounds */
-.dark .card,
-.dark [class*="bg-white"] {
-  background-color: var(--card-bg) !important;
-}
-
-/* Dark mode text */
-.dark .text-gray-600,
-.dark .text-gray-700,
-.dark .text-gray-800,
-.dark .text-gray-900 {
-  color: var(--foreground) !important;
-}
-
-.dark .text-gray-500 {
-  color: var(--muted-foreground) !important;
-}
-
-/* Dark mode borders */
-.dark .border-gray-200,
-.dark .border-gray-300,
-.dark .border-gray-100 {
-  border-color: var(--border) !important;
-}
-
-/* Dark mode backgrounds */
-.dark .bg-gray-50,
-.dark .bg-gray-100,
-.dark .from-gray-50,
-.dark .to-white {
-  background-color: var(--background) !important;
-}
-
-.dark .bg-gradient-to-b {
-  background: linear-gradient(to bottom, var(--background), var(--muted)) !important;
-}
-
-/* Dark mode hero section */
-.dark .bg-white\/80,
-.dark .via-white\/60,
-.dark .to-white {
-  --tw-gradient-stops: var(--background) !important;
-}
-
-/* Dark mode hero text */
-.dark h1,
-.dark h2,
-.dark h3,
-.dark p {
-  color: var(--foreground);
-}
-
-.dark .text-navy {
-  color: var(--foreground) !important;
-}
-
-/* Dark mode feature cards */
-.dark .bg-white {
-  background-color: var(--card-bg) !important;
-}
-
-.dark .hover\:bg-muted\/80:hover {
-  background-color: var(--muted) !important;
-}
-
-/* Dark mode footer / navy sections - keep as-is since they're already dark */
-.dark .bg-navy {
-  background-color: var(--navy-light) !important;
-}
-
-/* Fix gradient overlay in dark mode */
-.dark .bg-gradient-to-b.from-white\/80 {
-  background: linear-gradient(to bottom, rgba(15, 23, 42, 0.8), rgba(15, 23, 42, 0.6), var(--background)) !important;
 }
 
 /* Audio waveform bars */
@@ -211,4 +80,14 @@ body {
 @keyframes waveform {
   0%, 100% { height: 8px; }
   50% { height: 24px; }
+}
+
+/* Processing animation */
+.processing-wave {
+  animation: wave 1.5s ease-in-out infinite;
+}
+
+@keyframes wave {
+  0%, 100% { transform: scaleY(1); }
+  50% { transform: scaleY(1.5); }
 }

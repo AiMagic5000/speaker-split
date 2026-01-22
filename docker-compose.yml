@@ -1,48 +1,30 @@
-version: '3.8'
+# Speaker Split - Docker Compose
+# For local development and Coolify deployment
 
 services:
-  frontend:
+  speaker-split:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        - NEXT_PUBLIC_SITE_URL=${NEXT_PUBLIC_SITE_URL:-https://speakersplit.startmybusiness.us}
+        - NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=${NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
+        - CLERK_SECRET_KEY=${CLERK_SECRET_KEY}
+        - NEXT_PUBLIC_WHISPERX_API_URL=${NEXT_PUBLIC_WHISPERX_API_URL}
+        - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
     ports:
       - "3000:3000"
     environment:
-      - UPLOAD_DIR=/app/uploads
-      - BACKEND_URL=http://backend:8000
-      - N8N_WEBHOOK_URL=${N8N_WEBHOOK_URL}
+      - NODE_ENV=production
+      - NEXT_PUBLIC_SITE_URL=${NEXT_PUBLIC_SITE_URL:-https://speakersplit.startmybusiness.us}
+      - NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=${NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
+      - CLERK_SECRET_KEY=${CLERK_SECRET_KEY}
+      - NEXT_PUBLIC_WHISPERX_API_URL=${NEXT_PUBLIC_WHISPERX_API_URL}
       - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
-    volumes:
-      - uploads:/app/uploads
-    depends_on:
-      - backend
-
-  backend:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
-    ports:
-      - "8000:8000"
-    dns:
-      - 8.8.8.8
-      - 8.8.4.4
-      - 1.1.1.1
-    environment:
-      - HF_TOKEN=${HF_TOKEN}
-      - UPLOAD_DIR=/app/uploads
-      - WHISPER_MODEL=${WHISPER_MODEL:-large-v2}
-      - DEVICE=${DEVICE:-cuda}
-    volumes:
-      - uploads:/app/uploads
-      - hf_cache:/root/.cache/huggingface
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: 1
-              capabilities: [gpu]
-
-volumes:
-  uploads:
-  hf_cache:
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:3000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
