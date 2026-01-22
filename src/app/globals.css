@@ -11,13 +11,28 @@
   --navy-light: #1e3a5f;
   --charcoal: #1e1e1e;
 
-  /* Neutrals */
+  /* Neutrals - Light Mode */
   --background: #fafbfc;
   --foreground: #132743;
   --muted: #f1f5f9;
   --muted-foreground: #64748b;
   --border: #e2e8f0;
   --ring: #4493f2;
+  --card-bg: #ffffff;
+  --header-bg: rgba(255, 255, 255, 0.8);
+}
+
+/* Dark Mode */
+.dark {
+  --background: #0f172a;
+  --foreground: #e2e8f0;
+  --muted: #1e293b;
+  --muted-foreground: #94a3b8;
+  --border: #334155;
+  --card-bg: #1e293b;
+  --header-bg: rgba(15, 23, 42, 0.8);
+  --navy: #e2e8f0;
+  --navy-light: #94a3b8;
 }
 
 @theme inline {
@@ -102,9 +117,84 @@ body {
 
 /* Glass effect */
 .glass {
-  background: rgba(255, 255, 255, 0.8);
+  background: var(--header-bg);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
+}
+
+/* Dark mode card backgrounds */
+.dark .card,
+.dark [class*="bg-white"] {
+  background-color: var(--card-bg) !important;
+}
+
+/* Dark mode text */
+.dark .text-gray-600,
+.dark .text-gray-700,
+.dark .text-gray-800,
+.dark .text-gray-900 {
+  color: var(--foreground) !important;
+}
+
+.dark .text-gray-500 {
+  color: var(--muted-foreground) !important;
+}
+
+/* Dark mode borders */
+.dark .border-gray-200,
+.dark .border-gray-300,
+.dark .border-gray-100 {
+  border-color: var(--border) !important;
+}
+
+/* Dark mode backgrounds */
+.dark .bg-gray-50,
+.dark .bg-gray-100,
+.dark .from-gray-50,
+.dark .to-white {
+  background-color: var(--background) !important;
+}
+
+.dark .bg-gradient-to-b {
+  background: linear-gradient(to bottom, var(--background), var(--muted)) !important;
+}
+
+/* Dark mode hero section */
+.dark .bg-white\/80,
+.dark .via-white\/60,
+.dark .to-white {
+  --tw-gradient-stops: var(--background) !important;
+}
+
+/* Dark mode hero text */
+.dark h1,
+.dark h2,
+.dark h3,
+.dark p {
+  color: var(--foreground);
+}
+
+.dark .text-navy {
+  color: var(--foreground) !important;
+}
+
+/* Dark mode feature cards */
+.dark .bg-white {
+  background-color: var(--card-bg) !important;
+}
+
+.dark .hover\:bg-muted\/80:hover {
+  background-color: var(--muted) !important;
+}
+
+/* Dark mode footer / navy sections - keep as-is since they're already dark */
+.dark .bg-navy {
+  background-color: var(--navy-light) !important;
+}
+
+/* Fix gradient overlay in dark mode */
+.dark .bg-gradient-to-b.from-white\/80 {
+  background: linear-gradient(to bottom, rgba(15, 23, 42, 0.8), rgba(15, 23, 42, 0.6), var(--background)) !important;
 }
 
 /* Audio waveform bars */

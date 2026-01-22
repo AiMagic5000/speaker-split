@@ -2,7 +2,7 @@
 
 import { useCallback, useState } from "react"
 import { useDropzone } from "react-dropzone"
-import { Upload, FileAudio, X, Users, ArrowRight, Loader2 } from "lucide-react"
+import { Upload, FileAudio, X, Users, ArrowRight, Loader2, Clock, AlertCircle } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import {
@@ -15,6 +15,29 @@ import {
 import { cn, formatFileSize } from "@/lib/utils"
 import { useAppStore, updateSpeakerCount } from "@/lib/store"
 import { useRouter } from "next/navigation"
+
+// Estimate processing time based on file size
+// GPU mode: ~1-2 min per 10MB, CPU mode: ~5-10 min per 10MB
+function estimateProcessingTime(fileSizeBytes: number): { min: number; max: number; warning: boolean } {
+  const sizeMB = fileSizeBytes / (1024 * 1024)
+  // Assume GPU mode (faster) - adjust if needed
+  const minMinutes = Math.ceil(sizeMB / 10) * 1  // ~1 min per 10MB
+  const maxMinutes = Math.ceil(sizeMB / 10) * 3  // ~3 min per 10MB (conservative)
+  return {
+    min: Math.max(1, minMinutes),
+    max: Math.max(2, maxMinutes),
+    warning: sizeMB > 100 // Warn for files > 100MB
+  }
+}
+
+function formatTimeEstimate(min: number, max: number): string {
+  if (min === max) return `~${min} minute${min === 1 ? '' : 's'}`
+  if (max < 60) return `${min}-${max} minutes`
+  const minHours = Math.floor(min / 60)
+  const maxHours = Math.ceil(max / 60)
+  if (minHours === maxHours) return `~${minHours} hour${minHours === 1 ? '' : 's'}`
+  return `${minHours}-${maxHours} hours`
+}
 
 const ACCEPTED_FORMATS = {
   'audio/mpeg': ['.mp3'],
@@ -200,6 +223,50 @@ export function AudioUploader() {
         </CardContent>
       </Card>
 
+      {/* Processing Time Estimate */}
+      {file && (
+        <Card className={cn(
+          "border-l-4",
+          estimateProcessingTime(file.size).warning ? "border-l-amber-500 bg-amber-50 dark:bg-amber-950/20" : "border-l-primary bg-primary/5"
+        )}>
+          <CardContent className="p-4">
+            <div className="flex items-start gap-3">
+              <div className={cn(
+                "w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0",
+                estimateProcessingTime(file.size).warning ? "bg-amber-100 dark:bg-amber-900/30" : "bg-primary/10"
+              )}>
+                {estimateProcessingTime(file.size).warning ? (
+                  <AlertCircle className="w-5 h-5 text-amber-600" />
+                ) : (
+                  <Clock className="w-5 h-5 text-primary" />
+                )}
+              </div>
+              <div className="flex-1">
+                <p className={cn(
+                  "font-semibold",
+                  estimateProcessingTime(file.size).warning ? "text-amber-700 dark:text-amber-400" : "text-navy dark:text-white"
+                )}>
+                  Estimated Processing Time: {formatTimeEstimate(
+                    estimateProcessingTime(file.size).min,
+                    estimateProcessingTime(file.size).max
+                  )}
+                </p>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                  {estimateProcessingTime(file.size).warning ? (
+                    <>Large files take longer to process. Consider splitting into smaller segments for faster results.</>
+                  ) : (
+                    <>Processing includes transcription, alignment, and speaker identification.</>
+                  )}
+                </p>
+                <div className="mt-2 text-xs text-gray-500 dark:text-gray-500">
+                  File size: {formatFileSize(file.size)} • GPU accelerated
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Speaker Count Selection */}
       <Card>
         <CardContent className="p-6">
@@ -209,8 +276,8 @@ export function AudioUploader() {
                 <Users className="w-6 h-6 text-primary" />
               </div>
               <div>
-                <p className="font-semibold text-navy">Number of Speakers</p>
-                <p className="text-sm text-gray-500">How many people are in the conversation?</p>
+                <p className="font-semibold text-navy dark:text-white">Number of Speakers</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">How many people are in the conversation?</p>
               </div>
             </div>
             <Select value={speakerCount} onValueChange={handleSpeakerCountChange}>

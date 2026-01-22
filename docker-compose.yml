@@ -23,6 +23,10 @@ services:
       dockerfile: Dockerfile
     ports:
       - "8000:8000"
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
+      - 1.1.1.1
     environment:
       - HF_TOKEN=${HF_TOKEN}
       - UPLOAD_DIR=/app/uploads
@@ -30,6 +34,7 @@ services:
       - DEVICE=${DEVICE:-cuda}
     volumes:
       - uploads:/app/uploads
+      - hf_cache:/root/.cache/huggingface
     deploy:
       resources:
         reservations:
@@ -40,3 +45,4 @@ services:
 
 volumes:
   uploads:
+  hf_cache:

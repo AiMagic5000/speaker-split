@@ -1,10 +1,12 @@
-import { AudioUploader } from "@/components/AudioUploader"
-import { AudioWaveform, Mic2, Split, FileText, CheckCircle } from "lucide-react"
+import { TranscriptionUploader } from "@/components/TranscriptionUploader"
+import { SpeakerSplitUploader } from "@/components/SpeakerSplitUploader"
+import { DocumentGeneratorSection } from "@/components/DocumentGeneratorSection"
+import { AudioWaveform, Mic2, Split, FileText } from "lucide-react"
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
-      {/* Hero Section with Video Background */}
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-950">
+      {/* Hero Section */}
       <section className="relative overflow-hidden">
         {/* Background Video */}
         <div className="absolute inset-0 -z-10 overflow-hidden">
@@ -17,153 +19,185 @@ export default function Home() {
           >
             <source src="https://seafile.alwaysencrypted.com/seafhttp/f/5e3bd8a3f72b46f48f32/" type="video/mp4" />
           </video>
-          {/* Gradient overlay */}
-          <div className="absolute inset-0 bg-gradient-to-b from-white/80 via-white/60 to-white" />
+          <div className="absolute inset-0 bg-gradient-to-b from-white/80 via-white/60 to-white dark:from-gray-900/80 dark:via-gray-900/60 dark:to-gray-900" />
         </div>
 
-        {/* Decorative blurs */}
-        <div className="absolute inset-0 -z-10 pointer-events-none">
-          <div className="absolute top-0 right-0 w-96 h-96 bg-primary/5 rounded-full blur-3xl" />
-          <div className="absolute bottom-0 left-0 w-96 h-96 bg-secondary/5 rounded-full blur-3xl" />
-        </div>
-
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-20">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            {/* Left Column - Info */}
-            <div className="space-y-8">
-              <div>
-                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-semibold mb-6">
-                  <AudioWaveform className="w-4 h-4" />
-                  AI-Powered Audio Processing
-                </div>
-                <h1 className="text-4xl sm:text-5xl font-bold text-navy leading-tight">
-                  Split & Transcribe
-                  <span className="gradient-text block">Your Conversations</span>
-                </h1>
-                <p className="text-lg text-gray-600 mt-6 leading-relaxed">
-                  Upload any audio file and let our AI identify each speaker, transcribe the conversation,
-                  and generate separate audio tracks. Perfect for business consultations, interviews, and meetings.
-                </p>
-              </div>
-
-              {/* Features */}
-              <div className="grid sm:grid-cols-2 gap-4">
-                <FeatureItem
-                  icon={<Mic2 className="w-5 h-5" />}
-                  title="Speaker Recognition"
-                  description="Automatically identify up to 6 speakers"
-                />
-                <FeatureItem
-                  icon={<Split className="w-5 h-5" />}
-                  title="Audio Separation"
-                  description="Get individual audio files per speaker"
-                />
-                <FeatureItem
-                  icon={<FileText className="w-5 h-5" />}
-                  title="Full Transcript"
-                  description="Word-level timestamps & speaker labels"
-                />
-                <FeatureItem
-                  icon={<CheckCircle className="w-5 h-5" />}
-                  title="Reference Documents"
-                  description="Generate professional HTML summaries"
-                />
-              </div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
+          <div className="text-center max-w-3xl mx-auto">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-semibold mb-6">
+              <AudioWaveform className="w-4 h-4" />
+              AI-Powered Audio Processing Suite
             </div>
-
-            {/* Right Column - Upload Form */}
-            <div className="lg:pl-8">
-              <div className="bg-white rounded-3xl shadow-xl shadow-gray-200/50 p-6 sm:p-8 border border-gray-100">
-                <div className="text-center mb-6">
-                  <h2 className="text-2xl font-bold text-navy">Upload Your Audio</h2>
-                  <p className="text-gray-500 mt-1">Start processing in seconds</p>
-                </div>
-                <AudioUploader />
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* How It Works */}
-      <section className="bg-navy py-16 sm:py-24">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-white">How It Works</h2>
-            <p className="text-gray-400 mt-2">Three simple steps to transform your audio</p>
+            <h1 className="text-4xl sm:text-5xl font-bold text-navy dark:text-white leading-tight">
+              Transcribe, Split &
+              <span className="gradient-text block">Generate Documents</span>
+            </h1>
+            <p className="text-lg text-gray-600 dark:text-gray-400 mt-6 leading-relaxed">
+              Three powerful tools in one place. Transcribe conversations with speaker labels,
+              separate audio by speaker, and generate professional reference documents.
+            </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
-            <StepCard
-              number="1"
-              title="Upload Audio"
-              description="Drag and drop your audio file. We support MP3, WAV, M4A, FLAC, and more."
+          {/* Quick Nav Cards */}
+          <div className="grid md:grid-cols-3 gap-4 mt-10 max-w-4xl mx-auto">
+            <QuickNavCard
+              icon={<Mic2 className="w-6 h-6" />}
+              title="1. Transcription"
+              description="Upload audio, get transcript with speaker labels"
               color="primary"
+              href="#transcription"
             />
-            <StepCard
-              number="2"
-              title="AI Processing"
-              description="Our AI transcribes the conversation and identifies each speaker automatically."
+            <QuickNavCard
+              icon={<Split className="w-6 h-6" />}
+              title="2. Speaker Split"
+              description="Separate audio files for each speaker"
               color="secondary"
+              href="#speaker-split"
             />
-            <StepCard
-              number="3"
-              title="Get Results"
-              description="Download transcripts, separated audio files, and generate reference documents."
-              color="primary"
+            <QuickNavCard
+              icon={<FileText className="w-6 h-6" />}
+              title="3. Document Generator"
+              description="Create professional HTML documents"
+              color="accent"
+              href="#document-generator"
             />
           </div>
         </div>
       </section>
+
+      {/* Section 1: Transcription */}
+      <section id="transcription" className="py-12 sm:py-16 scroll-mt-20">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <SectionHeader
+            number="1"
+            icon={<Mic2 className="w-6 h-6" />}
+            title="Audio Transcription"
+            subtitle="Upload your audio file and get a full transcript with speaker labels"
+            color="primary"
+          />
+          <div className="mt-8">
+            <TranscriptionUploader />
+          </div>
+        </div>
+      </section>
+
+      {/* Divider */}
+      <div className="max-w-4xl mx-auto px-4">
+        <div className="h-px bg-gradient-to-r from-transparent via-gray-300 dark:via-gray-700 to-transparent" />
+      </div>
+
+      {/* Section 2: Speaker Split */}
+      <section id="speaker-split" className="py-12 sm:py-16 scroll-mt-20">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <SectionHeader
+            number="2"
+            icon={<Split className="w-6 h-6" />}
+            title="Speaker Audio Split"
+            subtitle="Separate your audio file into individual tracks for each speaker"
+            color="secondary"
+          />
+          <div className="mt-8">
+            <SpeakerSplitUploader />
+          </div>
+        </div>
+      </section>
+
+      {/* Divider */}
+      <div className="max-w-4xl mx-auto px-4">
+        <div className="h-px bg-gradient-to-r from-transparent via-gray-300 dark:via-gray-700 to-transparent" />
+      </div>
+
+      {/* Section 3: Document Generator */}
+      <section id="document-generator" className="py-12 sm:py-16 scroll-mt-20">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <SectionHeader
+            number="3"
+            icon={<FileText className="w-6 h-6" />}
+            title="Document Generator"
+            subtitle="Transform your transcript into a professional HTML reference document"
+            color="accent"
+          />
+          <div className="mt-8">
+            <DocumentGeneratorSection />
+          </div>
+        </div>
+      </section>
+
+      {/* Footer spacing */}
+      <div className="h-16" />
     </div>
   )
 }
 
-function FeatureItem({
+function QuickNavCard({
   icon,
   title,
-  description
+  description,
+  color,
+  href
 }: {
   icon: React.ReactNode
   title: string
   description: string
+  color: 'primary' | 'secondary' | 'accent'
+  href: string
 }) {
+  const colorClasses = {
+    primary: 'bg-primary/10 text-primary border-primary/20 hover:border-primary/40',
+    secondary: 'bg-secondary/10 text-secondary border-secondary/20 hover:border-secondary/40',
+    accent: 'bg-amber-500/10 text-amber-600 border-amber-500/20 hover:border-amber-500/40',
+  }
+
   return (
-    <div className="flex items-start gap-3 p-4 rounded-xl bg-white border border-gray-100 hover:border-primary/30 hover:shadow-md transition-all">
-      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary flex-shrink-0">
+    <a
+      href={href}
+      className={`flex flex-col items-center text-center p-6 rounded-2xl border-2 transition-all hover:shadow-lg ${colorClasses[color]}`}
+    >
+      <div className="w-12 h-12 rounded-xl bg-white dark:bg-gray-800 flex items-center justify-center shadow-sm mb-3">
         {icon}
       </div>
-      <div>
-        <p className="font-semibold text-navy">{title}</p>
-        <p className="text-sm text-gray-500">{description}</p>
-      </div>
-    </div>
+      <h3 className="font-bold text-navy dark:text-white">{title}</h3>
+      <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{description}</p>
+    </a>
   )
 }
 
-function StepCard({
+function SectionHeader({
   number,
+  icon,
   title,
-  description,
+  subtitle,
   color
 }: {
   number: string
+  icon: React.ReactNode
   title: string
-  description: string
-  color: 'primary' | 'secondary'
+  subtitle: string
+  color: 'primary' | 'secondary' | 'accent'
 }) {
+  const colorClasses = {
+    primary: 'bg-primary text-white',
+    secondary: 'bg-secondary text-white',
+    accent: 'bg-amber-500 text-white',
+  }
+
+  const iconColorClasses = {
+    primary: 'text-primary',
+    secondary: 'text-secondary',
+    accent: 'text-amber-500',
+  }
+
   return (
-    <div className="relative p-6 rounded-2xl bg-navy-light/50 border border-gray-700/50 hover:border-gray-600 transition-all group">
-      <div className={`
-        absolute -top-4 -left-2 w-12 h-12 rounded-xl flex items-center justify-center text-xl font-bold text-white
-        ${color === 'primary' ? 'bg-primary' : 'bg-secondary'}
-        group-hover:scale-110 transition-transform
-      `}>
+    <div className="flex items-start gap-4">
+      <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-xl font-bold flex-shrink-0 ${colorClasses[color]}`}>
         {number}
       </div>
-      <div className="pt-6">
-        <h3 className="text-xl font-bold text-white mb-2">{title}</h3>
-        <p className="text-gray-400">{description}</p>
+      <div>
+        <div className="flex items-center gap-2">
+          <span className={iconColorClasses[color]}>{icon}</span>
+          <h2 className="text-2xl font-bold text-navy dark:text-white">{title}</h2>
+        </div>
+        <p className="text-gray-600 dark:text-gray-400 mt-1">{subtitle}</p>
       </div>
     </div>
   )
