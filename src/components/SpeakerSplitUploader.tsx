@@ -1,8 +1,8 @@
 "use client"
 
 import { useCallback, useState } from "react"
-import { useDropzone } from "react-dropzone"
-import { Upload, FileAudio, X, Users, Loader2, Clock, AlertCircle, Download, Play, Pause } from "lucide-react"
+import { useDropzone, FileRejection } from "react-dropzone"
+import { Upload, FileAudio, X, Users, Loader2, Clock, AlertCircle, Download, Play, Pause, Zap } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import {
@@ -13,6 +13,8 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { cn, formatFileSize } from "@/lib/utils"
+import { useUser } from "@clerk/nextjs"
+import { TIER_LIMITS, getUserTier, getUpgradeMessage, formatMaxSize, type UserTier } from "@/lib/tiers"
 
 interface SpeakerAudio {
   speaker: string
@@ -63,6 +65,10 @@ const SPEAKER_COLORS = [
 ]
 
 export function SpeakerSplitUploader() {
+  const { user } = useUser()
+  const userTier: UserTier = getUserTier(user?.publicMetadata as { tier?: string })
+  const tierLimits = TIER_LIMITS[userTier]
+
   const [file, setFile] = useState<File | null>(null)
   const [speakerCount, setSpeakerCount] = useState("2")
   const [isProcessing, setIsProcessing] = useState(false)
@@ -70,10 +76,24 @@ export function SpeakerSplitUploader() {
   const [stage, setStage] = useState("")
   const [speakerAudios, setSpeakerAudios] = useState<SpeakerAudio[] | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [fileSizeError, setFileSizeError] = useState<string | null>(null)
   const [playingIndex, setPlayingIndex] = useState<number | null>(null)
   const [audioElements, setAudioElements] = useState<{ [key: number]: HTMLAudioElement }>({})
 
-  const onDrop = useCallback((acceptedFiles: File[]) => {
+  const onDrop = useCallback((acceptedFiles: File[], rejectedFiles: FileRejection[]) => {
+    setFileSizeError(null)
+
+    // Check for file size rejection
+    if (rejectedFiles.length > 0) {
+      const rejection = rejectedFiles[0]
+      const fileSizeMB = rejection.file.size / (1024 * 1024)
+
+      if (rejection.errors.some(e => e.code === 'file-too-large')) {
+        setFileSizeError(getUpgradeMessage(fileSizeMB))
+        return
+      }
+    }
+
     if (acceptedFiles.length > 0) {
       setFile(acceptedFiles[0])
       setSpeakerAudios(null)
@@ -85,7 +105,7 @@ export function SpeakerSplitUploader() {
     onDrop,
     accept: ACCEPTED_FORMATS,
     maxFiles: 1,
-    maxSize: 500 * 1024 * 1024,
+    maxSize: tierLimits.maxFileSize,
   })
 
   const handleProcess = async () => {
@@ -149,6 +169,7 @@ export function SpeakerSplitUploader() {
     setFile(null)
     setSpeakerAudios(null)
     setError(null)
+    setFileSizeError(null)
     setPlayingIndex(null)
     // Stop any playing audio
     Object.values(audioElements).forEach(audio => {
@@ -231,6 +252,12 @@ export function SpeakerSplitUploader() {
                     {isDragActive ? "Drop your audio file here" : "Drag & drop your audio file"}
                   </p>
                   <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">or click to browse</p>
+                  <p className="text-xs text-slate-400 dark:text-slate-500 mt-2">
+                    Max file size: {formatMaxSize(userTier)}
+                    {userTier === 'free' && (
+                      <span className="ml-1">(Pro: up to 200MB)</span>
+                    )}
+                  </p>
                 </div>
                 <div className="flex flex-wrap justify-center gap-2 text-xs text-slate-400 dark:text-slate-500">
                   <span className="px-2 py-1 rounded bg-slate-100 dark:bg-slate-800">MP3</span>
@@ -244,6 +271,33 @@ export function SpeakerSplitUploader() {
           </div>
         </CardContent>
       </Card>
+
+      {/* File Size Error / Upgrade Prompt */}
+      {fileSizeError && (
+        <Card className="border-amber-200 bg-amber-50 dark:bg-amber-950/20">
+          <CardContent className="p-4">
+            <div className="flex items-start gap-3">
+              <div className="w-10 h-10 rounded-lg bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center flex-shrink-0">
+                <Zap className="w-5 h-5 text-amber-600" />
+              </div>
+              <div className="flex-1">
+                <p className="font-semibold text-amber-800 dark:text-amber-200">File Too Large</p>
+                <p className="text-sm text-amber-700 dark:text-amber-300 mt-1">{fileSizeError}</p>
+                {userTier === 'free' && (
+                  <Button
+                    size="sm"
+                    className="mt-3 bg-amber-600 hover:bg-amber-700 text-white"
+                    onClick={() => window.location.href = '/upgrade'}
+                  >
+                    <Zap className="w-4 h-4 mr-1" />
+                    Upgrade to Pro
+                  </Button>
+                )}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Time Estimate */}
       {file && !isProcessing && !speakerAudios && (

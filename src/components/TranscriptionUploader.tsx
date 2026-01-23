@@ -1,8 +1,9 @@
 "use client"
 
 import { useCallback, useState } from "react"
-import { useDropzone } from "react-dropzone"
-import { Upload, FileAudio, X, Users, Loader2, Clock, AlertCircle, Download, Copy, Check } from "lucide-react"
+import { useDropzone, FileRejection } from "react-dropzone"
+import { useUser } from "@clerk/nextjs"
+import { Upload, FileAudio, X, Users, Loader2, Clock, AlertCircle, Download, Copy, Check, Sparkles } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import {
@@ -13,6 +14,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { cn, formatFileSize } from "@/lib/utils"
+import { TIER_LIMITS, getUserTier, getUpgradeMessage, type UserTier } from "@/lib/tiers"
 
 interface TranscriptSegment {
   speaker: string
@@ -69,6 +71,10 @@ const SPEAKER_COLORS = [
 ]
 
 export function TranscriptionUploader() {
+  const { user } = useUser()
+  const userTier: UserTier = getUserTier(user?.publicMetadata as { tier?: string })
+  const tierLimits = TIER_LIMITS[userTier]
+
   const [file, setFile] = useState<File | null>(null)
   const [speakerCount, setSpeakerCount] = useState("2")
   const [isProcessing, setIsProcessing] = useState(false)
@@ -77,8 +83,22 @@ export function TranscriptionUploader() {
   const [transcript, setTranscript] = useState<TranscriptSegment[] | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [copied, setCopied] = useState(false)
+  const [fileSizeError, setFileSizeError] = useState<string | null>(null)
 
-  const onDrop = useCallback((acceptedFiles: File[]) => {
+  const onDrop = useCallback((acceptedFiles: File[], rejectedFiles: FileRejection[]) => {
+    setFileSizeError(null)
+
+    // Check for rejected files due to size
+    if (rejectedFiles.length > 0) {
+      const rejection = rejectedFiles[0]
+      const fileSizeMB = rejection.file.size / (1024 * 1024)
+
+      if (rejection.errors.some(e => e.code === 'file-too-large')) {
+        setFileSizeError(getUpgradeMessage(fileSizeMB))
+        return
+      }
+    }
+
     if (acceptedFiles.length > 0) {
       setFile(acceptedFiles[0])
       setTranscript(null)
@@ -90,7 +110,7 @@ export function TranscriptionUploader() {
     onDrop,
     accept: ACCEPTED_FORMATS,
     maxFiles: 1,
-    maxSize: 500 * 1024 * 1024,
+    maxSize: tierLimits.maxFileSize,
   })
 
   const handleProcess = async () => {
@@ -154,6 +174,7 @@ export function TranscriptionUploader() {
     setFile(null)
     setTranscript(null)
     setError(null)
+    setFileSizeError(null)
   }
 
   const copyTranscript = () => {
@@ -178,6 +199,45 @@ export function TranscriptionUploader() {
 
   return (
     <div className="space-y-6">
+      {/* File Size Limit Info */}
+      <div className="flex items-center justify-between text-sm">
+        <span className="text-slate-500 dark:text-slate-400">
+          Max file size: <strong className="text-slate-700 dark:text-slate-200">{tierLimits.maxFileSizeMB}MB</strong>
+        </span>
+        {userTier === 'free' && (
+          <a
+            href="/upgrade"
+            className="inline-flex items-center gap-1 text-primary hover:text-primary-dark font-medium"
+          >
+            <Sparkles className="w-4 h-4" />
+            Upgrade for 200MB
+          </a>
+        )}
+      </div>
+
+      {/* File Size Error / Upgrade Prompt */}
+      {fileSizeError && (
+        <Card className="border-amber-200 bg-amber-50 dark:bg-amber-950/20">
+          <CardContent className="p-4">
+            <div className="flex items-start gap-3">
+              <AlertCircle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
+              <div className="flex-1">
+                <p className="text-amber-800 dark:text-amber-200">{fileSizeError}</p>
+                {userTier === 'free' && (
+                  <a
+                    href="/upgrade"
+                    className="inline-flex items-center gap-2 mt-3 px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-lg font-semibold text-sm hover:from-amber-600 hover:to-orange-600 transition-all"
+                  >
+                    <Sparkles className="w-4 h-4" />
+                    Upgrade to Pro - $7.95/month
+                  </a>
+                )}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Dropzone */}
       <Card className={cn(
         "border-2 border-dashed transition-all duration-300 cursor-pointer",
