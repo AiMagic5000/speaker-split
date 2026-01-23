@@ -7,6 +7,9 @@ const nextConfig: NextConfig = {
       bodySizeLimit: '500mb',
     },
   },
+  // Allow large file uploads through middleware (500MB)
+  // This is required for audio file uploads
+  middlewareClientMaxBodySize: '500mb',
   images: {
     domains: ['startmybusiness.us', 'cdn.prod.website-files.com'],
     remotePatterns: [

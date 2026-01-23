@@ -3,8 +3,18 @@
 /* Enable class-based dark mode for Tailwind v4 */
 @custom-variant dark (&:is(.dark *));
 
+/* Register custom colors with Tailwind v4 theme system */
+@theme {
+  /* Brand Colors - registered for utility classes */
+  --color-primary: #2563eb;
+  --color-primary-dark: #1d4ed8;
+  --color-secondary: #0d9488;
+  --color-secondary-dark: #0f766e;
+  --color-accent: #f59e0b;
+}
+
 :root {
-  /* Brand Colors */
+  /* Brand Colors - CSS variables for direct use */
   --primary: #2563eb;
   --primary-dark: #1d4ed8;
   --secondary: #0d9488;

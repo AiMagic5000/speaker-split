@@ -5,6 +5,19 @@ import path from 'path'
 import { v4 as uuidv4 } from 'uuid'
 import { auth } from '@clerk/nextjs/server'
 
+// Route segment config - allow large file uploads (500MB)
+export const config = {
+  api: {
+    bodyParser: {
+      sizeLimit: '500mb',
+    },
+  },
+}
+
+// Disable body size limit for this route (Next.js 16+)
+export const maxDuration = 300 // 5 minutes timeout
+export const dynamic = 'force-dynamic'
+
 const UPLOAD_DIR = process.env.UPLOAD_DIR || './uploads'
 const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:8000'
 
