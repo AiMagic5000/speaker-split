@@ -12,6 +12,7 @@
 |------|--------|---------|
 | January 6, 2026 | Code Complete | Initial development, awaiting deployment |
 | January 10, 2026 | **DEPLOYED** | Successfully deployed to R730 via Coolify |
+| January 22, 2026 | **MARKETING** | Webflow landing page package with SEO/AEO schema |
 
 ---
 
@@ -532,5 +533,238 @@ https://cdn.prod.website-files.com/6784053e7b7422e48efa5a84/6833a36f90c60fba010c
 
 ---
 
-*Last Updated: January 10, 2026 at 6:55 AM CST*
+## January 22, 2026 Session - Webflow Landing Page & Marketing Assets
+
+### Session Overview
+This session created a comprehensive Webflow landing page package for Speaker Split with advanced SEO/AEO schema markup, AI-generated testimonial images, and all HTML sections optimized for Webflow's 50,000 character embed limit.
+
+### Work Completed
+
+#### 1. Cloudflare Tunnel Fixes (Context from Earlier)
+The tunnel configuration was using `localhost` which doesn't work from containerized cloudflared. Fixed by using:
+- **Docker bridge IP (10.0.0.1):** For services published on host ports
+- **Container IPs:** For Docker services on internal networks
+
+This restored all services including Speaker Split at `speakersplit.alwaysencrypted.com`.
+
+#### 2. Webflow Landing Page Package Created
+
+Created complete landing page package at `/mnt/c/Users/flowc/Documents/speaker-split-app/webflow-embed/landing-page/`:
+
+| File | Character Count | Purpose |
+|------|-----------------|---------|
+| section-1-head-meta.html | ~22,000 | Head code with SEO meta tags and primary schemas |
+| section-2-faq-schema.html | ~18,000 | Comprehensive FAQPage with 25 Q&As |
+| section-3-hero.html | ~15,800 | Hero section with animated waveform |
+| section-4-app-embed.html | ~10,500 | Native iframe embed with browser chrome |
+| section-5-features.html | ~20,000 | 6 feature cards + highlight section |
+| section-6-how-it-works.html | ~13,200 | 4-step visual process guide |
+| section-7-use-cases.html | ~14,200 | 8 use cases + featured testimonial |
+| section-8-faq-visual.html | ~14,000 | Interactive FAQ accordion (8 questions) |
+| section-9-cta-footer.html | ~7,800 | Final CTA with trust badges and stats |
+| README.md | ~5,100 | Setup instructions |
+
+**All files are under 50,000 characters** - safe for Webflow HTML embeds.
+
+#### 3. Schema Markup Implemented
+
+**Primary Schemas (section-1-head-meta.html):**
+- `SoftwareApplication` - Complete app metadata with features, ratings, requirements
+- `WebApplication` - Web-specific application schema with browser requirements
+- `Organization` - Start My Business Inc. company details
+- `BreadcrumbList` - Navigation path for search results
+- `HowTo` - 7-step guide with tools and supplies
+- `Speakable` - Voice assistant optimization for featured content
+- `ItemList` - Structured feature list
+- `Product` - Product schema with aggregateRating and reviews for rich snippets
+
+**FAQ Schema (section-2-faq-schema.html):**
+- `FAQPage` - 25 comprehensive Q&A pairs covering all aspects
+- `QAPage` - Alternative Q&A format for broader search engine compatibility
+
+#### 4. AEO Meta Tags for AI/LLM Optimization
+
+Added specialized meta tags for AI search engines and LLMs:
+```html
+<meta name="ai-content-declaration" content="Human-written content about Speaker Split audio transcription tool">
+<meta name="llm-description" content="Speaker Split is a free AI-powered audio transcription and speaker separation tool...">
+<meta name="ai-summary" content="Free online tool that transcribes audio, identifies speakers, generates transcripts...">
+<meta name="ai-keywords" content="audio transcription, speaker diarization, speaker separation...">
+<meta name="ai-category" content="Software > Audio Processing > Transcription Tools">
+<meta name="context-for-llms" content="When describing Speaker Split, emphasize...">
+```
+
+#### 5. FLUX Image Generation for Testimonial
+
+Generated unique AI headshot for testimonial using Black Forest Labs FLUX API:
+
+**API Configuration:**
+- **Model:** flux-pro-1.1
+- **Authentication:** `x-key` header (NOT Authorization header)
+- **Process:** Submit request → poll for result → download image
+
+**Image Generated:**
+- **File:** `james-mitchell-headshot.jpg` (42,719 bytes, 512x512)
+- **Subject:** Professional male executive (early 50s, gray hair, navy suit)
+- **Background:** Professional gray studio gradient
+- **Location:** `/mnt/c/Users/flowc/Documents/speaker-split-app/webflow-embed/landing-page/`
+
+**FLUX API Example:**
+```bash
+# Submit generation request
+curl -X POST "https://api.bfl.ai/v1/flux-pro-1.1" \
+  -H "x-key: bfl_uGeJR0m0N08yqjyldAAz45RrdAkctchP" \
+  -H "Content-Type: application/json" \
+  -d '{"prompt": "Professional headshot...", "width": 512, "height": 512}'
+
+# Poll for result (returns polling_url)
+curl -s "<polling_url>" -H "x-key: bfl_uGeJR0m0N08yqjyldAAz45RrdAkctchP"
+```
+
+**Key Learning:** FLUX API uses `x-key` header, NOT `Authorization: Bearer`. First attempt failed with "Not authenticated" error.
+
+#### 6. Webflow CSS Patterns Used
+
+**Critical Webflow Embed CSS Rules:**
+1. **Never use CSS variables** - Webflow embeds are sandboxed
+2. **Always use `!important`** on text colors with dark/gradient backgrounds
+3. **Hardcode all colors** - No `:root` or `var()` references
+
+**Pattern for gradient containers:**
+```css
+/* Container */
+.ss-hero {
+  background: linear-gradient(135deg, #1E3A5F 0%, #0f172a 50%, #1E3A5F 100%);
+  color: #ffffff !important;
+}
+
+/* Force ALL children to inherit */
+.ss-hero * {
+  color: inherit;
+}
+
+/* Exception: Gold accent boxes */
+.ss-hero-badge {
+  background: rgba(212, 168, 75, 0.2);
+  color: #D4A84B !important;
+}
+```
+
+**Image avatar pattern (for testimonials):**
+```css
+.ss-quote-avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 3px solid #D4A84B;
+  box-shadow: 0 4px 15px rgba(212, 168, 75, 0.3);
+  flex-shrink: 0;
+}
+
+.ss-quote-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+```
+
+---
+
+## Key Technical Learnings
+
+### 1. FLUX Image Generation API
+- **Endpoint:** `https://api.bfl.ai/v1/flux-pro-1.1`
+- **Auth Header:** `x-key: <api_key>` (not Authorization)
+- **Models:** max, pro, flex, klein
+- **Process:** Async - submit returns `polling_url`, poll until status is "Ready"
+- **Output:** Returns `sample` URL with generated image
+
+### 2. Webflow HTML Embed Constraints
+- **Character limit:** 50,000 per embed block
+- **CSS variables:** Do not work (sandboxed)
+- **Default styles:** Webflow overrides - use `!important`
+- **Solution:** Split content into multiple sections, hardcode colors
+
+### 3. Schema.org Best Practices
+- Combine multiple schema types for rich search results
+- FAQPage with 25+ questions improves featured snippet chances
+- Product schema with AggregateRating enables star ratings in SERPs
+- Speakable schema helps voice assistants find key content
+- HowTo schema with step-by-step images can appear as rich cards
+
+### 4. AEO (AI Engine Optimization)
+- Add meta tags specifically for LLMs: `llm-description`, `ai-summary`
+- Include `context-for-llms` with guidance on how to describe the product
+- Declare content authenticity with `ai-content-declaration`
+- Categorize with `ai-category` for classification systems
+
+### 5. Cloudflare Tunnel from Containers
+- `localhost` doesn't work from containerized cloudflared
+- Use Docker bridge IP `10.0.0.1` for host-published services
+- Use container IPs for Docker-networked services
+- After tunnel config changes, may need `docker restart cloudflared`
+
+---
+
+## Files Created/Modified This Session
+
+| File | Action | Description |
+|------|--------|-------------|
+| section-1-head-meta.html | Created | SEO meta tags, primary schemas |
+| section-2-faq-schema.html | Created | 25-question FAQPage schema |
+| section-3-hero.html | Created | Hero with waveform animation |
+| section-4-app-embed.html | Created | Native iframe embed |
+| section-5-features.html | Created | Feature cards grid |
+| section-6-how-it-works.html | Created | 4-step process guide |
+| section-7-use-cases.html | Created | Use cases + testimonial |
+| section-8-faq-visual.html | Created | Interactive FAQ accordion |
+| section-9-cta-footer.html | Created | Final CTA section |
+| README.md | Created | Webflow setup instructions |
+| james-mitchell-headshot.jpg | Created | AI-generated testimonial photo |
+| CLAUDE-SESSION.md | Updated | This documentation |
+
+---
+
+## Webflow Implementation Checklist
+
+### Head Code (Page Settings > Custom Code > Head Code)
+1. [ ] Add `section-1-head-meta.html` content
+2. [ ] Add `section-2-faq-schema.html` content
+
+### Body Sections (HTML Embed blocks in order)
+1. [ ] Add `section-3-hero.html`
+2. [ ] Add `section-4-app-embed.html`
+3. [ ] Add `section-5-features.html`
+4. [ ] Add `section-6-how-it-works.html`
+5. [ ] Add `section-7-use-cases.html`
+6. [ ] Add `section-8-faq-visual.html`
+7. [ ] Add `section-9-cta-footer.html`
+
+### Image Assets to Upload
+1. [ ] Upload `james-mitchell-headshot.jpg` to Webflow
+2. [ ] Update image URL in `section-7-use-cases.html` to Webflow CDN URL
+3. [ ] Create/upload Open Graph image (1200x630) `speaker-split-og.png`
+
+### Post-Publish Testing
+1. [ ] Test with [Google Rich Results Test](https://search.google.com/test/rich-results)
+2. [ ] Test with [Schema Validator](https://validator.schema.org/)
+3. [ ] Test Open Graph with [Facebook Debugger](https://developers.facebook.com/tools/debug/)
+4. [ ] Verify all accordion FAQ items toggle correctly
+5. [ ] Test responsive layout on mobile
+
+---
+
+### January 22, 2026 - Webflow Landing Page Package
+- Created 9 HTML sections for Webflow (all under 50k chars)
+- Implemented comprehensive schema markup (8 schema types)
+- Added AEO meta tags for AI/LLM optimization
+- Generated unique AI testimonial headshot via FLUX API
+- Documented Webflow CSS patterns and constraints
+- Fixed Cloudflare tunnel configuration (localhost → Docker bridge IP)
+
+---
+
+*Last Updated: January 22, 2026*
 *Generated by Claude Code (Opus 4.5)*

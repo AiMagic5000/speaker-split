@@ -1,0 +1,614 @@
+<!-- ============================================== -->
+<!-- SPEAKER SPLIT - HERO SECTION -->
+<!-- ============================================== -->
+<!-- Add this to a Webflow HTML Embed block at the top of your page -->
+<!-- Character Count: ~12,000 (well under 50k limit) -->
+
+<style>
+/* ==================== */
+/* CSS RESET FOR EMBED */
+/* ==================== */
+.ss-hero,
+.ss-hero *,
+.ss-hero *::before,
+.ss-hero *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* ==================== */
+/* HERO SECTION */
+/* ==================== */
+.ss-hero {
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: linear-gradient(135deg, #1E3A5F 0%, #0f172a 50%, #1E3A5F 100%);
+  padding: 80px 24px 100px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Background decoration */
+.ss-hero::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -20%;
+  width: 80%;
+  height: 200%;
+  background: radial-gradient(ellipse, rgba(37, 99, 235, 0.15) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.ss-hero::after {
+  content: '';
+  position: absolute;
+  bottom: -30%;
+  left: -10%;
+  width: 50%;
+  height: 100%;
+  background: radial-gradient(ellipse, rgba(212, 168, 75, 0.1) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.ss-hero-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+}
+
+.ss-hero-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  align-items: center;
+}
+
+/* Left side - Text content */
+.ss-hero-text {
+  max-width: 600px;
+}
+
+.ss-hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  background: rgba(212, 168, 75, 0.15);
+  border: 1px solid rgba(212, 168, 75, 0.3);
+  border-radius: 50px;
+  color: #D4A84B !important;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 24px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.ss-hero-badge svg {
+  width: 18px;
+  height: 18px;
+}
+
+.ss-title {
+  font-size: 52px;
+  font-weight: 800;
+  color: #ffffff !important;
+  line-height: 1.1;
+  margin-bottom: 24px;
+  letter-spacing: -0.02em;
+}
+
+.ss-title-gradient {
+  background: linear-gradient(90deg, #D4A84B 0%, #f59e0b 50%, #D4A84B 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.ss-subtitle {
+  font-size: 20px;
+  color: rgba(255, 255, 255, 0.85) !important;
+  line-height: 1.6;
+  margin-bottom: 32px;
+  max-width: 540px;
+}
+
+/* CTA Buttons */
+.ss-hero-cta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 40px;
+}
+
+.ss-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 18px 32px;
+  background: linear-gradient(135deg, #D4A84B, #f59e0b);
+  color: #0f172a !important;
+  font-size: 18px;
+  font-weight: 700;
+  text-decoration: none !important;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 20px rgba(212, 168, 75, 0.4);
+}
+
+.ss-btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(212, 168, 75, 0.5);
+  color: #0f172a !important;
+  text-decoration: none !important;
+}
+
+.ss-btn-primary svg {
+  width: 20px;
+  height: 20px;
+}
+
+.ss-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 18px 32px;
+  background: transparent;
+  color: #ffffff !important;
+  font-size: 18px;
+  font-weight: 600;
+  text-decoration: none !important;
+  border-radius: 12px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.ss-btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.5);
+  color: #ffffff !important;
+  text-decoration: none !important;
+}
+
+.ss-btn-secondary svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* Trust indicators */
+.ss-trust {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 24px;
+}
+
+.ss-trust-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: rgba(255, 255, 255, 0.7) !important;
+  font-size: 14px;
+}
+
+.ss-trust-item svg {
+  width: 20px;
+  height: 20px;
+  color: #22c55e;
+}
+
+/* Right side - Visual */
+.ss-hero-visual {
+  position: relative;
+}
+
+.ss-hero-image {
+  position: relative;
+  background: linear-gradient(135deg, rgba(30, 58, 95, 0.8), rgba(15, 23, 42, 0.9));
+  border-radius: 20px;
+  padding: 32px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+}
+
+/* Simulated app interface */
+.ss-app-preview {
+  background: #0a0a0a;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.ss-app-preview-header {
+  background: linear-gradient(90deg, #1a1a2e, #16213e);
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ss-app-preview-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+.ss-app-preview-dot.red { background: #ef4444; }
+.ss-app-preview-dot.yellow { background: #f59e0b; }
+.ss-app-preview-dot.green { background: #22c55e; }
+
+.ss-app-preview-title {
+  margin-left: auto;
+  color: rgba(255, 255, 255, 0.6) !important;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.ss-app-preview-body {
+  padding: 24px;
+  min-height: 280px;
+}
+
+/* Audio waveform animation */
+.ss-waveform {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  height: 60px;
+  margin-bottom: 24px;
+}
+
+.ss-waveform-bar {
+  width: 4px;
+  background: linear-gradient(180deg, #D4A84B, #f59e0b);
+  border-radius: 2px;
+  animation: ss-wave 1.2s ease-in-out infinite;
+}
+
+.ss-waveform-bar:nth-child(1) { height: 20px; animation-delay: 0s; }
+.ss-waveform-bar:nth-child(2) { height: 35px; animation-delay: 0.1s; }
+.ss-waveform-bar:nth-child(3) { height: 50px; animation-delay: 0.2s; }
+.ss-waveform-bar:nth-child(4) { height: 40px; animation-delay: 0.3s; }
+.ss-waveform-bar:nth-child(5) { height: 55px; animation-delay: 0.4s; }
+.ss-waveform-bar:nth-child(6) { height: 30px; animation-delay: 0.5s; }
+.ss-waveform-bar:nth-child(7) { height: 45px; animation-delay: 0.6s; }
+.ss-waveform-bar:nth-child(8) { height: 25px; animation-delay: 0.7s; }
+.ss-waveform-bar:nth-child(9) { height: 40px; animation-delay: 0.8s; }
+.ss-waveform-bar:nth-child(10) { height: 35px; animation-delay: 0.9s; }
+
+@keyframes ss-wave {
+  0%, 100% { transform: scaleY(1); }
+  50% { transform: scaleY(0.5); }
+}
+
+/* Speaker transcript preview */
+.ss-transcript-preview {
+  font-size: 14px;
+  line-height: 1.8;
+}
+
+.ss-speaker-line {
+  padding: 8px 12px;
+  border-radius: 8px;
+  margin-bottom: 8px;
+}
+
+.ss-speaker-line:last-child {
+  margin-bottom: 0;
+}
+
+.ss-speaker-1 {
+  background: rgba(37, 99, 235, 0.15);
+  border-left: 3px solid #3b82f6;
+}
+
+.ss-speaker-2 {
+  background: rgba(34, 197, 94, 0.15);
+  border-left: 3px solid #22c55e;
+}
+
+.ss-speaker-label {
+  font-weight: 700;
+  font-size: 12px;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.ss-speaker-1 .ss-speaker-label { color: #60a5fa !important; }
+.ss-speaker-2 .ss-speaker-label { color: #4ade80 !important; }
+
+.ss-speaker-text {
+  color: rgba(255, 255, 255, 0.85) !important;
+}
+
+/* Floating badges */
+.ss-float-badge {
+  position: absolute;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 12px;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  animation: ss-float 3s ease-in-out infinite;
+}
+
+.ss-float-badge-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ss-float-badge-icon svg {
+  width: 20px;
+  height: 20px;
+  color: #ffffff;
+}
+
+.ss-float-badge-text {
+  font-size: 13px;
+  font-weight: 600;
+  color: #0f172a !important;
+}
+
+.ss-float-badge-sub {
+  font-size: 11px;
+  color: #64748b !important;
+}
+
+.ss-float-badge-1 {
+  top: 10%;
+  right: -20px;
+  animation-delay: 0s;
+}
+
+.ss-float-badge-1 .ss-float-badge-icon {
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+}
+
+.ss-float-badge-2 {
+  bottom: 15%;
+  left: -30px;
+  animation-delay: 1.5s;
+}
+
+.ss-float-badge-2 .ss-float-badge-icon {
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+}
+
+@keyframes ss-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+/* ==================== */
+/* RESPONSIVE DESIGN */
+/* ==================== */
+@media (max-width: 1024px) {
+  .ss-hero-content {
+    grid-template-columns: 1fr;
+    gap: 48px;
+  }
+
+  .ss-hero-text {
+    text-align: center;
+    max-width: 100%;
+  }
+
+  .ss-subtitle {
+    max-width: 100%;
+  }
+
+  .ss-hero-cta {
+    justify-content: center;
+  }
+
+  .ss-trust {
+    justify-content: center;
+  }
+
+  .ss-hero-visual {
+    max-width: 500px;
+    margin: 0 auto;
+  }
+
+  .ss-float-badge-1 {
+    right: 10px;
+    top: 5%;
+  }
+
+  .ss-float-badge-2 {
+    left: 10px;
+    bottom: 10%;
+  }
+}
+
+@media (max-width: 768px) {
+  .ss-hero {
+    padding: 60px 16px 80px;
+  }
+
+  .ss-title {
+    font-size: 36px;
+  }
+
+  .ss-subtitle {
+    font-size: 17px;
+  }
+
+  .ss-hero-cta {
+    flex-direction: column;
+  }
+
+  .ss-btn-primary,
+  .ss-btn-secondary {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .ss-trust {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .ss-hero-image {
+    padding: 20px;
+  }
+
+  .ss-float-badge {
+    display: none;
+  }
+}
+</style>
+
+<section class="ss-hero">
+  <div class="ss-hero-container">
+    <div class="ss-hero-content">
+      <!-- Left: Text Content -->
+      <div class="ss-hero-text">
+        <div class="ss-hero-badge">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+          </svg>
+          AI-Powered Audio Intelligence
+        </div>
+
+        <h1 class="ss-title">
+          Transcribe Audio.<br>
+          <span class="ss-title-gradient">Identify Speakers.</span><br>
+          Generate Documents.
+        </h1>
+
+        <p class="ss-subtitle">
+          Transform business calls, podcasts, and meetings into searchable transcripts with
+          AI-powered speaker identification. Separate audio by person. Generate professional
+          documents instantly. 100% free.
+        </p>
+
+        <div class="ss-hero-cta">
+          <a href="https://speakersplit.startmybusiness.us" class="ss-btn-primary" target="_blank" rel="noopener">
+            Try Speaker Split Free
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M5 12h14"/>
+              <path d="m12 5 7 7-7 7"/>
+            </svg>
+          </a>
+          <a href="#how-it-works" class="ss-btn-secondary">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="5 3 19 12 5 21 5 3"/>
+            </svg>
+            See How It Works
+          </a>
+        </div>
+
+        <div class="ss-trust">
+          <div class="ss-trust-item">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+              <polyline points="22 4 12 14.01 9 11.01"/>
+            </svg>
+            95%+ Accuracy
+          </div>
+          <div class="ss-trust-item">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+              <polyline points="22 4 12 14.01 9 11.01"/>
+            </svg>
+            No Credit Card Required
+          </div>
+          <div class="ss-trust-item">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+              <polyline points="22 4 12 14.01 9 11.01"/>
+            </svg>
+            Files Auto-Deleted
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Visual -->
+      <div class="ss-hero-visual">
+        <div class="ss-hero-image">
+          <!-- Floating badges -->
+          <div class="ss-float-badge ss-float-badge-1">
+            <div class="ss-float-badge-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                <polyline points="22 4 12 14.01 9 11.01"/>
+              </svg>
+            </div>
+            <div>
+              <div class="ss-float-badge-text">95% Accurate</div>
+              <div class="ss-float-badge-sub">WhisperX AI</div>
+            </div>
+          </div>
+
+          <div class="ss-float-badge ss-float-badge-2">
+            <div class="ss-float-badge-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                <circle cx="9" cy="7" r="4"/>
+                <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+              </svg>
+            </div>
+            <div>
+              <div class="ss-float-badge-text">6 Speakers</div>
+              <div class="ss-float-badge-sub">Auto-identified</div>
+            </div>
+          </div>
+
+          <!-- App preview -->
+          <div class="ss-app-preview">
+            <div class="ss-app-preview-header">
+              <span class="ss-app-preview-dot red"></span>
+              <span class="ss-app-preview-dot yellow"></span>
+              <span class="ss-app-preview-dot green"></span>
+              <span class="ss-app-preview-title">speakersplit.startmybusiness.us</span>
+            </div>
+            <div class="ss-app-preview-body">
+              <!-- Waveform -->
+              <div class="ss-waveform">
+                <div class="ss-waveform-bar"></div>
+                <div class="ss-waveform-bar"></div>
+                <div class="ss-waveform-bar"></div>
+                <div class="ss-waveform-bar"></div>
+                <div class="ss-waveform-bar"></div>
+                <div class="ss-waveform-bar"></div>
+                <div class="ss-waveform-bar"></div>
+                <div class="ss-waveform-bar"></div>
+                <div class="ss-waveform-bar"></div>
+                <div class="ss-waveform-bar"></div>
+              </div>
+
+              <!-- Transcript preview -->
+              <div class="ss-transcript-preview">
+                <div class="ss-speaker-line ss-speaker-1">
+                  <div class="ss-speaker-label">Speaker 1 - 0:00</div>
+                  <div class="ss-speaker-text">Let's discuss the quarterly results and action items...</div>
+                </div>
+                <div class="ss-speaker-line ss-speaker-2">
+                  <div class="ss-speaker-label">Speaker 2 - 0:15</div>
+                  <div class="ss-speaker-text">I've prepared a summary of the key metrics...</div>
+                </div>
+                <div class="ss-speaker-line ss-speaker-1">
+                  <div class="ss-speaker-label">Speaker 1 - 0:32</div>
+                  <div class="ss-speaker-text">That's great. What about the timeline for...</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

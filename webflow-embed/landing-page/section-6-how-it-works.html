@@ -1,0 +1,560 @@
+<!-- ============================================== -->
+<!-- SPEAKER SPLIT - HOW IT WORKS SECTION -->
+<!-- ============================================== -->
+<!-- Add this to a Webflow HTML Embed block -->
+<!-- Character Count: ~12,000 (well under 50k limit) -->
+
+<style>
+/* ==================== */
+/* HOW IT WORKS SECTION */
+/* ==================== */
+.ss-how-section {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background: linear-gradient(180deg, #1E3A5F 0%, #0f172a 100%);
+  padding: 100px 24px;
+  position: relative;
+  overflow: hidden;
+}
+
+.ss-how-section *,
+.ss-how-section *::before,
+.ss-how-section *::after {
+  box-sizing: border-box;
+}
+
+/* Background decoration */
+.ss-how-section::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: -20%;
+  width: 60%;
+  height: 60%;
+  background: radial-gradient(ellipse, rgba(212, 168, 75, 0.08) 0%, transparent 70%);
+  pointer-events: none;
+  transform: translateY(-50%);
+}
+
+.ss-how-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+}
+
+.ss-how-header {
+  text-align: center;
+  margin-bottom: 72px;
+}
+
+.ss-how-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: rgba(34, 197, 94, 0.15);
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  border-radius: 50px;
+  color: #4ade80 !important;
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 20px;
+}
+
+.ss-how-title {
+  font-size: 42px;
+  font-weight: 700;
+  color: #ffffff !important;
+  margin: 0 0 16px 0;
+}
+
+.ss-how-subtitle {
+  font-size: 18px;
+  color: rgba(255, 255, 255, 0.6) !important;
+  margin: 0 auto;
+  max-width: 600px;
+}
+
+/* Steps container */
+.ss-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  position: relative;
+}
+
+/* Connecting line */
+.ss-steps::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 60px;
+  bottom: 60px;
+  width: 2px;
+  background: linear-gradient(180deg, #D4A84B 0%, #3b82f6 50%, #22c55e 100%);
+  transform: translateX(-50%);
+}
+
+/* Individual step */
+.ss-step {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 48px;
+  align-items: center;
+  position: relative;
+}
+
+.ss-step:nth-child(even) .ss-step-content {
+  order: 3;
+  text-align: left;
+}
+
+.ss-step:nth-child(even) .ss-step-visual {
+  order: 1;
+}
+
+/* Step number */
+.ss-step-number {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  font-weight: 800;
+  position: relative;
+  z-index: 2;
+  order: 2;
+}
+
+.ss-step:nth-child(1) .ss-step-number {
+  background: linear-gradient(135deg, #D4A84B, #f59e0b);
+  color: #0f172a !important;
+  box-shadow: 0 0 30px rgba(212, 168, 75, 0.4);
+}
+
+.ss-step:nth-child(2) .ss-step-number {
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  color: #ffffff !important;
+  box-shadow: 0 0 30px rgba(59, 130, 246, 0.4);
+}
+
+.ss-step:nth-child(3) .ss-step-number {
+  background: linear-gradient(135deg, #a855f7, #7c3aed);
+  color: #ffffff !important;
+  box-shadow: 0 0 30px rgba(168, 85, 247, 0.4);
+}
+
+.ss-step:nth-child(4) .ss-step-number {
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  color: #ffffff !important;
+  box-shadow: 0 0 30px rgba(34, 197, 94, 0.4);
+}
+
+/* Step content */
+.ss-step-content {
+  text-align: right;
+}
+
+.ss-step-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: #ffffff !important;
+  margin: 0 0 12px 0;
+}
+
+.ss-step-desc {
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.6) !important;
+  margin: 0;
+  line-height: 1.6;
+}
+
+/* Step visual */
+.ss-step-visual {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 24px;
+  min-height: 160px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ss-step-visual svg {
+  width: 100px;
+  height: 100px;
+  color: rgba(255, 255, 255, 0.2);
+}
+
+/* Upload visual */
+.ss-upload-visual {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+}
+
+.ss-upload-icon {
+  width: 64px;
+  height: 64px;
+  border: 2px dashed rgba(212, 168, 75, 0.5);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ss-upload-icon svg {
+  width: 32px;
+  height: 32px;
+  color: #D4A84B;
+}
+
+.ss-upload-formats {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.ss-upload-format {
+  padding: 4px 10px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.6) !important;
+}
+
+/* Process visual */
+.ss-process-visual {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.ss-process-bar {
+  flex: 1;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.ss-process-fill {
+  width: 75%;
+  height: 100%;
+  background: linear-gradient(90deg, #3b82f6, #60a5fa);
+  border-radius: 4px;
+  animation: ss-progress 2s ease-in-out infinite;
+}
+
+@keyframes ss-progress {
+  0% { width: 0%; }
+  50% { width: 75%; }
+  100% { width: 100%; }
+}
+
+.ss-process-percent {
+  font-size: 18px;
+  font-weight: 700;
+  color: #60a5fa !important;
+}
+
+/* Review visual */
+.ss-review-visual {
+  width: 100%;
+}
+
+.ss-review-line {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  margin-bottom: 8px;
+}
+
+.ss-review-line:last-child {
+  margin-bottom: 0;
+}
+
+.ss-review-line.s1 {
+  background: rgba(59, 130, 246, 0.15);
+  border-left: 3px solid #3b82f6;
+}
+
+.ss-review-line.s2 {
+  background: rgba(34, 197, 94, 0.15);
+  border-left: 3px solid #22c55e;
+}
+
+.ss-review-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.ss-review-line.s1 .ss-review-label { color: #60a5fa !important; }
+.ss-review-line.s2 .ss-review-label { color: #4ade80 !important; }
+
+.ss-review-text {
+  flex: 1;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+}
+
+/* Download visual */
+.ss-download-visual {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+}
+
+.ss-download-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+}
+
+.ss-download-item svg {
+  width: 24px;
+  height: 24px;
+  color: #22c55e;
+}
+
+.ss-download-item span {
+  flex: 1;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.7) !important;
+}
+
+/* CTA at bottom */
+.ss-how-cta {
+  text-align: center;
+  margin-top: 72px;
+}
+
+.ss-how-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 20px 40px;
+  background: linear-gradient(135deg, #D4A84B, #f59e0b);
+  color: #0f172a !important;
+  font-size: 18px;
+  font-weight: 700;
+  text-decoration: none !important;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 20px rgba(212, 168, 75, 0.4);
+}
+
+.ss-how-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(212, 168, 75, 0.5);
+  color: #0f172a !important;
+  text-decoration: none !important;
+}
+
+.ss-how-btn svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* ==================== */
+/* RESPONSIVE DESIGN */
+/* ==================== */
+@media (max-width: 1024px) {
+  .ss-steps::before {
+    left: 40px;
+  }
+
+  .ss-step {
+    grid-template-columns: auto 1fr;
+    gap: 24px;
+  }
+
+  .ss-step-number {
+    width: 60px;
+    height: 60px;
+    font-size: 24px;
+    order: 1 !important;
+  }
+
+  .ss-step-content {
+    order: 2 !important;
+    text-align: left !important;
+  }
+
+  .ss-step-visual {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .ss-how-section {
+    padding: 60px 16px;
+  }
+
+  .ss-how-title {
+    font-size: 32px;
+  }
+
+  .ss-steps::before {
+    left: 30px;
+  }
+
+  .ss-step-number {
+    width: 50px;
+    height: 50px;
+    font-size: 20px;
+  }
+
+  .ss-step-title {
+    font-size: 20px;
+  }
+
+  .ss-step-desc {
+    font-size: 15px;
+  }
+}
+</style>
+
+<section class="ss-how-section" id="how-it-works">
+  <div class="ss-how-container">
+    <!-- Header -->
+    <div class="ss-how-header">
+      <div class="ss-how-label">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polygon points="5 3 19 12 5 21 5 3"/>
+        </svg>
+        How It Works
+      </div>
+      <h2 class="ss-how-title">From Audio to Transcript in 4 Easy Steps</h2>
+      <p class="ss-how-subtitle">No software to install, no complex setup. Just upload and go.</p>
+    </div>
+
+    <!-- Steps -->
+    <div class="ss-steps">
+      <!-- Step 1 -->
+      <div class="ss-step">
+        <div class="ss-step-content">
+          <h3 class="ss-step-title ss-step-text">Upload Your Audio</h3>
+          <p class="ss-step-desc ss-step-text">Drag and drop any audio or video file. We support MP3, WAV, M4A, FLAC, OGG, WebM, and MP4 formats up to 500MB.</p>
+        </div>
+        <div class="ss-step-number">1</div>
+        <div class="ss-step-visual">
+          <div class="ss-upload-visual">
+            <div class="ss-upload-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="17 8 12 3 7 8"/>
+                <line x1="12" x2="12" y1="3" y2="15"/>
+              </svg>
+            </div>
+            <div class="ss-upload-formats">
+              <span class="ss-upload-format">MP3</span>
+              <span class="ss-upload-format">WAV</span>
+              <span class="ss-upload-format">M4A</span>
+              <span class="ss-upload-format">MP4</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 2 -->
+      <div class="ss-step">
+        <div class="ss-step-content">
+          <h3 class="ss-step-title ss-step-text">AI Processes Your File</h3>
+          <p class="ss-step-desc ss-step-text">Our WhisperX AI analyzes your audio, identifies speakers, and generates an accurate transcript with timestamps.</p>
+        </div>
+        <div class="ss-step-number">2</div>
+        <div class="ss-step-visual">
+          <div class="ss-process-visual">
+            <div class="ss-process-bar">
+              <div class="ss-process-fill"></div>
+            </div>
+            <span class="ss-process-percent">75%</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 3 -->
+      <div class="ss-step">
+        <div class="ss-step-content">
+          <h3 class="ss-step-title ss-step-text">Review & Edit</h3>
+          <p class="ss-step-desc ss-step-text">See your transcript with color-coded speaker labels. Make any corrections and add speaker names for clarity.</p>
+        </div>
+        <div class="ss-step-number">3</div>
+        <div class="ss-step-visual">
+          <div class="ss-review-visual">
+            <div class="ss-review-line s1">
+              <span class="ss-review-label">Speaker 1</span>
+              <span class="ss-review-text"></span>
+            </div>
+            <div class="ss-review-line s2">
+              <span class="ss-review-label">Speaker 2</span>
+              <span class="ss-review-text"></span>
+            </div>
+            <div class="ss-review-line s1">
+              <span class="ss-review-label">Speaker 1</span>
+              <span class="ss-review-text"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 4 -->
+      <div class="ss-step">
+        <div class="ss-step-content">
+          <h3 class="ss-step-title ss-step-text">Download Everything</h3>
+          <p class="ss-step-desc ss-step-text">Get your transcript, individual speaker audio files, and AI-generated documents. All in seconds.</p>
+        </div>
+        <div class="ss-step-number">4</div>
+        <div class="ss-step-visual">
+          <div class="ss-download-visual">
+            <div class="ss-download-item">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="7 10 12 15 17 10"/>
+                <line x1="12" x2="12" y1="15" y2="3"/>
+              </svg>
+              <span>transcript.docx</span>
+            </div>
+            <div class="ss-download-item">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="7 10 12 15 17 10"/>
+                <line x1="12" x2="12" y1="15" y2="3"/>
+              </svg>
+              <span>speaker-1.mp3</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CTA -->
+    <div class="ss-how-cta">
+      <a href="https://speakersplit.startmybusiness.us" class="ss-how-btn" target="_blank" rel="noopener">
+        Start Transcribing Now
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M5 12h14"/>
+          <path d="m12 5 7 7-7 7"/>
+        </svg>
+      </a>
+    </div>
+  </div>
+</section>

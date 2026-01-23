@@ -1,0 +1,320 @@
+<!-- ============================================== -->
+<!-- SPEAKER SPLIT - FINAL CTA SECTION -->
+<!-- ============================================== -->
+<!-- Add this to a Webflow HTML Embed block as the final section -->
+<!-- Character Count: ~8,000 (well under 50k limit) -->
+
+<style>
+/* ==================== */
+/* FINAL CTA SECTION */
+/* ==================== */
+.ss-final-cta {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background: linear-gradient(135deg, #1E3A5F 0%, #0f172a 50%, #1E3A5F 100%);
+  padding: 100px 24px;
+  position: relative;
+  overflow: hidden;
+}
+
+.ss-final-cta *,
+.ss-final-cta *::before,
+.ss-final-cta *::after {
+  box-sizing: border-box;
+}
+
+/* Background decoration */
+.ss-final-cta::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 150%;
+  height: 150%;
+  background: radial-gradient(ellipse, rgba(212, 168, 75, 0.1) 0%, transparent 50%);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.ss-final-container {
+  max-width: 800px;
+  margin: 0 auto;
+  text-align: center;
+  position: relative;
+  z-index: 1;
+}
+
+.ss-final-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background: linear-gradient(135deg, rgba(212, 168, 75, 0.2), rgba(212, 168, 75, 0.05));
+  border: 1px solid rgba(212, 168, 75, 0.3);
+  border-radius: 50px;
+  color: #D4A84B !important;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 24px;
+}
+
+.ss-final-badge svg {
+  width: 18px;
+  height: 18px;
+}
+
+.ss-final-title {
+  font-size: 48px;
+  font-weight: 800;
+  color: #ffffff !important;
+  margin: 0 0 20px 0;
+  line-height: 1.1;
+}
+
+.ss-final-title-gradient {
+  background: linear-gradient(90deg, #D4A84B, #f59e0b, #D4A84B);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.ss-final-desc {
+  font-size: 20px;
+  color: rgba(255, 255, 255, 0.7) !important;
+  margin: 0 0 40px 0;
+  line-height: 1.6;
+}
+
+/* CTA Buttons */
+.ss-final-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 16px;
+  margin-bottom: 48px;
+}
+
+.ss-final-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 20px 40px;
+  background: linear-gradient(135deg, #D4A84B, #f59e0b);
+  color: #0f172a !important;
+  font-size: 18px;
+  font-weight: 700;
+  text-decoration: none !important;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 30px rgba(212, 168, 75, 0.4);
+}
+
+.ss-final-btn-primary:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 40px rgba(212, 168, 75, 0.5);
+  color: #0f172a !important;
+  text-decoration: none !important;
+}
+
+.ss-final-btn-primary svg {
+  width: 20px;
+  height: 20px;
+}
+
+.ss-final-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 20px 40px;
+  background: transparent;
+  color: #ffffff !important;
+  font-size: 18px;
+  font-weight: 600;
+  text-decoration: none !important;
+  border-radius: 12px;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+}
+
+.ss-final-btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.4);
+  color: #ffffff !important;
+  text-decoration: none !important;
+}
+
+/* Trust badges */
+.ss-final-trust {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 32px;
+}
+
+.ss-trust-badge {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: rgba(255, 255, 255, 0.6) !important;
+  font-size: 14px;
+}
+
+.ss-trust-badge svg {
+  width: 20px;
+  height: 20px;
+  color: #22c55e;
+}
+
+/* Stats row */
+.ss-final-stats {
+  display: flex;
+  justify-content: center;
+  gap: 48px;
+  margin-top: 64px;
+  padding-top: 48px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.ss-final-stat {
+  text-align: center;
+}
+
+.ss-final-stat-number {
+  font-size: 40px;
+  font-weight: 800;
+  color: #ffffff !important;
+  display: block;
+}
+
+.ss-final-stat-label {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.5) !important;
+}
+
+/* ==================== */
+/* RESPONSIVE DESIGN */
+/* ==================== */
+@media (max-width: 768px) {
+  .ss-final-cta {
+    padding: 60px 16px;
+  }
+
+  .ss-final-title {
+    font-size: 32px;
+  }
+
+  .ss-final-desc {
+    font-size: 17px;
+  }
+
+  .ss-final-buttons {
+    flex-direction: column;
+  }
+
+  .ss-final-btn-primary,
+  .ss-final-btn-secondary {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .ss-final-trust {
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .ss-final-stats {
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .ss-final-stat-number {
+    font-size: 32px;
+  }
+}
+</style>
+
+<section class="ss-final-cta">
+  <div class="ss-final-container">
+    <!-- Badge -->
+    <div class="ss-final-badge">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+      </svg>
+      Ready to Transform Your Audio?
+    </div>
+
+    <!-- Title -->
+    <h2 class="ss-final-title">
+      Start Transcribing<br>
+      <span class="ss-final-title-gradient">For Free Today</span>
+    </h2>
+
+    <!-- Description -->
+    <p class="ss-final-desc">
+      Join thousands of professionals using Speaker Split to turn their audio into actionable content.
+      No credit card required. No software to install. Just results.
+    </p>
+
+    <!-- Buttons -->
+    <div class="ss-final-buttons">
+      <a href="https://speakersplit.startmybusiness.us" class="ss-final-btn-primary" target="_blank" rel="noopener">
+        Try Speaker Split Free
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M5 12h14"/>
+          <path d="m12 5 7 7-7 7"/>
+        </svg>
+      </a>
+      <a href="#how-it-works" class="ss-final-btn-secondary">
+        Learn More
+      </a>
+    </div>
+
+    <!-- Trust badges -->
+    <div class="ss-final-trust">
+      <div class="ss-trust-badge">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+          <polyline points="22 4 12 14.01 9 11.01"/>
+        </svg>
+        Free Forever Plan
+      </div>
+      <div class="ss-trust-badge">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+          <polyline points="22 4 12 14.01 9 11.01"/>
+        </svg>
+        No Credit Card
+      </div>
+      <div class="ss-trust-badge">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+          <polyline points="22 4 12 14.01 9 11.01"/>
+        </svg>
+        95%+ Accuracy
+      </div>
+      <div class="ss-trust-badge">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+          <polyline points="22 4 12 14.01 9 11.01"/>
+        </svg>
+        Data Auto-Deleted
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="ss-final-stats">
+      <div class="ss-final-stat">
+        <span class="ss-final-stat-number">10K+</span>
+        <span class="ss-final-stat-label">Files Processed</span>
+      </div>
+      <div class="ss-final-stat">
+        <span class="ss-final-stat-number">500+</span>
+        <span class="ss-final-stat-label">Hours Transcribed</span>
+      </div>
+      <div class="ss-final-stat">
+        <span class="ss-final-stat-number">4.9/5</span>
+        <span class="ss-final-stat-label">User Rating</span>
+      </div>
+    </div>
+  </div>
+</section>

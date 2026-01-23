@@ -1,0 +1,463 @@
+<!-- ============================================== -->
+<!-- SPEAKER SPLIT - USE CASES SECTION -->
+<!-- ============================================== -->
+<!-- Add this to a Webflow HTML Embed block -->
+<!-- Character Count: ~12,000 (well under 50k limit) -->
+
+<style>
+/* ==================== */
+/* USE CASES SECTION */
+/* ==================== */
+.ss-usecases-section {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background: #0f172a;
+  padding: 100px 24px;
+}
+
+.ss-usecases-section *,
+.ss-usecases-section *::before,
+.ss-usecases-section *::after {
+  box-sizing: border-box;
+}
+
+.ss-usecases-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.ss-usecases-header {
+  text-align: center;
+  margin-bottom: 64px;
+}
+
+.ss-usecases-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: rgba(168, 85, 247, 0.15);
+  border: 1px solid rgba(168, 85, 247, 0.3);
+  border-radius: 50px;
+  color: #c084fc !important;
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 20px;
+}
+
+.ss-usecases-title {
+  font-size: 42px;
+  font-weight: 700;
+  color: #ffffff !important;
+  margin: 0 0 16px 0;
+}
+
+.ss-usecases-subtitle {
+  font-size: 18px;
+  color: rgba(255, 255, 255, 0.6) !important;
+  margin: 0 auto;
+  max-width: 600px;
+}
+
+/* Use cases grid */
+.ss-usecases-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+}
+
+/* Use case card */
+.ss-usecase-card {
+  background: linear-gradient(135deg, rgba(30, 58, 95, 0.4), rgba(15, 23, 42, 0.8));
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 16px;
+  padding: 28px;
+  transition: all 0.3s ease;
+  text-align: center;
+}
+
+.ss-usecase-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+}
+
+.ss-usecase-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px;
+}
+
+.ss-usecase-icon svg {
+  width: 32px;
+  height: 32px;
+}
+
+/* Card color variants */
+.ss-usecase-card[data-use="meetings"] .ss-usecase-icon {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(59, 130, 246, 0.05));
+}
+.ss-usecase-card[data-use="meetings"] .ss-usecase-icon svg { color: #60a5fa; }
+
+.ss-usecase-card[data-use="podcasts"] .ss-usecase-icon {
+  background: linear-gradient(135deg, rgba(168, 85, 247, 0.2), rgba(168, 85, 247, 0.05));
+}
+.ss-usecase-card[data-use="podcasts"] .ss-usecase-icon svg { color: #c084fc; }
+
+.ss-usecase-card[data-use="interviews"] .ss-usecase-icon {
+  background: linear-gradient(135deg, rgba(34, 197, 94, 0.2), rgba(34, 197, 94, 0.05));
+}
+.ss-usecase-card[data-use="interviews"] .ss-usecase-icon svg { color: #4ade80; }
+
+.ss-usecase-card[data-use="sales"] .ss-usecase-icon {
+  background: linear-gradient(135deg, rgba(212, 168, 75, 0.2), rgba(212, 168, 75, 0.05));
+}
+.ss-usecase-card[data-use="sales"] .ss-usecase-icon svg { color: #D4A84B; }
+
+.ss-usecase-card[data-use="legal"] .ss-usecase-icon {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(239, 68, 68, 0.05));
+}
+.ss-usecase-card[data-use="legal"] .ss-usecase-icon svg { color: #f87171; }
+
+.ss-usecase-card[data-use="education"] .ss-usecase-icon {
+  background: linear-gradient(135deg, rgba(6, 182, 212, 0.2), rgba(6, 182, 212, 0.05));
+}
+.ss-usecase-card[data-use="education"] .ss-usecase-icon svg { color: #22d3ee; }
+
+.ss-usecase-card[data-use="research"] .ss-usecase-icon {
+  background: linear-gradient(135deg, rgba(236, 72, 153, 0.2), rgba(236, 72, 153, 0.05));
+}
+.ss-usecase-card[data-use="research"] .ss-usecase-icon svg { color: #f472b6; }
+
+.ss-usecase-card[data-use="content"] .ss-usecase-icon {
+  background: linear-gradient(135deg, rgba(251, 146, 60, 0.2), rgba(251, 146, 60, 0.05));
+}
+.ss-usecase-card[data-use="content"] .ss-usecase-icon svg { color: #fb923c; }
+
+.ss-usecase-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #ffffff !important;
+  margin: 0 0 10px 0;
+}
+
+.ss-usecase-desc {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.5) !important;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* Featured testimonial */
+.ss-featured-quote {
+  grid-column: span 4;
+  background: linear-gradient(135deg, rgba(212, 168, 75, 0.08), rgba(15, 23, 42, 0.9));
+  border: 1px solid rgba(212, 168, 75, 0.2);
+  border-radius: 20px;
+  padding: 48px;
+  display: flex;
+  gap: 48px;
+  align-items: center;
+  margin-top: 24px;
+}
+
+.ss-quote-content {
+  flex: 1;
+}
+
+.ss-quote-icon {
+  color: #D4A84B;
+  margin-bottom: 16px;
+}
+
+.ss-quote-icon svg {
+  width: 40px;
+  height: 40px;
+}
+
+.ss-quote-text {
+  font-size: 22px;
+  font-weight: 500;
+  color: #ffffff !important;
+  margin: 0 0 24px 0;
+  line-height: 1.5;
+  font-style: italic;
+}
+
+.ss-quote-author {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.ss-quote-avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 3px solid #D4A84B;
+  box-shadow: 0 4px 15px rgba(212, 168, 75, 0.3);
+  flex-shrink: 0;
+}
+
+.ss-quote-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.ss-quote-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: #ffffff !important;
+  margin: 0 0 4px 0;
+}
+
+.ss-quote-role {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.5) !important;
+  margin: 0;
+}
+
+.ss-quote-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.ss-quote-stat {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  padding: 20px 24px;
+  text-align: center;
+  min-width: 140px;
+}
+
+.ss-quote-stat-number {
+  font-size: 32px;
+  font-weight: 800;
+  color: #D4A84B !important;
+  display: block;
+}
+
+.ss-quote-stat-label {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.5) !important;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* ==================== */
+/* RESPONSIVE DESIGN */
+/* ==================== */
+@media (max-width: 1024px) {
+  .ss-usecases-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .ss-featured-quote {
+    grid-column: span 2;
+    flex-direction: column;
+    text-align: center;
+    padding: 36px;
+  }
+
+  .ss-quote-author {
+    justify-content: center;
+  }
+
+  .ss-quote-stats {
+    flex-direction: row;
+  }
+}
+
+@media (max-width: 768px) {
+  .ss-usecases-section {
+    padding: 60px 16px;
+  }
+
+  .ss-usecases-title {
+    font-size: 32px;
+  }
+
+  .ss-usecases-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .ss-featured-quote {
+    grid-column: span 1;
+    padding: 28px;
+  }
+
+  .ss-quote-text {
+    font-size: 18px;
+  }
+
+  .ss-quote-stats {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .ss-quote-stat {
+    min-width: auto;
+  }
+}
+</style>
+
+<section class="ss-usecases-section">
+  <div class="ss-usecases-container">
+    <!-- Header -->
+    <div class="ss-usecases-header">
+      <div class="ss-usecases-label">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+          <circle cx="9" cy="7" r="4"/>
+          <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+          <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+        </svg>
+        Who Uses Speaker Split
+      </div>
+      <h2 class="ss-usecases-title">Perfect for Every Professional</h2>
+      <p class="ss-usecases-subtitle">From podcasters to legal professionals, thousands trust Speaker Split daily</p>
+    </div>
+
+    <!-- Use Cases Grid -->
+    <div class="ss-usecases-grid">
+      <!-- Meeting Transcription -->
+      <div class="ss-usecase-card" data-use="meetings">
+        <div class="ss-usecase-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+            <circle cx="9" cy="7" r="4"/>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+          </svg>
+        </div>
+        <h3 class="ss-usecase-title">Meeting Minutes</h3>
+        <p class="ss-usecase-desc">Turn team meetings into actionable notes with speaker attribution</p>
+      </div>
+
+      <!-- Podcast Transcription -->
+      <div class="ss-usecase-card" data-use="podcasts">
+        <div class="ss-usecase-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/>
+            <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+            <line x1="12" x2="12" y1="19" y2="22"/>
+          </svg>
+        </div>
+        <h3 class="ss-usecase-title">Podcast Production</h3>
+        <p class="ss-usecase-desc">Create show notes, SEO transcripts, and quotes from episodes</p>
+      </div>
+
+      <!-- Interview Transcription -->
+      <div class="ss-usecase-card" data-use="interviews">
+        <div class="ss-usecase-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+          </svg>
+        </div>
+        <h3 class="ss-usecase-title">Interviews</h3>
+        <p class="ss-usecase-desc">Transcribe journalist and HR interviews with accurate attribution</p>
+      </div>
+
+      <!-- Sales Calls -->
+      <div class="ss-usecase-card" data-use="sales">
+        <div class="ss-usecase-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72"/>
+            <path d="M15 7a4 4 0 0 0 6 0"/>
+          </svg>
+        </div>
+        <h3 class="ss-usecase-title">Sales Calls</h3>
+        <p class="ss-usecase-desc">Document client conversations and extract key follow-up items</p>
+      </div>
+
+      <!-- Legal Depositions -->
+      <div class="ss-usecase-card" data-use="legal">
+        <div class="ss-usecase-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="m16.24 7.76-1.41 1.41A4.98 4.98 0 0 0 12 8c-1.38 0-2.63.56-3.54 1.46"/>
+            <path d="m7.76 16.24 1.41-1.41A4.98 4.98 0 0 0 12 16c1.38 0 2.63-.56 3.54-1.46"/>
+          </svg>
+        </div>
+        <h3 class="ss-usecase-title">Legal Transcription</h3>
+        <p class="ss-usecase-desc">First-draft depositions and witness interviews for review</p>
+      </div>
+
+      <!-- Academic Lectures -->
+      <div class="ss-usecase-card" data-use="education">
+        <div class="ss-usecase-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+            <path d="M6 12v5c3 3 9 3 12 0v-5"/>
+          </svg>
+        </div>
+        <h3 class="ss-usecase-title">Academic Lectures</h3>
+        <p class="ss-usecase-desc">Help students review class recordings with searchable text</p>
+      </div>
+
+      <!-- Focus Groups -->
+      <div class="ss-usecase-card" data-use="research">
+        <div class="ss-usecase-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 3v18h18"/>
+            <path d="m19 9-5 5-4-4-3 3"/>
+          </svg>
+        </div>
+        <h3 class="ss-usecase-title">Focus Groups</h3>
+        <p class="ss-usecase-desc">Analyze group discussions with per-participant breakdowns</p>
+      </div>
+
+      <!-- Content Repurposing -->
+      <div class="ss-usecase-card" data-use="content">
+        <div class="ss-usecase-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="23 7 16 12 23 17 23 7"/>
+            <rect width="15" height="14" x="1" y="5" rx="2" ry="2"/>
+          </svg>
+        </div>
+        <h3 class="ss-usecase-title">Content Repurposing</h3>
+        <p class="ss-usecase-desc">Turn video content into blog posts, social media, and more</p>
+      </div>
+
+      <!-- Featured Quote -->
+      <div class="ss-featured-quote">
+        <div class="ss-quote-content">
+          <div class="ss-quote-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z"/>
+            </svg>
+          </div>
+          <p class="ss-quote-text">"Speaker Split has transformed how we handle client calls. What used to take hours of manual transcription now happens in minutes. The speaker separation is a game-changer for our sales team."</p>
+          <div class="ss-quote-author">
+            <div class="ss-quote-avatar">
+              <img src="https://startmybusiness.us/images/testimonials/james-mitchell.jpg" alt="James Mitchell - VP of Sales at TechCorp Solutions" loading="lazy">
+            </div>
+            <div>
+              <p class="ss-quote-name">James Mitchell</p>
+              <p class="ss-quote-role">VP of Sales, TechCorp Solutions</p>
+            </div>
+          </div>
+        </div>
+        <div class="ss-quote-stats">
+          <div class="ss-quote-stat">
+            <span class="ss-quote-stat-number">85%</span>
+            <span class="ss-quote-stat-label">Time Saved</span>
+          </div>
+          <div class="ss-quote-stat">
+            <span class="ss-quote-stat-number">500+</span>
+            <span class="ss-quote-stat-label">Calls/Month</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

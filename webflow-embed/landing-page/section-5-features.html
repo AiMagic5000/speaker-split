@@ -1,0 +1,603 @@
+<!-- ============================================== -->
+<!-- SPEAKER SPLIT - FEATURES SECTION -->
+<!-- ============================================== -->
+<!-- Add this to a Webflow HTML Embed block -->
+<!-- Character Count: ~16,000 (well under 50k limit) -->
+
+<style>
+/* ==================== */
+/* FEATURES SECTION */
+/* ==================== */
+.ss-features-section {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background: #0f172a;
+  padding: 100px 24px;
+  position: relative;
+}
+
+.ss-features-section *,
+.ss-features-section *::before,
+.ss-features-section *::after {
+  box-sizing: border-box;
+}
+
+.ss-features-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.ss-features-header {
+  text-align: center;
+  margin-bottom: 64px;
+}
+
+.ss-features-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: rgba(37, 99, 235, 0.15);
+  border: 1px solid rgba(37, 99, 235, 0.3);
+  border-radius: 50px;
+  color: #60a5fa !important;
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 20px;
+}
+
+.ss-features-title {
+  font-size: 42px;
+  font-weight: 700;
+  color: #ffffff !important;
+  margin: 0 0 16px 0;
+  line-height: 1.2;
+}
+
+.ss-features-title-gradient {
+  background: linear-gradient(90deg, #D4A84B, #f59e0b);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.ss-features-subtitle {
+  font-size: 18px;
+  color: rgba(255, 255, 255, 0.6) !important;
+  margin: 0 auto;
+  max-width: 600px;
+}
+
+/* Feature grid */
+.ss-features-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+/* Feature card */
+.ss-feature-card {
+  background: linear-gradient(135deg, rgba(30, 58, 95, 0.5), rgba(15, 23, 42, 0.8));
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  padding: 32px;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.ss-feature-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, var(--card-accent, #D4A84B), transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.ss-feature-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(255, 255, 255, 0.15);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+}
+
+.ss-feature-card:hover::before {
+  opacity: 1;
+}
+
+/* Card icon */
+.ss-feature-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24px;
+  position: relative;
+}
+
+.ss-feature-icon svg {
+  width: 28px;
+  height: 28px;
+  position: relative;
+  z-index: 1;
+}
+
+/* Icon variants */
+.ss-feature-card[data-feature="transcription"] .ss-feature-icon {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(59, 130, 246, 0.05));
+  --card-accent: #3b82f6;
+}
+.ss-feature-card[data-feature="transcription"] .ss-feature-icon svg { color: #60a5fa; }
+
+.ss-feature-card[data-feature="speakers"] .ss-feature-icon {
+  background: linear-gradient(135deg, rgba(34, 197, 94, 0.2), rgba(34, 197, 94, 0.05));
+  --card-accent: #22c55e;
+}
+.ss-feature-card[data-feature="speakers"] .ss-feature-icon svg { color: #4ade80; }
+
+.ss-feature-card[data-feature="separation"] .ss-feature-icon {
+  background: linear-gradient(135deg, rgba(168, 85, 247, 0.2), rgba(168, 85, 247, 0.05));
+  --card-accent: #a855f7;
+}
+.ss-feature-card[data-feature="separation"] .ss-feature-icon svg { color: #c084fc; }
+
+.ss-feature-card[data-feature="documents"] .ss-feature-icon {
+  background: linear-gradient(135deg, rgba(212, 168, 75, 0.2), rgba(212, 168, 75, 0.05));
+  --card-accent: #D4A84B;
+}
+.ss-feature-card[data-feature="documents"] .ss-feature-icon svg { color: #D4A84B; }
+
+.ss-feature-card[data-feature="languages"] .ss-feature-icon {
+  background: linear-gradient(135deg, rgba(236, 72, 153, 0.2), rgba(236, 72, 153, 0.05));
+  --card-accent: #ec4899;
+}
+.ss-feature-card[data-feature="languages"] .ss-feature-icon svg { color: #f472b6; }
+
+.ss-feature-card[data-feature="formats"] .ss-feature-icon {
+  background: linear-gradient(135deg, rgba(6, 182, 212, 0.2), rgba(6, 182, 212, 0.05));
+  --card-accent: #06b6d4;
+}
+.ss-feature-card[data-feature="formats"] .ss-feature-icon svg { color: #22d3ee; }
+
+/* Card content */
+.ss-feature-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #ffffff !important;
+  margin: 0 0 12px 0;
+}
+
+.ss-feature-desc {
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.6) !important;
+  margin: 0 0 20px 0;
+  line-height: 1.6;
+}
+
+/* Feature list */
+.ss-feature-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.ss-feature-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.7) !important;
+  margin-bottom: 10px;
+}
+
+.ss-feature-list li:last-child {
+  margin-bottom: 0;
+}
+
+.ss-feature-list li svg {
+  width: 16px;
+  height: 16px;
+  color: #22c55e;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+/* Highlight card (spans full width) */
+.ss-feature-highlight {
+  grid-column: span 3;
+  background: linear-gradient(135deg, rgba(212, 168, 75, 0.1), rgba(15, 23, 42, 0.9));
+  border-color: rgba(212, 168, 75, 0.2);
+  padding: 48px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 48px;
+  align-items: center;
+}
+
+.ss-feature-highlight:hover {
+  border-color: rgba(212, 168, 75, 0.4);
+}
+
+.ss-highlight-content h3 {
+  font-size: 28px;
+  font-weight: 700;
+  color: #ffffff !important;
+  margin: 0 0 16px 0;
+}
+
+.ss-highlight-content p {
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.7) !important;
+  margin: 0 0 24px 0;
+  line-height: 1.6;
+}
+
+.ss-highlight-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.ss-stat {
+  text-align: center;
+}
+
+.ss-stat-number {
+  font-size: 36px;
+  font-weight: 800;
+  color: #D4A84B !important;
+  display: block;
+}
+
+.ss-stat-label {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.5) !important;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.ss-highlight-visual {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.ss-highlight-item {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.ss-highlight-item-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #D4A84B, #f59e0b);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.ss-highlight-item-icon svg {
+  width: 24px;
+  height: 24px;
+  color: #0f172a;
+}
+
+.ss-highlight-item-text {
+  flex: 1;
+}
+
+.ss-highlight-item-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #ffffff !important;
+  margin: 0 0 4px 0;
+}
+
+.ss-highlight-item-desc {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.5) !important;
+  margin: 0;
+}
+
+/* ==================== */
+/* RESPONSIVE DESIGN */
+/* ==================== */
+@media (max-width: 1024px) {
+  .ss-features-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .ss-feature-highlight {
+    grid-column: span 2;
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+}
+
+@media (max-width: 768px) {
+  .ss-features-section {
+    padding: 60px 16px;
+  }
+
+  .ss-features-title {
+    font-size: 32px;
+  }
+
+  .ss-features-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .ss-feature-highlight {
+    grid-column: span 1;
+    padding: 32px;
+  }
+
+  .ss-highlight-content h3 {
+    font-size: 24px;
+  }
+
+  .ss-highlight-stats {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+
+  .ss-stat-number {
+    font-size: 28px;
+  }
+}
+</style>
+
+<section class="ss-features-section">
+  <div class="ss-features-container">
+    <!-- Header -->
+    <div class="ss-features-header">
+      <div class="ss-features-label">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+        </svg>
+        Powerful Features
+      </div>
+      <h2 class="ss-features-title">Everything You Need for <span class="ss-features-title-gradient">Audio Processing</span></h2>
+      <p class="ss-features-subtitle">From transcription to document generation, Speaker Split handles your entire audio workflow</p>
+    </div>
+
+    <!-- Features Grid -->
+    <div class="ss-features-grid">
+      <!-- Feature 1: Transcription -->
+      <div class="ss-feature-card" data-feature="transcription">
+        <div class="ss-feature-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/>
+            <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+            <line x1="12" x2="12" y1="19" y2="22"/>
+          </svg>
+        </div>
+        <h3 class="ss-feature-title">AI Transcription</h3>
+        <p class="ss-feature-desc">Industry-leading WhisperX AI converts your audio to text with exceptional accuracy.</p>
+        <ul class="ss-feature-list">
+          <li>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+            95%+ accuracy on clear audio
+          </li>
+          <li>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+            Automatic punctuation
+          </li>
+          <li>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+            Word-level timestamps
+          </li>
+        </ul>
+      </div>
+
+      <!-- Feature 2: Speaker Identification -->
+      <div class="ss-feature-card" data-feature="speakers">
+        <div class="ss-feature-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+            <circle cx="9" cy="7" r="4"/>
+            <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+          </svg>
+        </div>
+        <h3 class="ss-feature-title">Speaker Identification</h3>
+        <p class="ss-feature-desc">Automatically detect who's speaking and label each voice distinctly.</p>
+        <ul class="ss-feature-list">
+          <li>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+            Support for 2-6 speakers
+          </li>
+          <li>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+            Color-coded labels
+          </li>
+          <li>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+            Voice fingerprinting
+          </li>
+        </ul>
+      </div>
+
+      <!-- Feature 3: Audio Separation -->
+      <div class="ss-feature-card" data-feature="separation">
+        <div class="ss-feature-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M16 3h5v5"/>
+            <path d="M8 3H3v5"/>
+            <path d="M12 22v-8.3a4 4 0 0 0-1.172-2.872L3 3"/>
+            <path d="m15 9 6-6"/>
+          </svg>
+        </div>
+        <h3 class="ss-feature-title">Audio Separation</h3>
+        <p class="ss-feature-desc">Download individual audio tracks for each identified speaker.</p>
+        <ul class="ss-feature-list">
+          <li>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+            Per-speaker audio files
+          </li>
+          <li>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+            High-quality output
+          </li>
+          <li>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+            Create highlight reels
+          </li>
+        </ul>
+      </div>
+
+      <!-- Feature 4: Document Generation -->
+      <div class="ss-feature-card" data-feature="documents">
+        <div class="ss-feature-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/>
+            <polyline points="14 2 14 8 20 8"/>
+            <line x1="16" x2="8" y1="13" y2="13"/>
+            <line x1="16" x2="8" y1="17" y2="17"/>
+          </svg>
+        </div>
+        <h3 class="ss-feature-title">Document Generator</h3>
+        <p class="ss-feature-desc">Transform transcripts into professional meeting notes and reports.</p>
+        <ul class="ss-feature-list">
+          <li>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+            AI-generated summaries
+          </li>
+          <li>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+            Action item extraction
+          </li>
+          <li>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+            HTML &amp; Word export
+          </li>
+        </ul>
+      </div>
+
+      <!-- Feature 5: Multi-Language -->
+      <div class="ss-feature-card" data-feature="languages">
+        <div class="ss-feature-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="2" x2="22" y1="12" y2="12"/>
+            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+          </svg>
+        </div>
+        <h3 class="ss-feature-title">Multi-Language Support</h3>
+        <p class="ss-feature-desc">Transcribe audio in 12+ languages with automatic detection.</p>
+        <ul class="ss-feature-list">
+          <li>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+            English, Spanish, French
+          </li>
+          <li>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+            German, Japanese, Korean
+          </li>
+          <li>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+            Auto language detection
+          </li>
+        </ul>
+      </div>
+
+      <!-- Feature 6: Format Support -->
+      <div class="ss-feature-card" data-feature="formats">
+        <div class="ss-feature-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="17 8 12 3 7 8"/>
+            <line x1="12" x2="12" y1="3" y2="15"/>
+          </svg>
+        </div>
+        <h3 class="ss-feature-title">Universal Format Support</h3>
+        <p class="ss-feature-desc">Works with all major audio and video file formats.</p>
+        <ul class="ss-feature-list">
+          <li>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+            MP3, WAV, M4A, FLAC
+          </li>
+          <li>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+            OGG, WebM, MP4 video
+          </li>
+          <li>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+            Up to 500MB files
+          </li>
+        </ul>
+      </div>
+
+      <!-- Highlight Card -->
+      <div class="ss-feature-card ss-feature-highlight">
+        <div class="ss-highlight-content">
+          <h3>Why Choose Speaker Split?</h3>
+          <p>Unlike other transcription tools, Speaker Split is completely free, requires no software installation, and offers unique speaker audio separation that competitors charge hundreds for.</p>
+          <div class="ss-highlight-stats">
+            <div class="ss-stat">
+              <span class="ss-stat-number">95%+</span>
+              <span class="ss-stat-label">Accuracy</span>
+            </div>
+            <div class="ss-stat">
+              <span class="ss-stat-number">12+</span>
+              <span class="ss-stat-label">Languages</span>
+            </div>
+            <div class="ss-stat">
+              <span class="ss-stat-number">500MB</span>
+              <span class="ss-stat-label">Max File Size</span>
+            </div>
+          </div>
+        </div>
+        <div class="ss-highlight-visual">
+          <div class="ss-highlight-item">
+            <div class="ss-highlight-item-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              </svg>
+            </div>
+            <div class="ss-highlight-item-text">
+              <h4 class="ss-highlight-item-title">Privacy First</h4>
+              <p class="ss-highlight-item-desc">Files are encrypted and auto-deleted after processing</p>
+            </div>
+          </div>
+          <div class="ss-highlight-item">
+            <div class="ss-highlight-item-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <polyline points="12 6 12 12 16 14"/>
+              </svg>
+            </div>
+            <div class="ss-highlight-item-text">
+              <h4 class="ss-highlight-item-title">Lightning Fast</h4>
+              <p class="ss-highlight-item-desc">Process 30-minute recordings in under 5 minutes</p>
+            </div>
+          </div>
+          <div class="ss-highlight-item">
+            <div class="ss-highlight-item-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect width="20" height="14" x="2" y="5" rx="2"/>
+                <line x1="2" x2="22" y1="10" y2="10"/>
+              </svg>
+            </div>
+            <div class="ss-highlight-item-text">
+              <h4 class="ss-highlight-item-title">No Credit Card</h4>
+              <p class="ss-highlight-item-desc">Start free instantly - no payment info required</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,244 @@
+<!-- Speaker Split - Seamless Webflow Embed -->
+<!-- This embed makes the app look native to your page, not like an iframe -->
+<!-- Copy this entire code block into a Webflow HTML Embed element -->
+
+<style>
+/* Container that holds the embedded app */
+.ss-app-embed {
+  position: relative;
+  width: 100%;
+  min-height: 800px;
+  background: #0a0a0a;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+}
+
+/* The iframe itself - completely seamless */
+.ss-app-embed iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+  background: transparent;
+}
+
+/* Loading state while app loads */
+.ss-app-loader {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+  z-index: 1;
+  transition: opacity 0.5s ease, visibility 0.5s ease;
+}
+
+.ss-app-loader.hidden {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.ss-loader-spinner {
+  width: 48px;
+  height: 48px;
+  border: 3px solid rgba(212, 168, 75, 0.2);
+  border-top-color: #D4A84B;
+  border-radius: 50%;
+  animation: ss-spin 1s linear infinite;
+}
+
+@keyframes ss-spin {
+  to { transform: rotate(360deg); }
+}
+
+.ss-loader-text {
+  margin-top: 16px;
+  color: rgba(255, 255, 255, 0.7);
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 14px;
+}
+
+/* Header bar to match your site's look */
+.ss-app-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  background: linear-gradient(135deg, #1E3A5F 0%, #2563eb 100%);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  z-index: 10;
+}
+
+.ss-app-header-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #ffffff;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.ss-app-header-title svg {
+  width: 24px;
+  height: 24px;
+  color: #D4A84B;
+}
+
+.ss-app-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.ss-app-btn {
+  padding: 8px 16px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.ss-app-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+  text-decoration: none;
+}
+
+.ss-app-btn-primary {
+  background: linear-gradient(135deg, #D4A84B, #f59e0b);
+  border: none;
+  color: #1E3A5F;
+}
+
+.ss-app-btn-primary:hover {
+  background: linear-gradient(135deg, #e5b85c, #fbbf24);
+  color: #1E3A5F;
+}
+
+/* Adjust iframe position when header is shown */
+.ss-app-embed.with-header iframe {
+  top: 60px;
+  height: calc(100% - 60px);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .ss-app-embed {
+    min-height: 600px;
+    border-radius: 0;
+  }
+
+  .ss-app-header {
+    padding: 0 16px;
+  }
+
+  .ss-app-header-title {
+    font-size: 16px;
+  }
+
+  .ss-app-header-title span {
+    display: none;
+  }
+}
+
+/* Full-width variant (no rounded corners) */
+.ss-app-embed.full-width {
+  border-radius: 0;
+  box-shadow: none;
+}
+</style>
+
+<!-- OPTION 1: Seamless embed with custom header (Recommended) -->
+<div class="ss-app-embed with-header" id="speakerSplitApp">
+  <!-- Custom header that matches your site -->
+  <div class="ss-app-header">
+    <div class="ss-app-header-title">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M2 10v3"/>
+        <path d="M6 6v11"/>
+        <path d="M10 3v18"/>
+        <path d="M14 8v7"/>
+        <path d="M18 5v13"/>
+        <path d="M22 10v3"/>
+      </svg>
+      <span>Speaker Split</span>
+    </div>
+    <div class="ss-app-header-actions">
+      <a href="https://speakersplit.startmybusiness.us" target="_blank" class="ss-app-btn">
+        Open Full App
+      </a>
+    </div>
+  </div>
+
+  <!-- Loading state -->
+  <div class="ss-app-loader" id="ssLoader">
+    <div class="ss-loader-spinner"></div>
+    <p class="ss-loader-text">Loading Speaker Split...</p>
+  </div>
+
+  <!-- The actual app -->
+  <iframe
+    src="https://speakersplit.startmybusiness.us"
+    title="Speaker Split - Audio Transcription Tool"
+    allow="microphone; clipboard-write"
+    loading="lazy"
+    onload="document.getElementById('ssLoader').classList.add('hidden')"
+  ></iframe>
+</div>
+
+<!-- OPTION 2: Minimal embed (uncomment to use instead)
+<div class="ss-app-embed" id="speakerSplitAppMinimal">
+  <div class="ss-app-loader" id="ssLoaderMinimal">
+    <div class="ss-loader-spinner"></div>
+    <p class="ss-loader-text">Loading Speaker Split...</p>
+  </div>
+  <iframe
+    src="https://speakersplit.startmybusiness.us"
+    title="Speaker Split"
+    allow="microphone; clipboard-write"
+    loading="lazy"
+    onload="document.getElementById('ssLoaderMinimal').classList.add('hidden')"
+  ></iframe>
+</div>
+-->
+
+<script>
+// Optional: Resize iframe based on content (requires same-origin or postMessage)
+// This enhances the native feel by auto-adjusting height
+(function() {
+  const container = document.getElementById('speakerSplitApp');
+  const iframe = container.querySelector('iframe');
+
+  // Listen for resize messages from the app
+  window.addEventListener('message', function(event) {
+    if (event.origin !== 'https://speakersplit.startmybusiness.us') return;
+
+    if (event.data.type === 'resize') {
+      container.style.minHeight = event.data.height + 'px';
+    }
+  });
+
+  // Optional: Track app loaded
+  iframe.addEventListener('load', function() {
+    console.log('Speaker Split app loaded');
+  });
+})();
+</script>
