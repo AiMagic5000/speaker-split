@@ -390,7 +390,7 @@ export function TranscriptionUploader() {
 
       {/* Start Button */}
       {file && !isProcessing && !transcript && (
-        <Button size="lg" className="w-full" onClick={handleProcess}>
+        <Button size="lg" className="w-full bg-blue-600 hover:bg-blue-700 text-white" onClick={handleProcess}>
           Start Transcription
         </Button>
       )}

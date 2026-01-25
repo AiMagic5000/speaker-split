@@ -399,7 +399,7 @@ export function SpeakerSplitUploader() {
 
       {/* Start Button */}
       {file && !isProcessing && !speakerAudios && (
-        <Button size="lg" variant="secondary" className="w-full" onClick={handleProcess}>
+        <Button size="lg" className="w-full bg-blue-600 hover:bg-blue-700 text-white" onClick={handleProcess}>
           Start Speaker Split
         </Button>
       )}
