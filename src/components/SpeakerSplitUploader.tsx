@@ -133,28 +133,52 @@ export function SpeakerSplitUploader() {
         throw new Error(data.error || 'Speaker split failed')
       }
 
-      // Handle streaming response
+      // Handle streaming response with proper buffering for large JSON
       const reader = response.body?.getReader()
       const decoder = new TextDecoder()
+      let buffer = ''
 
       if (reader) {
         while (true) {
           const { done, value } = await reader.read()
           if (done) break
 
-          const text = decoder.decode(value)
-          const lines = text.split('\n').filter(line => line.trim())
+          buffer += decoder.decode(value, { stream: true })
+          const lines = buffer.split('\n')
+
+          // Keep the last partial line in the buffer
+          buffer = lines.pop() || ''
 
           for (const line of lines) {
+            if (!line.trim()) continue
             try {
               const data = JSON.parse(line)
+              console.log('Split received:', data.progress, data.stage, data.speakerAudios ? 'HAS AUDIOS' : 'no audios')
               if (data.progress) setProgress(data.progress)
               if (data.stage) setStage(data.stage)
               if (data.speakerAudios) setSpeakerAudios(data.speakerAudios)
+              if (data.transcript) {
+                // Cloud backend returns transcript for speaker info
+                console.log('Got transcript with', data.transcript.length, 'segments')
+              }
               if (data.error) throw new Error(data.error)
             } catch (e) {
-              // Ignore JSON parse errors for partial data
+              console.error('JSON parse error:', line.substring(0, 100), e)
             }
+          }
+        }
+
+        // Process any remaining data in buffer
+        if (buffer.trim()) {
+          try {
+            const data = JSON.parse(buffer)
+            console.log('Final split buffer:', data.progress, data.stage)
+            if (data.progress) setProgress(data.progress)
+            if (data.stage) setStage(data.stage)
+            if (data.speakerAudios) setSpeakerAudios(data.speakerAudios)
+            if (data.error) throw new Error(data.error)
+          } catch (e) {
+            console.error('Final buffer parse error:', buffer.substring(0, 100), e)
           }
         }
       }

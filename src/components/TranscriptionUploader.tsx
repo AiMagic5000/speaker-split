@@ -138,28 +138,54 @@ export function TranscriptionUploader() {
         throw new Error(data.error || 'Transcription failed')
       }
 
-      // Handle streaming response
+      // Handle streaming response with proper buffering for large JSON
       const reader = response.body?.getReader()
       const decoder = new TextDecoder()
+      let buffer = ''
 
       if (reader) {
         while (true) {
           const { done, value } = await reader.read()
           if (done) break
 
-          const text = decoder.decode(value)
-          const lines = text.split('\n').filter(line => line.trim())
+          buffer += decoder.decode(value, { stream: true })
+          const lines = buffer.split('\n')
+
+          // Keep the last partial line in the buffer
+          buffer = lines.pop() || ''
 
           for (const line of lines) {
+            if (!line.trim()) continue
             try {
               const data = JSON.parse(line)
+              console.log('Received data:', data.progress, data.stage, data.transcript ? 'HAS TRANSCRIPT' : 'no transcript')
               if (data.progress) setProgress(data.progress)
               if (data.stage) setStage(data.stage)
-              if (data.transcript) setTranscript(data.transcript)
+              if (data.transcript) {
+                console.log('Setting transcript with', data.transcript.length, 'segments')
+                setTranscript(data.transcript)
+              }
               if (data.error) throw new Error(data.error)
             } catch (e) {
-              // Ignore JSON parse errors for partial data
+              console.error('JSON parse error for line:', line.substring(0, 100), e)
             }
+          }
+        }
+
+        // Process any remaining data in buffer
+        if (buffer.trim()) {
+          try {
+            const data = JSON.parse(buffer)
+            console.log('Final buffer data:', data.progress, data.stage, data.transcript ? 'HAS TRANSCRIPT' : 'no transcript')
+            if (data.progress) setProgress(data.progress)
+            if (data.stage) setStage(data.stage)
+            if (data.transcript) {
+              console.log('Setting transcript from final buffer with', data.transcript.length, 'segments')
+              setTranscript(data.transcript)
+            }
+            if (data.error) throw new Error(data.error)
+          } catch (e) {
+            console.error('Final buffer parse error:', buffer.substring(0, 100), e)
           }
         }
       }
