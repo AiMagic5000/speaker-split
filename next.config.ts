@@ -6,6 +6,8 @@ const nextConfig: NextConfig = {
     serverActions: {
       bodySizeLimit: '500mb',
     },
+    // Allow large file uploads (500MB) for audio processing
+    proxyClientMaxBodySize: 500 * 1024 * 1024, // 500MB in bytes
   },
   images: {
     domains: ['startmybusiness.us', 'cdn.prod.website-files.com'],

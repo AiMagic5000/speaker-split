@@ -97,29 +97,17 @@ export async function POST(request: NextRequest) {
             }
           }
         } catch (error) {
-          // If backend isn't available, use mock data for development
           console.error('Backend error:', error)
+          const errorMessage = error instanceof Error ? error.message : 'Unknown error'
 
-          send({ progress: 40, stage: 'Transcribing audio...' })
-          await new Promise(resolve => setTimeout(resolve, 1000))
-
-          send({ progress: 70, stage: 'Identifying speakers...' })
-          await new Promise(resolve => setTimeout(resolve, 1000))
-
-          send({ progress: 90, stage: 'Finalizing transcript...' })
-          await new Promise(resolve => setTimeout(resolve, 500))
-
-          // Mock transcript for development
-          send({
-            progress: 100,
-            stage: 'Complete',
-            transcript: [
-              { speaker: 'SPEAKER_0', text: 'Hello, welcome to our consultation today.', start: 0, end: 3.5 },
-              { speaker: 'SPEAKER_1', text: 'Thank you for having me. I appreciate your time.', start: 3.5, end: 7.2 },
-              { speaker: 'SPEAKER_0', text: 'Let\'s discuss your business goals and how we can help you achieve them.', start: 7.2, end: 12.1 },
-              { speaker: 'SPEAKER_1', text: 'I\'m looking to expand my online presence and increase sales.', start: 12.1, end: 16.8 },
-            ]
-          })
+          // Check if backend is not running or endpoint not found
+          if (errorMessage.includes('fetch failed') || errorMessage.includes('ECONNREFUSED')) {
+            send({ error: 'Backend server is not running. The transcription service is currently unavailable. Please try again later or contact support.' })
+          } else if (errorMessage.includes('Transcription failed')) {
+            send({ error: 'Transcription endpoint not available. Please try again later.' })
+          } else {
+            send({ error: `Backend processing failed: ${errorMessage}` })
+          }
         }
 
         controller.close()
