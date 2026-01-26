@@ -3,6 +3,7 @@ import { SpeakerSplitUploader } from "@/components/SpeakerSplitUploader"
 import { DocumentGeneratorSection } from "@/components/DocumentGeneratorSection"
 import { AuthGate } from "@/components/AuthGate"
 import { FAQ, TRANSCRIPTION_FAQ, SPEAKER_SPLIT_FAQ, DOCUMENT_GENERATOR_FAQ } from "@/components/FAQ"
+import { WaveBackground } from "@/components/WaveBackground"
 import { AudioWaveform, Mic2, Split, FileText } from "lucide-react"
 
 export default function Home() {
@@ -10,18 +11,19 @@ export default function Home() {
     <div className="min-h-screen bg-white dark:bg-slate-900">
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-gradient-to-b from-slate-50 to-white dark:from-slate-800 dark:to-slate-900">
-        {/* Background Video */}
+        {/* Wave Animation Background */}
         <div className="absolute inset-0 -z-10 overflow-hidden">
-          <video
-            autoPlay
-            muted
-            loop
-            playsInline
-            className="absolute top-1/2 left-1/2 min-w-full min-h-full w-auto h-auto transform -translate-x-1/2 -translate-y-1/2 object-cover opacity-10 dark:opacity-20"
-          >
-            <source src="https://seafile.alwaysencrypted.com/seafhttp/f/5e3bd8a3f72b46f48f32/" type="video/mp4" />
-          </video>
-          <div className="absolute inset-0 bg-gradient-to-b from-white/90 via-white/70 to-white dark:from-slate-900/90 dark:via-slate-900/70 dark:to-slate-900" />
+          <WaveBackground
+            lineColor="rgba(59, 130, 246, 0.2)"
+            waveSpeedX={0.015}
+            waveSpeedY={0.008}
+            waveAmpX={50}
+            waveAmpY={25}
+            xGap={14}
+            yGap={40}
+            className="dark:opacity-40"
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-white/60 via-white/40 to-white dark:from-slate-900/60 dark:via-slate-900/40 dark:to-slate-900" />
         </div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
