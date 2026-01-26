@@ -2,6 +2,58 @@ import { NextRequest, NextResponse } from 'next/server'
 
 const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:8000'
 
+// Handle CORS preflight requests
+export async function OPTIONS() {
+  return new NextResponse(null, {
+    status: 200,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, HEAD, OPTIONS',
+      'Access-Control-Allow-Headers': 'Range, Content-Type',
+      'Access-Control-Expose-Headers': 'Content-Length, Content-Range, Accept-Ranges',
+      'Access-Control-Max-Age': '86400',
+    }
+  })
+}
+
+// Handle HEAD requests for audio metadata preload
+export async function HEAD(
+  request: NextRequest,
+  { params }: { params: Promise<{ path: string[] }> }
+) {
+  try {
+    const { path: pathSegments } = await params
+    const filePath = pathSegments.join('/')
+
+    // Proxy HEAD request to backend
+    const response = await fetch(`${BACKEND_URL}/files/${filePath}`, {
+      method: 'HEAD',
+      cache: 'no-store',
+    })
+
+    if (!response.ok) {
+      return new NextResponse(null, { status: response.status })
+    }
+
+    const contentType = response.headers.get('content-type') || 'audio/wav'
+    const contentLength = response.headers.get('content-length')
+
+    return new NextResponse(null, {
+      status: 200,
+      headers: {
+        'Content-Type': contentType,
+        'Content-Length': contentLength || '0',
+        'Accept-Ranges': 'bytes',
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Expose-Headers': 'Content-Length, Content-Range, Accept-Ranges',
+      }
+    })
+  } catch (error) {
+    console.error('HEAD request error:', error)
+    return new NextResponse(null, { status: 500 })
+  }
+}
+
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ path: string[] }> }
@@ -46,6 +98,11 @@ export async function GET(
       'Content-Type': contentType,
       'Accept-Ranges': acceptRanges || 'bytes',
       'Cache-Control': 'public, max-age=3600',
+      // CORS headers for audio element with crossOrigin="anonymous"
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, HEAD, OPTIONS',
+      'Access-Control-Allow-Headers': 'Range, Content-Type',
+      'Access-Control-Expose-Headers': 'Content-Length, Content-Range, Accept-Ranges',
     }
 
     if (contentLength) {
