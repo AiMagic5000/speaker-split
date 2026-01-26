@@ -12,18 +12,17 @@ export default function Home() {
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-gradient-to-b from-slate-50 to-white dark:from-slate-800 dark:to-slate-900">
         {/* Wave Animation Background */}
-        <div className="absolute inset-0 -z-10 overflow-hidden">
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <WaveBackground
-            lineColor="rgba(59, 130, 246, 0.2)"
-            waveSpeedX={0.015}
-            waveSpeedY={0.008}
-            waveAmpX={50}
-            waveAmpY={25}
-            xGap={14}
-            yGap={40}
-            className="dark:opacity-40"
+            lineColor="rgba(59, 130, 246, 0.5)"
+            waveSpeedX={0.02}
+            waveSpeedY={0.01}
+            waveAmpX={60}
+            waveAmpY={30}
+            xGap={12}
+            yGap={32}
+            className="opacity-70 dark:opacity-50"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-white/60 via-white/40 to-white dark:from-slate-900/60 dark:via-slate-900/40 dark:to-slate-900" />
         </div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
