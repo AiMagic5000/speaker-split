@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Menu, X, LayoutDashboard, ShieldCheck, Sparkles, Mic2, Split, FileText, Home } from "lucide-react"
+import { Menu, X, LayoutDashboard, ShieldCheck, Sparkles, Mic2, Split, FileText, Home, AudioWaveform } from "lucide-react"
 import Link from "next/link"
 import { DarkModeToggle } from "./DarkModeToggle"
 import { UserButton, SignedIn, SignedOut, useUser } from "@clerk/nextjs"
@@ -87,8 +87,15 @@ export function Header() {
                 className="flex items-center gap-2 px-3 py-2 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 font-medium text-sm transition-colors"
               >
                 <Home className="w-4 h-4" />
-                <span>Home</span>
+                <span>SMB Home</span>
               </a>
+              <Link
+                href="/"
+                className="flex items-center gap-2 px-3 py-2 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 font-medium text-sm transition-colors"
+              >
+                <AudioWaveform className="w-4 h-4" />
+                <span>App</span>
+              </Link>
               <Link
                 href="/dashboard"
                 className="flex items-center gap-2 px-3 py-2 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 font-medium text-sm transition-colors"
@@ -221,8 +228,16 @@ export function Header() {
                   className="flex items-center gap-2 px-3 py-2.5 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 font-medium"
                 >
                   <Home className="w-5 h-5" />
-                  <span>Home</span>
+                  <span>SMB Home</span>
                 </a>
+                <Link
+                  href="/"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="flex items-center gap-2 px-3 py-2.5 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 font-medium"
+                >
+                  <AudioWaveform className="w-5 h-5" />
+                  <span>App</span>
+                </Link>
                 <Link
                   href="/dashboard"
                   onClick={() => setMobileMenuOpen(false)}
