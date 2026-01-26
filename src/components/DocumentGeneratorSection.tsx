@@ -7,6 +7,8 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { cn } from "@/lib/utils"
+import { useUser } from "@clerk/nextjs"
+import { saveUserFile } from "@/lib/user-files"
 
 type OutputFormat = "html" | "docx"
 
@@ -19,6 +21,7 @@ interface FormData {
 }
 
 export function DocumentGeneratorSection() {
+  const { user } = useUser()
   const [formData, setFormData] = useState<FormData>({
     businessOwners: "",
     businessName: "",
@@ -72,10 +75,26 @@ export function DocumentGeneratorSection() {
         // For Word docs, response is base64 encoded
         const data = await response.json()
         setGeneratedDocx(data.docx)
+        // Save to user history
+        if (user?.id) {
+          saveUserFile(user.id, {
+            type: 'document',
+            name: formData.businessName || 'Business Document',
+            htmlContent: `[Word Document - ${formData.businessName || 'Business Document'}]`,
+          })
+        }
       } else {
         const data = await response.json()
         setGeneratedDoc(data.html)
         setShowPreview(true)
+        // Save to user history
+        if (user?.id) {
+          saveUserFile(user.id, {
+            type: 'document',
+            name: formData.businessName || 'Business Document',
+            htmlContent: data.html,
+          })
+        }
       }
     } catch (err) {
       if (err instanceof TypeError && err.message.includes('fetch')) {

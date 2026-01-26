@@ -1,7 +1,8 @@
 "use client"
 
-import { useUser, SignInButton, SignUpButton } from "@clerk/nextjs"
+import { useUser } from "@clerk/nextjs"
 import { Lock } from "lucide-react"
+import Link from "next/link"
 import { ReactNode } from "react"
 
 interface AuthGateProps {
@@ -38,16 +39,18 @@ export function AuthGate({ children, featureName }: AuthGateProps) {
             Create a free account to use {featureName} and all other features.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <SignInButton mode="modal">
-              <button className="px-6 py-3 border-2 border-amber-500 text-amber-600 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-500/10 font-semibold rounded-lg transition-colors">
-                Sign In
-              </button>
-            </SignInButton>
-            <SignUpButton mode="modal">
-              <button className="px-6 py-3 bg-amber-500 hover:bg-amber-600 text-white font-semibold rounded-lg transition-colors">
-                Sign Up Free
-              </button>
-            </SignUpButton>
+            <Link
+              href="/sign-in"
+              className="px-6 py-3 border-2 border-amber-500 text-amber-600 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-500/10 font-semibold rounded-lg transition-colors text-center"
+            >
+              Sign In
+            </Link>
+            <Link
+              href="/sign-up"
+              className="px-6 py-3 bg-amber-500 hover:bg-amber-600 text-white font-semibold rounded-lg transition-colors text-center"
+            >
+              Sign Up Free
+            </Link>
           </div>
         </div>
       </div>

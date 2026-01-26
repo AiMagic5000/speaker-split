@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/select"
 import { cn, formatFileSize } from "@/lib/utils"
 import { TIER_LIMITS, getUserTier, getUpgradeMessage, type UserTier } from "@/lib/tiers"
+import { saveUserFile } from "@/lib/user-files"
 
 interface TranscriptSegment {
   speaker: string
@@ -164,6 +165,21 @@ export function TranscriptionUploader() {
               if (data.transcript) {
                 console.log('Setting transcript with', data.transcript.length, 'segments')
                 setTranscript(data.transcript)
+                // Save to user history
+                if (user?.id && file) {
+                  saveUserFile(user.id, {
+                    type: 'transcription',
+                    name: file.name.replace(/\.[^/.]+$/, ''),
+                    transcript: data.transcript.map((seg: TranscriptSegment) => ({
+                      speaker: seg.speaker,
+                      start: seg.start,
+                      end: seg.end,
+                      text: seg.text
+                    })),
+                    originalFileName: file.name,
+                    originalFileSize: file.size,
+                  })
+                }
               }
               if (data.error) throw new Error(data.error)
             } catch (e) {
@@ -182,6 +198,21 @@ export function TranscriptionUploader() {
             if (data.transcript) {
               console.log('Setting transcript from final buffer with', data.transcript.length, 'segments')
               setTranscript(data.transcript)
+              // Save to user history
+              if (user?.id && file) {
+                saveUserFile(user.id, {
+                  type: 'transcription',
+                  name: file.name.replace(/\.[^/.]+$/, ''),
+                  transcript: data.transcript.map((seg: TranscriptSegment) => ({
+                    speaker: seg.speaker,
+                    start: seg.start,
+                    end: seg.end,
+                    text: seg.text
+                  })),
+                  originalFileName: file.name,
+                  originalFileSize: file.size,
+                })
+              }
             }
             if (data.error) throw new Error(data.error)
           } catch (e) {

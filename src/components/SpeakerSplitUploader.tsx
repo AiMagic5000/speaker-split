@@ -15,6 +15,7 @@ import {
 import { cn, formatFileSize } from "@/lib/utils"
 import { useUser } from "@clerk/nextjs"
 import { TIER_LIMITS, getUserTier, getUpgradeMessage, formatMaxSize, type UserTier } from "@/lib/tiers"
+import { saveUserFile } from "@/lib/user-files"
 
 interface SpeakerAudio {
   speaker: string
@@ -156,7 +157,22 @@ export function SpeakerSplitUploader() {
               console.log('Split received:', data.progress, data.stage, data.speakerAudios ? 'HAS AUDIOS' : 'no audios')
               if (data.progress) setProgress(data.progress)
               if (data.stage) setStage(data.stage)
-              if (data.speakerAudios) setSpeakerAudios(data.speakerAudios)
+              if (data.speakerAudios) {
+                setSpeakerAudios(data.speakerAudios)
+                // Save to user history
+                if (user?.id && file) {
+                  saveUserFile(user.id, {
+                    type: 'speaker-split',
+                    name: file.name.replace(/\.[^/.]+$/, ''),
+                    speakerAudios: data.speakerAudios.map((a: SpeakerAudio, i: number) => ({
+                      speaker: a.speaker || `Speaker ${i + 1}`,
+                      url: a.url
+                    })),
+                    originalFileName: file.name,
+                    originalFileSize: file.size,
+                  })
+                }
+              }
               if (data.transcript) {
                 // Cloud backend returns transcript for speaker info
                 console.log('Got transcript with', data.transcript.length, 'segments')
@@ -175,7 +191,22 @@ export function SpeakerSplitUploader() {
             console.log('Final split buffer:', data.progress, data.stage)
             if (data.progress) setProgress(data.progress)
             if (data.stage) setStage(data.stage)
-            if (data.speakerAudios) setSpeakerAudios(data.speakerAudios)
+            if (data.speakerAudios) {
+              setSpeakerAudios(data.speakerAudios)
+              // Save to user history
+              if (user?.id && file) {
+                saveUserFile(user.id, {
+                  type: 'speaker-split',
+                  name: file.name.replace(/\.[^/.]+$/, ''),
+                  speakerAudios: data.speakerAudios.map((a: SpeakerAudio, i: number) => ({
+                    speaker: a.speaker || `Speaker ${i + 1}`,
+                    url: a.url
+                  })),
+                  originalFileName: file.name,
+                  originalFileSize: file.size,
+                })
+              }
+            }
             if (data.error) throw new Error(data.error)
           } catch (e) {
             console.error('Final buffer parse error:', buffer.substring(0, 100), e)

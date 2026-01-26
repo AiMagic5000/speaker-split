@@ -4,16 +4,8 @@ import { existsSync } from 'fs'
 import path from 'path'
 import { v4 as uuidv4 } from 'uuid'
 
-// Route segment config - allow large file uploads (500MB)
-export const config = {
-  api: {
-    bodyParser: {
-      sizeLimit: '500mb',
-    },
-  },
-}
-
-// Disable body size limit for this route (Next.js 16+)
+// Route segment config (App Router)
+// Note: Body size limit is handled by Next.js config, not route config
 export const maxDuration = 300 // 5 minutes timeout
 export const dynamic = 'force-dynamic'
 

@@ -7,8 +7,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { getUserTier, TIER_LIMITS } from "@/lib/tiers"
 import Link from "next/link"
 
-// Gumroad product URL - update this after creating the product on Gumroad
-const GUMROAD_PRODUCT_URL = process.env.NEXT_PUBLIC_GUMROAD_PRODUCT_URL || "https://coreypearson.gumroad.com/l/speaker-split-pro"
+// Gumroad product URL for Speaker Split Pro
+const GUMROAD_PRODUCT_URL = process.env.NEXT_PUBLIC_GUMROAD_PRODUCT_URL || "https://coreypearson.gumroad.com/l/eygnd"
 
 const PRO_FEATURES = [
   { icon: FileAudio, text: "Upload files up to 200MB" },

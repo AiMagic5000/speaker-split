@@ -69,8 +69,5 @@ export async function POST(request: NextRequest) {
   }
 }
 
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-}
+// App Router uses Next.js config for body parsing, not route config
+export const dynamic = 'force-dynamic'

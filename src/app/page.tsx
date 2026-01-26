@@ -3,7 +3,6 @@ import { SpeakerSplitUploader } from "@/components/SpeakerSplitUploader"
 import { DocumentGeneratorSection } from "@/components/DocumentGeneratorSection"
 import { AuthGate } from "@/components/AuthGate"
 import { FAQ, TRANSCRIPTION_FAQ, SPEAKER_SPLIT_FAQ, DOCUMENT_GENERATOR_FAQ } from "@/components/FAQ"
-import { WaveBackground } from "@/components/WaveBackground"
 import { AudioWaveform, Mic2, Split, FileText } from "lucide-react"
 
 export default function Home() {
@@ -11,20 +10,6 @@ export default function Home() {
     <div className="min-h-screen bg-white dark:bg-slate-900">
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-gradient-to-b from-slate-50 to-white dark:from-slate-800 dark:to-slate-900">
-        {/* Wave Animation Background */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <WaveBackground
-            lineColor="rgba(59, 130, 246, 0.5)"
-            waveSpeedX={0.02}
-            waveSpeedY={0.01}
-            waveAmpX={60}
-            waveAmpY={30}
-            xGap={12}
-            yGap={32}
-            className="opacity-70 dark:opacity-50"
-          />
-        </div>
-
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
           <div className="text-center max-w-3xl mx-auto">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400 text-sm font-semibold mb-6">
