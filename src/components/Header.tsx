@@ -67,8 +67,8 @@ export function Header() {
     <header className="sticky top-0 z-50 backdrop-blur-md border-b bg-white/80 dark:bg-slate-900/80 border-slate-200 dark:border-slate-700">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-14 sm:h-16">
-          {/* Logo */}
-          <Link href="/" className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+          {/* Logo - links to Start My Business */}
+          <a href="https://startmybusiness.us/" className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
             <img
               src="https://cdn.prod.website-files.com/6784053e7b7422e48efa5a84/6833a36f90c60fba010cee72_start_my_business_logo-removebg-preview.png"
               alt="Start My Business Inc."
@@ -77,18 +77,18 @@ export function Header() {
             <div className="border-l pl-2 sm:pl-3 border-slate-300 dark:border-slate-600">
               <h1 className="text-sm sm:text-base md:text-lg font-bold text-slate-900 dark:text-white">Speaker Split</h1>
             </div>
-          </Link>
+          </a>
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-3 lg:gap-4">
             <SignedIn>
-              <Link
-                href="/"
+              <a
+                href="https://startmybusiness.us/"
                 className="flex items-center gap-2 px-3 py-2 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 font-medium text-sm transition-colors"
               >
                 <Home className="w-4 h-4" />
-                <span>App</span>
-              </Link>
+                <span>Home</span>
+              </a>
               <Link
                 href="/dashboard"
                 className="flex items-center gap-2 px-3 py-2 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 font-medium text-sm transition-colors"
@@ -215,14 +215,14 @@ export function Header() {
                   <CreditsDisplay credits={credits} loading={loading} />
                 </div>
 
-                <Link
-                  href="/"
+                <a
+                  href="https://startmybusiness.us/"
                   onClick={() => setMobileMenuOpen(false)}
                   className="flex items-center gap-2 px-3 py-2.5 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 font-medium"
                 >
                   <Home className="w-5 h-5" />
-                  <span>App</span>
-                </Link>
+                  <span>Home</span>
+                </a>
                 <Link
                   href="/dashboard"
                   onClick={() => setMobileMenuOpen(false)}
