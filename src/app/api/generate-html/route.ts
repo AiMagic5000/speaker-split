@@ -185,8 +185,11 @@ export async function POST(request: NextRequest) {
       },
       body: JSON.stringify({
         model: 'MiniMax-M2.5',
-        max_tokens: 8192,
-        messages: [{ role: 'user', content: prompt }],
+        max_tokens: 3000,
+        messages: [
+          { role: 'system', content: 'You are an expert document generator. Respond directly with the requested output. Do not use thinking tags or explain your reasoning.' },
+          { role: 'user', content: prompt },
+        ],
       }),
     })
 
