@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server"
-import Anthropic from "@anthropic-ai/sdk"
 import {
   Document,
   Packer,
@@ -23,6 +22,9 @@ import {
 // Extend route timeout for large transcript processing
 export const maxDuration = 300 // 5 minutes
 export const dynamic = "force-dynamic"
+
+const MINIMAX_API_KEY = process.env.MINIMAX_API_KEY || ''
+const MINIMAX_BASE_URL = 'https://api.minimaxi.chat/v1'
 
 const HTML_DOCUMENT_PROMPT = `## Primary Objective
 
@@ -854,8 +856,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Transcript is required" }, { status: 400 })
     }
 
-    if (!process.env.ANTHROPIC_API_KEY) {
-      return NextResponse.json({ error: "Anthropic API key not configured" }, { status: 500 })
+    if (!MINIMAX_API_KEY) {
+      return NextResponse.json({ error: "MiniMax API key not configured" }, { status: 500 })
     }
 
     // Truncate very long transcripts to avoid token limits (keep ~50k chars max)
@@ -878,31 +880,30 @@ export async function POST(request: NextRequest) {
       .replace("{additionalNotes}", additionalNotes || "None")
       .replace("{transcript}", processedTranscript)
 
-    // Create client fresh for each request to avoid connection reuse issues
-    const anthropic = new Anthropic({
-      apiKey: process.env.ANTHROPIC_API_KEY,
+    // Call MiniMax API (OpenAI-compatible)
+    const apiResponse = await fetch(`${MINIMAX_BASE_URL}/chat/completions`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${MINIMAX_API_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'MiniMax-M2.5',
+        max_tokens: 8192,
+        messages: [{ role: 'user', content: prompt }],
+      }),
     })
 
-    // Use streaming to keep connection alive for large requests
-    let responseText = ""
-
-    const stream = anthropic.messages.stream({
-      model: "claude-sonnet-4-20250514",
-      max_tokens: 8192,
-      messages: [
-        {
-          role: "user",
-          content: prompt,
-        },
-      ],
-    })
-
-    // Collect streamed response
-    for await (const event of stream) {
-      if (event.type === "content_block_delta" && event.delta.type === "text_delta") {
-        responseText += event.delta.text
-      }
+    if (!apiResponse.ok) {
+      const errorData = await apiResponse.json().catch(() => ({}))
+      throw new Error(errorData?.error?.message || `MiniMax API error: ${apiResponse.status}`)
     }
+
+    const apiResult = await apiResponse.json()
+    const rawText = apiResult.choices?.[0]?.message?.content || ''
+
+    // Strip <think>...</think> tags from MiniMax reasoning output
+    let responseText = rawText.replace(/<think>[\s\S]*?<\/think>\s*/g, '').trim()
 
     if (format === "docx") {
       // Parse the JSON response and create Word document

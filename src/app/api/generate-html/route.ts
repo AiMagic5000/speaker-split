@@ -1,11 +1,9 @@
 import { NextRequest, NextResponse } from "next/server"
-import Anthropic from "@anthropic-ai/sdk"
 import fs from "fs/promises"
 import path from "path"
 
-const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY,
-})
+const MINIMAX_API_KEY = process.env.MINIMAX_API_KEY || ''
+const MINIMAX_BASE_URL = 'https://api.minimaxi.chat/v1'
 
 interface TranscriptSegment {
   speaker: string
@@ -151,8 +149,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Transcript is required" }, { status: 400 })
     }
 
-    if (!process.env.ANTHROPIC_API_KEY) {
-      return NextResponse.json({ error: "Anthropic API key not configured" }, { status: 500 })
+    if (!MINIMAX_API_KEY) {
+      return NextResponse.json({ error: "MiniMax API key not configured" }, { status: 500 })
     }
 
     // Format transcript with speaker names
@@ -178,25 +176,30 @@ export async function POST(request: NextRequest) {
       .replace("{speakersList}", speakersList || "Unknown")
       .replace("{transcript}", formattedTranscript)
 
-    // Call Claude API
-    const message = await anthropic.messages.create({
-      model: "claude-sonnet-4-20250514",
-      max_tokens: 8192,
-      messages: [
-        {
-          role: "user",
-          content: prompt,
-        },
-      ],
+    // Call MiniMax API (OpenAI-compatible)
+    const response = await fetch(`${MINIMAX_BASE_URL}/chat/completions`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${MINIMAX_API_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'MiniMax-M2.5',
+        max_tokens: 8192,
+        messages: [{ role: 'user', content: prompt }],
+      }),
     })
 
-    // Extract the HTML from the response
-    const content = message.content[0]
-    if (content.type !== "text") {
-      throw new Error("Unexpected response type")
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}))
+      throw new Error(errorData?.error?.message || `MiniMax API error: ${response.status}`)
     }
 
-    let html = content.text
+    const result = await response.json()
+    const rawText = result.choices?.[0]?.message?.content || ''
+
+    // Strip <think>...</think> tags from MiniMax reasoning output
+    let html = rawText.replace(/<think>[\s\S]*?<\/think>\s*/g, '').trim()
 
     // Clean up the response - extract just the HTML if wrapped in code blocks
     if (html.includes("```html")) {
