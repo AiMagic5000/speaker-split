@@ -1,6 +1,4 @@
 import { NextRequest } from 'next/server'
-import { writeFile, mkdir } from 'fs/promises'
-import path from 'path'
 import { v4 as uuidv4 } from 'uuid'
 
 export const maxDuration = 600
@@ -138,23 +136,17 @@ export async function POST(request: NextRequest) {
           throw new Error(t2aResult.base_resp?.status_msg || 'Speech generation failed')
         }
 
-        send({ progress: 80, stage: 'Saving audio file...' })
+        send({ progress: 80, stage: 'Encoding audio...' })
 
-        // Step 4: Decode hex-encoded audio and save
+        // Step 4: Convert hex-encoded audio to base64 data URL
         const hexAudio = t2aResult.data?.audio
         if (!hexAudio) {
           throw new Error('No audio data received from speech generation')
         }
 
         const audioBuffer = Buffer.from(hexAudio, 'hex')
-        const outputDir = path.join(process.cwd(), 'public', 'outputs', jobId)
-        await mkdir(outputDir, { recursive: true })
-
-        const audioFileName = 'cloned_output.mp3'
-        const audioFilePath = path.join(outputDir, audioFileName)
-        await writeFile(audioFilePath, audioBuffer)
-
-        const audioUrl = `/outputs/${jobId}/${audioFileName}`
+        const base64Audio = audioBuffer.toString('base64')
+        const audioUrl = `data:audio/mpeg;base64,${base64Audio}`
 
         send({ progress: 100, stage: 'Complete!', audioUrl })
         controller.close()
