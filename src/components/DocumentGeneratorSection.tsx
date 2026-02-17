@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { FileText, Loader2, Download, Users, Building, Link, StickyNote, Eye, Globe, FileIcon } from "lucide-react"
+import { FileText, Loader2, Download, Users, Building, Link, StickyNote, Eye, Globe, FileIcon, AlertTriangle } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -59,11 +59,26 @@ export function DocumentGeneratorSection() {
     setGeneratedDoc(null)
     setGeneratedDocx(null)
 
+    // Log what we're sending for debugging
+    console.log("Generating document with data:", {
+      businessName: formData.businessName,
+      businessOwners: formData.businessOwners,
+      transcriptLength: formData.transcript.length,
+      format: outputFormat,
+      timestamp: new Date().toISOString()
+    })
+
     try {
-      const response = await fetch("/api/generate-document", {
+      // Add timestamp to prevent any caching
+      const response = await fetch(`/api/generate-document?t=${Date.now()}`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "Cache-Control": "no-cache, no-store, must-revalidate",
+          "Pragma": "no-cache"
+        },
         body: JSON.stringify({ ...formData, format: outputFormat }),
+        cache: "no-store",
       })
 
       if (!response.ok) {
@@ -75,23 +90,36 @@ export function DocumentGeneratorSection() {
         // For Word docs, response is base64 encoded
         const data = await response.json()
         setGeneratedDocx(data.docx)
-        // Save to user history
+        // Extract title from the response if available
+        const docTitle = data.title || formData.businessName || 'Business Document'
+        // Save to user history with actual docx content
         if (user?.id) {
           saveUserFile(user.id, {
             type: 'document',
-            name: formData.businessName || 'Business Document',
-            htmlContent: `[Word Document - ${formData.businessName || 'Business Document'}]`,
+            name: docTitle,
+            documentType: 'docx',
+            docxContent: data.docx,
           })
         }
       } else {
         const data = await response.json()
         setGeneratedDoc(data.html)
         setShowPreview(true)
+        // Extract title from HTML - look for <title> tag or first <h1>
+        let docTitle = formData.businessName || 'Business Document'
+        const titleMatch = data.html.match(/<title[^>]*>([^<]+)<\/title>/i)
+        const h1Match = data.html.match(/<h1[^>]*>([^<]+)<\/h1>/i)
+        if (titleMatch && titleMatch[1]) {
+          docTitle = titleMatch[1].trim()
+        } else if (h1Match && h1Match[1]) {
+          docTitle = h1Match[1].trim()
+        }
         // Save to user history
         if (user?.id) {
           saveUserFile(user.id, {
             type: 'document',
-            name: formData.businessName || 'Business Document',
+            name: docTitle,
+            documentType: 'html',
             htmlContent: data.html,
           })
         }
@@ -331,6 +359,23 @@ Tip: Copy the transcript from Section 1 (Transcription) and paste it here!"
             </>
           )}
         </Button>
+      )}
+
+      {/* Navigation Warning - Shows during generation */}
+      {isGenerating && (
+        <Card className="border-amber-300 bg-amber-50 dark:bg-amber-950/30 border-2">
+          <CardContent className="p-4">
+            <div className="flex items-start gap-3">
+              <AlertTriangle className="w-5 h-5 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
+              <div>
+                <p className="font-semibold text-amber-800 dark:text-amber-200">Do not navigate away from this page</p>
+                <p className="text-sm text-amber-700 dark:text-amber-300 mt-1">
+                  Your document is being generated with AI. Leaving this page will cancel the process and your progress will be lost.
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       )}
 
       {/* Generated HTML Document */}

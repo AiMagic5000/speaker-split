@@ -161,6 +161,16 @@ class ProcessRequest(BaseModel):
     outputDir: str
 
 
+class VoiceCloneRequest(BaseModel):
+    jobId: str
+    referenceAudioPath: str
+    referenceText: str = ""
+    textToGenerate: str
+    outputDir: str
+    speed: float = 1.0
+    quality: int = 32
+
+
 class JobStatus(BaseModel):
     status: str
     progress: float
@@ -770,6 +780,209 @@ async def split_audio_endpoint(request: ProcessRequest):
         except Exception as e:
             import traceback
             logger.error(f"Split error: {str(e)}")
+            logger.error(f"Traceback: {traceback.format_exc()}")
+            yield json.dumps({"error": str(e)}) + "\n"
+
+    return StreamingResponse(generate(), media_type="text/event-stream")
+
+
+@app.post("/clone-voice")
+async def clone_voice(request: VoiceCloneRequest):
+    """Voice cloning endpoint with F5-TTS and streaming response."""
+    async def generate():
+        try:
+            job_id = request.jobId
+            ref_audio_path = request.referenceAudioPath
+            ref_text = request.referenceText
+            text_to_generate = request.textToGenerate
+            output_dir = request.outputDir
+            speed = request.speed
+            quality = request.quality
+
+            if not text_to_generate.strip():
+                yield json.dumps({"error": "No text provided to generate"}) + "\n"
+                return
+
+            if not os.path.exists(ref_audio_path):
+                yield json.dumps({"error": f"Reference audio not found: {ref_audio_path}"}) + "\n"
+                return
+
+            # Create output directory
+            Path(output_dir).mkdir(parents=True, exist_ok=True)
+
+            # Convert reference audio to WAV
+            yield json.dumps({"progress": 10, "stage": "Converting reference audio..."}) + "\n"
+
+            ref_wav_path = os.path.join(output_dir, "reference.wav")
+            import subprocess
+            convert_cmd = [
+                "ffmpeg", "-y", "-i", ref_audio_path,
+                "-acodec", "pcm_s16le", "-ar", "24000", "-ac", "1",
+                ref_wav_path
+            ]
+            subprocess.run(convert_cmd, capture_output=True, check=True)
+
+            # Auto-transcribe reference if no text provided
+            if not ref_text.strip():
+                yield json.dumps({"progress": 20, "stage": "Transcribing reference audio..."}) + "\n"
+
+                try:
+                    from faster_whisper import WhisperModel
+                    import torch
+
+                    device_fw = "cuda" if torch.cuda.is_available() else "cpu"
+                    compute_fw = "float16" if device_fw == "cuda" else "int8"
+                    whisper_model = WhisperModel("base", device=device_fw, compute_type=compute_fw)
+                    segments, _ = whisper_model.transcribe(ref_wav_path, beam_size=5, language="en")
+                    ref_text = " ".join(seg.text.strip() for seg in segments).strip()
+                    del whisper_model
+                    torch.cuda.empty_cache()
+
+                    if not ref_text:
+                        ref_text = "."
+                    logger.info(f"Auto-transcribed reference: {ref_text[:100]}")
+                except Exception as e:
+                    logger.warning(f"Reference transcription failed: {e}, using placeholder")
+                    ref_text = "."
+
+            # Split text into sentence chunks
+            yield json.dumps({"progress": 30, "stage": "Preparing text..."}) + "\n"
+
+            import re
+            raw_sentences = re.split(r'(?<=[.!?])\s+', text_to_generate.strip())
+            sentences = [s.strip() for s in raw_sentences if s.strip()]
+
+            chunks = []
+            current = ""
+            max_chars = 200
+            for sentence in sentences:
+                if len(sentence) > max_chars:
+                    if current:
+                        chunks.append(current.strip())
+                        current = ""
+                    parts = re.split(r'(?<=[,;])\s+', sentence)
+                    sub = ""
+                    for part in parts:
+                        if len(sub) + len(part) + 1 > max_chars:
+                            if sub:
+                                chunks.append(sub.strip())
+                            sub = part
+                        else:
+                            sub = f"{sub} {part}".strip() if sub else part
+                    if sub:
+                        chunks.append(sub.strip())
+                elif len(current) + len(sentence) + 1 > max_chars:
+                    chunks.append(current.strip())
+                    current = sentence
+                else:
+                    current = f"{current} {sentence}".strip() if current else sentence
+            if current:
+                chunks.append(current.strip())
+
+            if not chunks:
+                chunks = [text_to_generate.strip()]
+
+            logger.info(f"Split text into {len(chunks)} chunks")
+
+            # Load F5-TTS model
+            yield json.dumps({"progress": 35, "stage": "Loading voice cloning model..."}) + "\n"
+
+            try:
+                from f5_tts.api import F5TTS
+                import torch
+                import numpy as np
+                import soundfile as sf
+
+                device_tts = "cuda" if torch.cuda.is_available() else "cpu"
+                tts = F5TTS(model="F5TTS_v1_Base", device=device_tts)
+            except Exception as e:
+                yield json.dumps({"error": f"Failed to load F5-TTS: {str(e)}"}) + "\n"
+                return
+
+            # Generate each chunk
+            all_audio = []
+            sample_rate = None
+
+            for i, chunk in enumerate(chunks):
+                progress = 40 + int(45 * (i / len(chunks)))
+                yield json.dumps({"progress": progress, "stage": f"Generating audio {i+1}/{len(chunks)}..."}) + "\n"
+
+                try:
+                    wav, sr, _ = tts.infer(
+                        ref_file=ref_wav_path,
+                        ref_text=ref_text,
+                        gen_text=chunk,
+                        nfe_step=quality,
+                        speed=speed,
+                        remove_silence=True,
+                    )
+                    sample_rate = sr
+
+                    if isinstance(wav, np.ndarray):
+                        audio_chunk = wav.flatten().astype(np.float32)
+                    else:
+                        audio_chunk = np.array(wav, dtype=np.float32).flatten()
+
+                    all_audio.append(audio_chunk)
+                    logger.info(f"Chunk {i+1}/{len(chunks)}: {len(audio_chunk)/sr:.1f}s audio")
+                except Exception as e:
+                    logger.error(f"Chunk {i+1} failed: {e}")
+                    continue
+
+            if not all_audio or sample_rate is None:
+                yield json.dumps({"error": "Voice generation failed - no audio produced"}) + "\n"
+                return
+
+            # Cross-fade and concatenate
+            yield json.dumps({"progress": 88, "stage": "Joining audio segments..."}) + "\n"
+
+            fade_samples = int(sample_rate * 0.08)
+            combined = all_audio[0]
+            for chunk_audio in all_audio[1:]:
+                if fade_samples > 0 and len(combined) >= fade_samples and len(chunk_audio) >= fade_samples:
+                    fade_out = np.linspace(1.0, 0.0, fade_samples, dtype=np.float32)
+                    fade_in = np.linspace(0.0, 1.0, fade_samples, dtype=np.float32)
+                    tail = combined[-fade_samples:] * fade_out
+                    head = chunk_audio[:fade_samples] * fade_in
+                    mixed = tail + head
+                    combined = np.concatenate([combined[:-fade_samples], mixed, chunk_audio[fade_samples:]])
+                else:
+                    combined = np.concatenate([combined, chunk_audio])
+
+            # Normalize volume
+            yield json.dumps({"progress": 93, "stage": "Normalizing audio..."}) + "\n"
+
+            peak = np.max(np.abs(combined))
+            if peak > 0:
+                combined = combined * (0.95 / peak)
+
+            # Save output
+            yield json.dumps({"progress": 96, "stage": "Saving audio file..."}) + "\n"
+
+            output_filename = "cloned_output.wav"
+            output_path = os.path.join(output_dir, output_filename)
+            sf.write(output_path, combined, sample_rate)
+
+            total_duration = len(combined) / sample_rate
+            file_size_mb = os.path.getsize(output_path) / (1024 * 1024)
+            logger.info(f"Voice clone complete: {total_duration:.1f}s, {file_size_mb:.1f}MB")
+
+            # Clean up TTS model
+            del tts
+            import torch
+            torch.cuda.empty_cache()
+
+            yield json.dumps({
+                "progress": 100,
+                "stage": "Complete",
+                "audioUrl": f"/api/files/{job_id}/output/{output_filename}",
+                "duration": round(total_duration, 1),
+                "fileSizeMB": round(file_size_mb, 1),
+            }) + "\n"
+
+        except Exception as e:
+            import traceback
+            logger.error(f"Voice clone error: {str(e)}")
             logger.error(f"Traceback: {traceback.format_exc()}")
             yield json.dumps({"error": str(e)}) + "\n"
 

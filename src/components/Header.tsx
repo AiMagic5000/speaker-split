@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Menu, X, LayoutDashboard, ShieldCheck, Sparkles, Mic2, Split, FileText, Home, AudioWaveform } from "lucide-react"
+import { Menu, X, LayoutDashboard, ShieldCheck, Sparkles, Mic2, Split, FileText, Home, AudioWaveform, Volume2 } from "lucide-react"
 import Link from "next/link"
 import { DarkModeToggle } from "./DarkModeToggle"
 import { UserButton, SignedIn, SignedOut, useUser } from "@clerk/nextjs"
@@ -15,7 +15,7 @@ function CreditsDisplay({
   credits,
   loading
 }: {
-  credits: { transcription: number; speakerSplit: number; documents: number } | null
+  credits: { transcription: number; speakerSplit: number; documents: number; voiceClone: number } | null
   loading: boolean
 }) {
   if (loading) {
@@ -26,17 +26,18 @@ function CreditsDisplay({
           <div className="h-16 w-20 bg-slate-200 dark:bg-slate-700 rounded-lg" />
           <div className="h-16 w-20 bg-slate-200 dark:bg-slate-700 rounded-lg" />
           <div className="h-16 w-20 bg-slate-200 dark:bg-slate-700 rounded-lg" />
+          <div className="h-16 w-20 bg-slate-200 dark:bg-slate-700 rounded-lg" />
         </div>
       </div>
     )
   }
 
-  const displayCredits = credits || { transcription: 10, speakerSplit: 10, documents: 10 }
+  const displayCredits = credits || { transcription: 10, speakerSplit: 10, documents: 10, voiceClone: 5 }
 
   return (
     <div className="space-y-2">
       <p className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Credits Remaining</p>
-      <div className="grid grid-cols-3 gap-2">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
         <div className="flex flex-col items-center p-2 rounded-lg bg-blue-50 dark:bg-blue-900/30">
           <Mic2 className="w-4 h-4 text-blue-600 dark:text-blue-400 mb-1" />
           <span className="text-lg font-bold text-blue-600 dark:text-blue-400">{displayCredits.transcription}</span>
@@ -51,6 +52,11 @@ function CreditsDisplay({
           <FileText className="w-4 h-4 text-amber-600 dark:text-amber-400 mb-1" />
           <span className="text-lg font-bold text-amber-600 dark:text-amber-400">{displayCredits.documents}</span>
           <span className="text-xs text-slate-500 dark:text-slate-400">Docs</span>
+        </div>
+        <div className="flex flex-col items-center p-2 rounded-lg bg-violet-50 dark:bg-violet-900/30">
+          <Volume2 className="w-4 h-4 text-violet-600 dark:text-violet-400 mb-1" />
+          <span className="text-lg font-bold text-violet-600 dark:text-violet-400">{displayCredits.voiceClone}</span>
+          <span className="text-xs text-slate-500 dark:text-slate-400">Clone</span>
         </div>
       </div>
     </div>

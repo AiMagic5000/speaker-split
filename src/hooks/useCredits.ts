@@ -50,7 +50,7 @@ export function useCredits() {
     }
   }, [isLoaded, isSignedIn, fetchCredits])
 
-  const deductCredit = async (type: 'transcription' | 'speakerSplit' | 'documents') => {
+  const deductCredit = async (type: 'transcription' | 'speakerSplit' | 'documents' | 'voiceClone') => {
     try {
       const response = await fetch('/api/credits', {
         method: 'POST',
@@ -81,7 +81,7 @@ export function useCredits() {
     }
   }
 
-  const checkCredits = (type: 'transcription' | 'speakerSplit' | 'documents'): boolean => {
+  const checkCredits = (type: 'transcription' | 'speakerSplit' | 'documents' | 'voiceClone'): boolean => {
     if (!data) return false
     return data.credits[type] > 0
   }

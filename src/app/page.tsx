@@ -1,9 +1,10 @@
 import { TranscriptionUploader } from "@/components/TranscriptionUploader"
 import { SpeakerSplitUploader } from "@/components/SpeakerSplitUploader"
 import { DocumentGeneratorSection } from "@/components/DocumentGeneratorSection"
+import { VoiceCloneUploader } from "@/components/VoiceCloneUploader"
 import { AuthGate } from "@/components/AuthGate"
-import { FAQ, TRANSCRIPTION_FAQ, SPEAKER_SPLIT_FAQ, DOCUMENT_GENERATOR_FAQ } from "@/components/FAQ"
-import { AudioWaveform, Mic2, Split, FileText } from "lucide-react"
+import { FAQ, TRANSCRIPTION_FAQ, SPEAKER_SPLIT_FAQ, DOCUMENT_GENERATOR_FAQ, VOICE_CLONE_FAQ } from "@/components/FAQ"
+import { AudioWaveform, Mic2, Split, FileText, Volume2 } from "lucide-react"
 
 export default function Home() {
   return (
@@ -17,17 +18,17 @@ export default function Home() {
               AI-Powered Audio Processing Suite
             </div>
             <h1 className="text-4xl sm:text-5xl font-bold text-slate-900 dark:text-white leading-tight">
-              Transcribe, Split &
-              <span className="block bg-gradient-to-r from-blue-600 to-teal-500 bg-clip-text text-transparent">Generate Documents</span>
+              Transcribe, Split, Clone &
+              <span className="block bg-gradient-to-r from-blue-600 to-violet-500 bg-clip-text text-transparent">Generate Documents</span>
             </h1>
             <p className="text-lg text-slate-600 dark:text-slate-300 mt-6 leading-relaxed">
-              Three powerful tools in one place. Transcribe conversations with speaker labels,
-              separate audio by speaker, and generate professional reference documents.
+              Four powerful tools in one place. Transcribe conversations with speaker labels,
+              separate audio by speaker, clone voices with AI, and generate professional reference documents.
             </p>
           </div>
 
           {/* Quick Nav Cards */}
-          <div className="grid md:grid-cols-3 gap-4 mt-10 max-w-4xl mx-auto">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-10 max-w-5xl mx-auto">
             <QuickNavCard
               icon={<Mic2 className="w-6 h-6" />}
               title="1. Transcription"
@@ -48,6 +49,13 @@ export default function Home() {
               description="Create professional HTML documents"
               color="accent"
               href="#document-generator"
+            />
+            <QuickNavCard
+              icon={<Volume2 className="w-6 h-6" />}
+              title="4. Voice Clone"
+              description="Clone any voice and generate speech from text"
+              color="violet"
+              href="#voice-clone"
             />
           </div>
         </div>
@@ -123,6 +131,31 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Divider */}
+      <div className="max-w-4xl mx-auto px-4">
+        <div className="h-px bg-gradient-to-r from-transparent via-slate-300 dark:via-slate-700 to-transparent" />
+      </div>
+
+      {/* Section 4: Voice Clone */}
+      <section id="voice-clone" className="py-12 sm:py-16 scroll-mt-20 bg-white dark:bg-slate-900">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <SectionHeader
+            number="4"
+            icon={<Volume2 className="w-6 h-6" />}
+            title="Voice Clone"
+            subtitle="Upload a short voice sample and generate speech in that voice"
+            color="violet"
+          />
+          <div className="mt-8">
+            <AuthGate featureName="Voice Clone">
+              <VoiceCloneUploader />
+            </AuthGate>
+          </div>
+          {/* FAQ visible to everyone */}
+          <FAQ items={VOICE_CLONE_FAQ} accentColor="violet" />
+        </div>
+      </section>
+
       {/* Footer spacing */}
       <div className="h-16 bg-white dark:bg-slate-900" />
     </div>
@@ -139,13 +172,14 @@ function QuickNavCard({
   icon: React.ReactNode
   title: string
   description: string
-  color: 'primary' | 'secondary' | 'accent'
+  color: 'primary' | 'secondary' | 'accent' | 'violet'
   href: string
 }) {
   const colorClasses = {
     primary: 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-800 hover:border-blue-400 dark:hover:border-blue-600',
     secondary: 'bg-teal-50 dark:bg-teal-900/30 text-teal-600 dark:text-teal-400 border-teal-200 dark:border-teal-800 hover:border-teal-400 dark:hover:border-teal-600',
     accent: 'bg-amber-50 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 border-amber-200 dark:border-amber-800 hover:border-amber-400 dark:hover:border-amber-600',
+    violet: 'bg-violet-50 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400 border-violet-200 dark:border-violet-800 hover:border-violet-400 dark:hover:border-violet-600',
   }
 
   return (
@@ -173,18 +207,20 @@ function SectionHeader({
   icon: React.ReactNode
   title: string
   subtitle: string
-  color: 'primary' | 'secondary' | 'accent'
+  color: 'primary' | 'secondary' | 'accent' | 'violet'
 }) {
   const colorClasses = {
     primary: 'bg-blue-600 text-white',
     secondary: 'bg-teal-600 text-white',
     accent: 'bg-amber-500 text-white',
+    violet: 'bg-violet-600 text-white',
   }
 
   const iconColorClasses = {
     primary: 'text-blue-600 dark:text-blue-400',
     secondary: 'text-teal-600 dark:text-teal-400',
     accent: 'text-amber-500 dark:text-amber-400',
+    violet: 'text-violet-600 dark:text-violet-400',
   }
 
   return (

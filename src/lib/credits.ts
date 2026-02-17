@@ -2,12 +2,13 @@
 // Free users: 10 credits each for transcription, speakerSplit, documents per month
 // Pro users: 100 credits total with 200MB max file size
 
-export type CreditType = 'transcription' | 'speakerSplit' | 'documents'
+export type CreditType = 'transcription' | 'speakerSplit' | 'documents' | 'voiceClone'
 
 export interface UserCredits {
   transcription: number
   speakerSplit: number
   documents: number
+  voiceClone: number
   lastResetDate: string // ISO date string for monthly reset
 }
 
@@ -22,6 +23,7 @@ export const FREE_CREDITS: UserCredits = {
   transcription: 10,
   speakerSplit: 10,
   documents: 10,
+  voiceClone: 5,
   lastResetDate: new Date().toISOString()
 }
 
@@ -30,6 +32,7 @@ export const PRO_CREDITS: UserCredits = {
   transcription: 100,
   speakerSplit: 100,
   documents: 100,
+  voiceClone: 50,
   lastResetDate: new Date().toISOString()
 }
 
@@ -65,6 +68,7 @@ export function parseCreditsFromMetadata(metadata: Record<string, unknown>): Use
     transcription: typeof credits.transcription === 'number' ? credits.transcription : 10,
     speakerSplit: typeof credits.speakerSplit === 'number' ? credits.speakerSplit : 10,
     documents: typeof credits.documents === 'number' ? credits.documents : 10,
+    voiceClone: typeof credits.voiceClone === 'number' ? credits.voiceClone : 5,
     lastResetDate: typeof credits.lastResetDate === 'string' ? credits.lastResetDate : new Date().toISOString()
   }
 }
@@ -95,5 +99,5 @@ export function getMaxFileSize(tier: 'free' | 'pro'): number {
 
 // Format credits for display
 export function formatCreditsDisplay(credits: UserCredits): string {
-  return `Transcription: ${credits.transcription} | Split: ${credits.speakerSplit} | Docs: ${credits.documents}`
+  return `Transcription: ${credits.transcription} | Split: ${credits.speakerSplit} | Docs: ${credits.documents} | Clone: ${credits.voiceClone}`
 }

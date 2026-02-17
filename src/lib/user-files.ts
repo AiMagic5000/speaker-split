@@ -1,7 +1,7 @@
 // User file storage - tracks all files created by user
 // Uses localStorage for persistence, keyed by Clerk user ID
 
-export type FileType = 'transcription' | 'speaker-split' | 'document'
+export type FileType = 'transcription' | 'speaker-split' | 'document' | 'voice-clone'
 
 export interface UserFile {
   id: string
@@ -22,7 +22,12 @@ export interface UserFile {
   }>
   // For documents
   htmlContent?: string
+  docxContent?: string  // Base64 encoded Word document
+  documentType?: 'html' | 'docx'  // Type of document
   documentUrl?: string
+  // For voice clones
+  clonedAudioUrl?: string
+  generatedText?: string
   // Original audio info
   originalFileName?: string
   originalFileSize?: number
@@ -91,6 +96,8 @@ export function getFileTypeLabel(type: FileType): string {
       return 'Speaker Split'
     case 'document':
       return 'Document'
+    case 'voice-clone':
+      return 'Voice Clone'
     default:
       return 'File'
   }
@@ -104,6 +111,8 @@ export function getFileTypeColor(type: FileType): string {
       return 'teal'
     case 'document':
       return 'amber'
+    case 'voice-clone':
+      return 'violet'
     default:
       return 'slate'
   }

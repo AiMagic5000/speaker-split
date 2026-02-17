@@ -17,3 +17,8 @@ asteroid-filterbanks>=0.4.0
 pyannote.core>=5.0.0
 pyannote.database>=5.0.0
 pyannote.metrics>=3.2.0
+
+# Voice cloning (F5-TTS)
+f5-tts>=1.0.0
+faster-whisper>=1.0.0
+soundfile>=0.12.0

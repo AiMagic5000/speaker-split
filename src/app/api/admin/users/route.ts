@@ -59,7 +59,8 @@ export async function GET(request: NextRequest) {
           transcription: defaultCredits.transcription - credits.transcription,
           speakerSplit: defaultCredits.speakerSplit - credits.speakerSplit,
           documents: defaultCredits.documents - credits.documents,
-        } : { transcription: 0, speakerSplit: 0, documents: 0 }
+          voiceClone: defaultCredits.voiceClone - credits.voiceClone,
+        } : { transcription: 0, speakerSplit: 0, documents: 0, voiceClone: 0 }
 
         return {
           id: user.id,

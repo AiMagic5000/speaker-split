@@ -115,6 +115,36 @@ Each major topic should include expandable sections with:
 - Easy navigation between sections via menu links
 - Smooth scroll to sections when menu items are clicked
 
+### 7. REQUIRED JavaScript for Collapsible Sections
+
+You MUST include this exact JavaScript pattern in your HTML for collapsible sections to work:
+
+\`\`\`javascript
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Handle all expand/collapse buttons
+  document.querySelectorAll('.expand-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      const content = this.nextElementSibling;
+      const isExpanded = content.style.display === 'block';
+      content.style.display = isExpanded ? 'none' : 'block';
+      this.textContent = isExpanded ? '▶ ' + this.textContent.substring(2) : '▼ ' + this.textContent.substring(2);
+    });
+  });
+});
+</script>
+\`\`\`
+
+Use this HTML pattern for each collapsible section:
+\`\`\`html
+<button class="expand-btn" style="background: linear-gradient(135deg, #D4A017, #B8860B); color: white; border: none; padding: 12px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; text-align: left; margin: 10px 0;">▶ Expand for Details</button>
+<div class="expand-content" style="display: none; padding: 20px; background: #f9f9f9; border-radius: 8px; margin-top: 5px;">
+  <!-- Content goes here -->
+</div>
+\`\`\`
+
+CRITICAL: The expand-content div MUST be the immediate next sibling of the expand-btn button for the JavaScript to work!
+
 ## Example Structure Template
 
 [Main Topic Heading]
@@ -811,6 +841,15 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const { businessOwners, businessName, relatedWebsites, additionalNotes, transcript, format = "html" } = body
 
+    // Log incoming request for debugging
+    console.log("Document generation request received:", {
+      businessName,
+      businessOwners,
+      transcriptLength: transcript?.length || 0,
+      format,
+      timestamp: new Date().toISOString()
+    })
+
     if (!transcript) {
       return NextResponse.json({ error: "Transcript is required" }, { status: 400 })
     }
@@ -903,9 +942,18 @@ export async function POST(request: NextRequest) {
       const doc = createProfessionalWordDocument(documentData, businessName || "Business Owner")
       const buffer = await Packer.toBuffer(doc)
 
-      // Return as base64
+      // Return as base64 with no-cache headers, include title for dashboard
       const base64 = buffer.toString("base64")
-      return NextResponse.json({ docx: base64 })
+      return NextResponse.json({
+        docx: base64,
+        title: documentData.title || businessName || "Business Document"
+      }, {
+        headers: {
+          "Cache-Control": "no-cache, no-store, must-revalidate",
+          "Pragma": "no-cache",
+          "Expires": "0"
+        }
+      })
     } else {
       // HTML format - clean up the response
       let html = responseText
@@ -915,7 +963,13 @@ export async function POST(request: NextRequest) {
         html = html.split("```")[1].split("```")[0].trim()
       }
 
-      return NextResponse.json({ html })
+      return NextResponse.json({ html }, {
+        headers: {
+          "Cache-Control": "no-cache, no-store, must-revalidate",
+          "Pragma": "no-cache",
+          "Expires": "0"
+        }
+      })
     }
   } catch (error) {
     console.error("Document generation error:", error)

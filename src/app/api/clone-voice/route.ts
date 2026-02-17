@@ -4,9 +4,7 @@ import { existsSync } from 'fs'
 import path from 'path'
 import { v4 as uuidv4 } from 'uuid'
 
-// Route segment config (App Router)
-// Note: Body size limit is handled by Next.js config, not route config
-export const maxDuration = 600 // 10 minutes timeout for large audio files
+export const maxDuration = 600
 export const dynamic = 'force-dynamic'
 
 const UPLOAD_DIR = process.env.UPLOAD_DIR || './uploads'
@@ -23,17 +21,25 @@ export async function POST(request: NextRequest) {
 
       try {
         const formData = await request.formData()
-        const file = formData.get('file') as File
-        const speakerCount = formData.get('speakerCount') as string
+        const referenceAudio = formData.get('referenceAudio') as File
+        const textToGenerate = formData.get('textToGenerate') as string
+        const speed = formData.get('speed') as string
+        const quality = formData.get('quality') as string
 
-        if (!file) {
-          send({ error: 'No file provided' })
+        if (!referenceAudio) {
+          send({ error: 'No reference audio provided' })
+          controller.close()
+          return
+        }
+
+        if (!textToGenerate?.trim()) {
+          send({ error: 'No text to generate provided' })
           controller.close()
           return
         }
 
         const jobId = uuidv4()
-        send({ progress: 5, stage: 'Uploading file...' })
+        send({ progress: 5, stage: 'Uploading reference audio...' })
 
         // Create job directory
         const jobDir = path.join(UPLOAD_DIR, jobId)
@@ -41,28 +47,30 @@ export async function POST(request: NextRequest) {
           await mkdir(jobDir, { recursive: true })
         }
 
-        // Save the file
-        const bytes = await file.arrayBuffer()
+        // Save the reference audio
+        const bytes = await referenceAudio.arrayBuffer()
         const buffer = Buffer.from(bytes)
-        const filePath = path.join(jobDir, file.name)
+        const filePath = path.join(jobDir, referenceAudio.name)
         await writeFile(filePath, buffer)
 
-        send({ progress: 20, stage: 'Starting transcription...' })
+        send({ progress: 15, stage: 'Starting voice cloning...' })
 
-        // Call backend for transcription only
+        // Call backend for voice cloning
         try {
-          // Use AbortController with 10 minute timeout for large files
           const abortController = new AbortController()
-          const timeoutId = setTimeout(() => abortController.abort(), 600000) // 10 minutes
+          const timeoutId = setTimeout(() => abortController.abort(), 600000)
 
-          const processResponse = await fetch(`${BACKEND_URL}/transcribe`, {
+          const processResponse = await fetch(`${BACKEND_URL}/clone-voice`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               jobId,
-              audioPath: filePath,
-              speakerCount: parseInt(speakerCount) || 2,
+              referenceAudioPath: filePath,
+              referenceText: '',
+              textToGenerate: textToGenerate.trim(),
               outputDir: path.join(jobDir, 'output'),
+              speed: parseFloat(speed) || 1.0,
+              quality: parseInt(quality) || 32,
             }),
             signal: abortController.signal,
           })
@@ -71,7 +79,7 @@ export async function POST(request: NextRequest) {
 
           if (!processResponse.ok) {
             const errorData = await processResponse.json().catch(() => ({}))
-            throw new Error(errorData.error || 'Transcription failed')
+            throw new Error(errorData.error || 'Voice cloning failed')
           }
 
           // Stream progress from backend
@@ -96,14 +104,12 @@ export async function POST(request: NextRequest) {
             }
           }
         } catch (error) {
-          console.error('Backend error:', error)
           const errorMessage = error instanceof Error ? error.message : 'Unknown error'
 
-          // Check if backend is not running or endpoint not found
           if (errorMessage.includes('fetch failed') || errorMessage.includes('ECONNREFUSED')) {
-            send({ error: 'Backend server is not running. The transcription service is currently unavailable. Please try again later or contact support.' })
-          } else if (errorMessage.includes('Transcription failed')) {
-            send({ error: 'Transcription endpoint not available. Please try again later.' })
+            send({ error: 'Backend server is not running. The voice cloning service is currently unavailable. Please try again later or contact support.' })
+          } else if (errorMessage.includes('Voice cloning failed')) {
+            send({ error: 'Voice cloning endpoint not available. Please try again later.' })
           } else {
             send({ error: `Backend processing failed: ${errorMessage}` })
           }

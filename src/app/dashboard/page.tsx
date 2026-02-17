@@ -13,7 +13,8 @@ import {
   ChevronDown,
   ChevronUp,
   ExternalLink,
-  ArrowLeft
+  ArrowLeft,
+  Volume2
 } from "lucide-react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
@@ -32,7 +33,8 @@ import { cn } from "@/lib/utils"
 const FILE_TYPE_ICONS: Record<FileType, React.ReactNode> = {
   transcription: <Mic2 className="w-5 h-5" />,
   'speaker-split': <Split className="w-5 h-5" />,
-  document: <FileText className="w-5 h-5" />
+  document: <FileText className="w-5 h-5" />,
+  'voice-clone': <Volume2 className="w-5 h-5" />
 }
 
 const FILE_TYPE_COLORS: Record<FileType, { bg: string; text: string; border: string }> = {
@@ -50,6 +52,11 @@ const FILE_TYPE_COLORS: Record<FileType, { bg: string; text: string; border: str
     bg: 'bg-amber-100 dark:bg-amber-900/30',
     text: 'text-amber-600 dark:text-amber-400',
     border: 'border-amber-200 dark:border-amber-800'
+  },
+  'voice-clone': {
+    bg: 'bg-violet-100 dark:bg-violet-900/30',
+    text: 'text-violet-600 dark:text-violet-400',
+    border: 'border-violet-200 dark:border-violet-800'
   }
 }
 
@@ -99,6 +106,59 @@ function FileCard({ file, onDelete }: { file: UserFile; onDelete: () => void }) 
     a.download = `${file.name}-transcript.txt`
     a.click()
     URL.revokeObjectURL(url)
+  }
+
+  const downloadDocument = () => {
+    // Handle Word documents
+    if (file.documentType === 'docx' && file.docxContent) {
+      const byteCharacters = atob(file.docxContent)
+      const byteNumbers = new Array(byteCharacters.length)
+      for (let i = 0; i < byteCharacters.length; i++) {
+        byteNumbers[i] = byteCharacters.charCodeAt(i)
+      }
+      const byteArray = new Uint8Array(byteNumbers)
+      const blob = new Blob([byteArray], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' })
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `${file.name}.docx`
+      a.click()
+      URL.revokeObjectURL(url)
+      return
+    }
+
+    // Handle HTML documents
+    if (!file.htmlContent) return
+
+    const blob = new Blob([file.htmlContent], { type: 'text/html' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `${file.name}.html`
+    a.click()
+    URL.revokeObjectURL(url)
+  }
+
+  // Get document file size
+  const getDocumentSize = (): number => {
+    if (file.documentType === 'docx' && file.docxContent) {
+      // Base64 is ~4/3 the size of binary
+      return Math.round((file.docxContent.length * 3) / 4 / 1024)
+    }
+    if (file.htmlContent) {
+      return Math.round(file.htmlContent.length / 1024)
+    }
+    return 0
+  }
+
+  // Get document file extension
+  const getDocumentExtension = (): string => {
+    return file.documentType === 'docx' ? 'docx' : 'html'
+  }
+
+  // Check if document has downloadable content
+  const hasDocumentContent = (): boolean => {
+    return !!(file.docxContent || file.htmlContent)
   }
 
   return (
@@ -164,59 +224,204 @@ function FileCard({ file, onDelete }: { file: UserFile; onDelete: () => void }) 
 
             {/* Transcription Content */}
             {file.type === 'transcription' && file.transcript && (
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
-                    Transcript ({file.transcript.length} segments)
-                  </span>
-                  <Button variant="outline" size="sm" onClick={downloadTranscript}>
-                    <Download className="w-4 h-4 mr-1" />
-                    Download
-                  </Button>
-                </div>
-                <div className="max-h-60 overflow-y-auto space-y-2 bg-slate-50 dark:bg-slate-800/50 rounded-lg p-3">
-                  {file.transcript.slice(0, 10).map((seg, idx) => (
-                    <div key={idx} className="text-sm">
-                      <span className="font-medium text-blue-600 dark:text-blue-400">
-                        [{seg.speaker}]
-                      </span>
-                      <span className="text-slate-700 dark:text-slate-300 ml-2">
-                        {seg.text}
-                      </span>
+              <div className="space-y-4">
+                {/* Prominent Download Button */}
+                <div className="flex items-center justify-between bg-amber-50 dark:bg-amber-900/20 rounded-lg p-4 border border-amber-200 dark:border-amber-800">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-lg bg-gradient-to-r from-amber-500 to-orange-500 flex items-center justify-center">
+                      <Mic2 className="w-5 h-5 text-white" />
                     </div>
-                  ))}
-                  {file.transcript.length > 10 && (
-                    <p className="text-sm text-slate-500 italic">
-                      ... and {file.transcript.length - 10} more segments
-                    </p>
-                  )}
+                    <div>
+                      <p className="font-medium text-slate-900 dark:text-white">{file.name}-transcript.txt</p>
+                      <p className="text-sm text-slate-500 dark:text-slate-400">
+                        {file.transcript.length} segments
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={downloadTranscript}
+                    className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-gradient-to-r from-amber-500 to-orange-500 text-white font-semibold text-sm transition-all hover:from-amber-600 hover:to-orange-600 shadow-sm hover:shadow-md"
+                  >
+                    <Download className="w-4 h-4" />
+                    Download
+                  </button>
+                </div>
+
+                {/* Preview Section */}
+                <div className="space-y-2">
+                  <p className="text-sm font-medium text-slate-700 dark:text-slate-300">Preview (first 10 segments)</p>
+                  <div className="max-h-60 overflow-y-auto space-y-2 bg-slate-50 dark:bg-slate-800/50 rounded-lg p-3 border border-slate-200 dark:border-slate-700">
+                    {file.transcript.slice(0, 10).map((seg, idx) => (
+                      <div key={idx} className="text-sm">
+                        <span className="font-medium text-blue-600 dark:text-blue-400">
+                          [{seg.speaker}]
+                        </span>
+                        <span className="text-slate-700 dark:text-slate-300 ml-2">
+                          {seg.text}
+                        </span>
+                      </div>
+                    ))}
+                    {file.transcript.length > 10 && (
+                      <p className="text-sm text-slate-500 italic">
+                        ... and {file.transcript.length - 10} more segments
+                      </p>
+                    )}
+                  </div>
                 </div>
               </div>
             )}
 
             {/* Speaker Split Content */}
             {file.type === 'speaker-split' && file.speakerAudios && (
-              <div className="space-y-3">
-                <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
-                  Speaker Audio Files ({file.speakerAudios.length})
-                </span>
-                <div className="space-y-2">
-                  {file.speakerAudios.map((audio, idx) => (
-                    <AudioWaveformPlayer
-                      key={idx}
-                      url={normalizeAudioUrl(audio.url)}
-                      title={audio.speaker}
-                      color={SPEAKER_COLORS[idx % SPEAKER_COLORS.length]}
-                      compact
-                    />
-                  ))}
+              <div className="space-y-4">
+                {/* Download All Button */}
+                <div className="flex items-center justify-between bg-amber-50 dark:bg-amber-900/20 rounded-lg p-4 border border-amber-200 dark:border-amber-800">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-lg bg-gradient-to-r from-amber-500 to-orange-500 flex items-center justify-center">
+                      <Split className="w-5 h-5 text-white" />
+                    </div>
+                    <div>
+                      <p className="font-medium text-slate-900 dark:text-white">Speaker Audio Files</p>
+                      <p className="text-sm text-slate-500 dark:text-slate-400">
+                        {file.speakerAudios.length} speaker{file.speakerAudios.length > 1 ? 's' : ''} detected
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => {
+                      file.speakerAudios?.forEach((audio, idx) => {
+                        setTimeout(() => {
+                          const link = document.createElement('a')
+                          link.href = normalizeAudioUrl(audio.url)
+                          link.download = `${file.name}-${audio.speaker}.wav`
+                          document.body.appendChild(link)
+                          link.click()
+                          document.body.removeChild(link)
+                        }, idx * 500)
+                      })
+                    }}
+                    className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-gradient-to-r from-amber-500 to-orange-500 text-white font-semibold text-sm transition-all hover:from-amber-600 hover:to-orange-600 shadow-sm hover:shadow-md"
+                  >
+                    <Download className="w-4 h-4" />
+                    Download All
+                  </button>
                 </div>
+
+                {/* Individual Speaker Players */}
+                <div className="space-y-2">
+                  <p className="text-sm font-medium text-slate-700 dark:text-slate-300">Play or download individual speakers</p>
+                  <div className="space-y-2">
+                    {file.speakerAudios.map((audio, idx) => (
+                      <AudioWaveformPlayer
+                        key={idx}
+                        url={normalizeAudioUrl(audio.url)}
+                        title={audio.speaker}
+                        color={SPEAKER_COLORS[idx % SPEAKER_COLORS.length]}
+                        compact
+                      />
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Voice Clone Content */}
+            {file.type === 'voice-clone' && (
+              <div className="space-y-4">
+                {file.clonedAudioUrl && (
+                  <div className="flex items-center justify-between bg-violet-50 dark:bg-violet-900/20 rounded-lg p-4 border border-violet-200 dark:border-violet-800">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-lg bg-gradient-to-r from-violet-500 to-purple-500 flex items-center justify-center">
+                        <Volume2 className="w-5 h-5 text-white" />
+                      </div>
+                      <div>
+                        <p className="font-medium text-slate-900 dark:text-white">{file.name}.wav</p>
+                        <p className="text-sm text-slate-500 dark:text-slate-400">Cloned voice audio</p>
+                      </div>
+                    </div>
+                    <a
+                      href={file.clonedAudioUrl}
+                      download={`${file.name}.wav`}
+                      className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-gradient-to-r from-violet-500 to-purple-500 text-white font-semibold text-sm transition-all hover:from-violet-600 hover:to-purple-600 shadow-sm hover:shadow-md"
+                    >
+                      <Download className="w-4 h-4" />
+                      Download
+                    </a>
+                  </div>
+                )}
+
+                {file.clonedAudioUrl && (
+                  <audio controls src={file.clonedAudioUrl} className="w-full" />
+                )}
+
+                {file.generatedText && (
+                  <div className="space-y-2">
+                    <p className="text-sm font-medium text-slate-700 dark:text-slate-300">Generated Text</p>
+                    <div className="max-h-40 overflow-y-auto bg-slate-50 dark:bg-slate-800/50 rounded-lg p-3 border border-slate-200 dark:border-slate-700">
+                      <p className="text-sm text-slate-600 dark:text-slate-400">
+                        {file.generatedText.substring(0, 500)}
+                        {file.generatedText.length > 500 && '...'}
+                      </p>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
 
             {/* Document Content */}
             {file.type === 'document' && (
-              <div className="space-y-3">
+              <div className="space-y-4">
+                {/* Prominent Download Button */}
+                {hasDocumentContent() && (
+                  <div className={cn(
+                    "flex items-center justify-between rounded-lg p-4 border",
+                    file.documentType === 'docx'
+                      ? "bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800"
+                      : "bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800"
+                  )}>
+                    <div className="flex items-center gap-3">
+                      <div className={cn(
+                        "w-10 h-10 rounded-lg flex items-center justify-center",
+                        file.documentType === 'docx'
+                          ? "bg-gradient-to-r from-blue-500 to-blue-600"
+                          : "bg-gradient-to-r from-amber-500 to-orange-500"
+                      )}>
+                        <FileText className="w-5 h-5 text-white" />
+                      </div>
+                      <div>
+                        <p className="font-medium text-slate-900 dark:text-white">
+                          {file.name}.{getDocumentExtension()}
+                        </p>
+                        <p className="text-sm text-slate-500 dark:text-slate-400">
+                          {file.documentType === 'docx' ? 'Word Document' : 'HTML Document'} ({getDocumentSize()} KB)
+                        </p>
+                      </div>
+                    </div>
+                    <button
+                      onClick={downloadDocument}
+                      className={cn(
+                        "flex items-center gap-2 px-4 py-2.5 rounded-lg text-white font-semibold text-sm transition-all shadow-sm hover:shadow-md",
+                        file.documentType === 'docx'
+                          ? "bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700"
+                          : "bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600"
+                      )}
+                    >
+                      <Download className="w-4 h-4" />
+                      Download
+                    </button>
+                  </div>
+                )}
+
+                {/* No content message */}
+                {!hasDocumentContent() && (
+                  <div className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-lg border border-slate-200 dark:border-slate-700 text-center">
+                    <p className="text-sm text-slate-500 dark:text-slate-400">
+                      Document content not available. This may be from an older version.
+                    </p>
+                  </div>
+                )}
+
+                {/* View Document Link */}
                 {file.documentUrl && (
                   <a
                     href={file.documentUrl}
@@ -225,14 +430,28 @@ function FileCard({ file, onDelete }: { file: UserFile; onDelete: () => void }) 
                     className="inline-flex items-center gap-2 text-sm text-blue-600 dark:text-blue-400 hover:underline"
                   >
                     <ExternalLink className="w-4 h-4" />
-                    View Document
+                    View Document in Browser
                   </a>
                 )}
-                {file.htmlContent && (
-                  <div className="max-h-60 overflow-y-auto bg-slate-50 dark:bg-slate-800/50 rounded-lg p-3">
-                    <pre className="text-xs text-slate-600 dark:text-slate-400 whitespace-pre-wrap">
-                      {file.htmlContent.substring(0, 500)}...
-                    </pre>
+
+                {/* Preview Section - Only for HTML */}
+                {file.documentType !== 'docx' && file.htmlContent && (
+                  <div className="space-y-2">
+                    <p className="text-sm font-medium text-slate-700 dark:text-slate-300">Preview (first 500 characters)</p>
+                    <div className="max-h-40 overflow-y-auto bg-slate-50 dark:bg-slate-800/50 rounded-lg p-3 border border-slate-200 dark:border-slate-700">
+                      <pre className="text-xs text-slate-600 dark:text-slate-400 whitespace-pre-wrap font-mono">
+                        {file.htmlContent.substring(0, 500)}...
+                      </pre>
+                    </div>
+                  </div>
+                )}
+
+                {/* Info for Word docs */}
+                {file.documentType === 'docx' && (
+                  <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                    <p className="text-sm text-blue-700 dark:text-blue-400">
+                      Word documents can be opened in Microsoft Word, Google Docs, or any compatible editor.
+                    </p>
                   </div>
                 )}
               </div>
@@ -274,7 +493,8 @@ function DashboardContent() {
     all: files.length,
     transcription: files.filter(f => f.type === 'transcription').length,
     'speaker-split': files.filter(f => f.type === 'speaker-split').length,
-    document: files.filter(f => f.type === 'document').length
+    document: files.filter(f => f.type === 'document').length,
+    'voice-clone': files.filter(f => f.type === 'voice-clone').length
   }
 
   if (isLoading) {
@@ -319,7 +539,8 @@ function DashboardContent() {
             { key: 'all' as const, label: 'All Files' },
             { key: 'transcription' as const, label: 'Transcriptions' },
             { key: 'speaker-split' as const, label: 'Speaker Splits' },
-            { key: 'document' as const, label: 'Documents' }
+            { key: 'document' as const, label: 'Documents' },
+            { key: 'voice-clone' as const, label: 'Voice Clones' }
           ].map(tab => (
             <button
               key={tab.key}

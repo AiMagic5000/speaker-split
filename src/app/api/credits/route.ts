@@ -69,7 +69,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const creditType = body.type as CreditType
 
-    if (!creditType || !['transcription', 'speakerSplit', 'documents'].includes(creditType)) {
+    if (!creditType || !['transcription', 'speakerSplit', 'documents', 'voiceClone'].includes(creditType)) {
       return NextResponse.json({ error: 'Invalid credit type' }, { status: 400 })
     }
 

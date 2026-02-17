@@ -11,7 +11,7 @@ interface FAQItem {
 
 interface FAQProps {
   items: FAQItem[]
-  accentColor?: 'primary' | 'secondary' | 'amber'
+  accentColor?: 'primary' | 'secondary' | 'amber' | 'violet'
 }
 
 export function FAQ({ items, accentColor = 'primary' }: FAQProps) {
@@ -21,12 +21,14 @@ export function FAQ({ items, accentColor = 'primary' }: FAQProps) {
     primary: 'text-primary border-primary/20 hover:border-primary/40',
     secondary: 'text-secondary border-secondary/20 hover:border-secondary/40',
     amber: 'text-amber-500 border-amber-500/20 hover:border-amber-500/40',
+    violet: 'text-violet-500 border-violet-500/20 hover:border-violet-500/40',
   }
 
   const bgClasses = {
     primary: 'bg-primary/5',
     secondary: 'bg-secondary/5',
     amber: 'bg-amber-500/5',
+    violet: 'bg-violet-500/5',
   }
 
   return (
@@ -123,5 +125,28 @@ export const DOCUMENT_GENERATOR_FAQ = [
   {
     question: "Can I edit the generated document?",
     answer: "Yes! Download the HTML file and open it in any text editor to make changes. The document includes embedded CSS and JavaScript, so it works as a standalone file that you can customize."
+  },
+]
+
+export const VOICE_CLONE_FAQ = [
+  {
+    question: "How long should the reference audio be?",
+    answer: "For best results, use 5-12 seconds of clear speech from a single speaker. The audio should have minimal background noise, no music, and no overlapping voices. Quality matters more than length."
+  },
+  {
+    question: "How much text can I generate at once?",
+    answer: "You can generate up to about 750 words (roughly 3 minutes of speech) per request. For longer content, split your text into multiple requests using the same reference audio."
+  },
+  {
+    question: "What languages are supported?",
+    answer: "F5-TTS supports English and Chinese natively. English produces the most natural results. Other languages may work but with reduced quality."
+  },
+  {
+    question: "How accurate is the voice clone?",
+    answer: "F5-TTS captures tone, pitch, and speaking style from the reference audio. Results are best when the reference audio is high quality with clear speech. The generated output will sound similar but not identical to the original voice."
+  },
+  {
+    question: "What format is the output?",
+    answer: "The generated audio is provided as a WAV file at 24kHz for maximum quality. You can convert it to MP3 or other formats using any audio converter."
   },
 ]

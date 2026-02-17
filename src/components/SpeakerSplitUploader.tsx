@@ -2,7 +2,7 @@
 
 import { useCallback, useState } from "react"
 import { useDropzone, FileRejection } from "react-dropzone"
-import { Upload, FileAudio, X, Users, Loader2, Clock, AlertCircle, Download, Play, Pause, Zap } from "lucide-react"
+import { Upload, FileAudio, X, Users, Loader2, Clock, AlertCircle, Download, Play, Pause, Zap, AlertTriangle } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import {
@@ -434,6 +434,23 @@ export function SpeakerSplitUploader() {
                   className="h-full bg-gradient-to-r from-secondary to-primary transition-all duration-300"
                   style={{ width: `${progress}%` }}
                 />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Navigation Warning - Shows during processing */}
+      {isProcessing && (
+        <Card className="border-amber-300 bg-amber-50 dark:bg-amber-950/30 border-2">
+          <CardContent className="p-4">
+            <div className="flex items-start gap-3">
+              <AlertTriangle className="w-5 h-5 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
+              <div>
+                <p className="font-semibold text-amber-800 dark:text-amber-200">Do not navigate away from this page</p>
+                <p className="text-sm text-amber-700 dark:text-amber-300 mt-1">
+                  Your speaker audio is being processed. Leaving this page will cancel the process and your progress will be lost.
+                </p>
               </div>
             </div>
           </CardContent>
