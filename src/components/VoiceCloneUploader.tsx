@@ -192,7 +192,7 @@ export function VoiceCloneUploader() {
     if (!resultAudioUrl) return
     const a = document.createElement('a')
     a.href = resultAudioUrl
-    a.download = `${referenceFile?.name.replace(/\.[^/.]+$/, '') || 'voice'}-cloned.wav`
+    a.download = `${referenceFile?.name.replace(/\.[^/.]+$/, '') || 'voice'}-cloned.mp3`
     a.click()
   }
 
@@ -233,10 +233,10 @@ export function VoiceCloneUploader() {
                 </div>
                 <div>
                   <p className="text-lg font-semibold text-slate-900 dark:text-white">
-                    {isDragActive ? "Drop your reference audio here" : "Upload Reference Voice (5-12 seconds)"}
+                    {isDragActive ? "Drop your reference audio here" : "Upload Reference Voice (10-60 seconds)"}
                   </p>
                   <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-                    Clear speech from a single speaker, no background noise
+                    Clear speech from a single speaker, minimum 10 seconds, no background noise
                   </p>
                 </div>
                 <div className="flex flex-wrap justify-center gap-2 text-xs text-slate-400 dark:text-slate-500">
@@ -416,7 +416,7 @@ For best results, use complete sentences with natural punctuation. The AI will g
               </h3>
               <Button variant="outline" size="sm" onClick={downloadAudio}>
                 <Download className="w-4 h-4 mr-1" />
-                Download WAV
+                Download MP3
               </Button>
             </div>
 
@@ -428,8 +428,8 @@ For best results, use complete sentences with natural punctuation. The AI will g
 
             <div className="mt-4 p-4 bg-green-50 dark:bg-green-950/20 rounded-lg border border-green-200 dark:border-green-800">
               <p className="text-green-700 dark:text-green-400 text-sm">
-                <strong>Voice clone complete!</strong> Download the WAV file to use it in your projects.
-                The audio is 24kHz for maximum quality.
+                <strong>Voice clone complete!</strong> Download the MP3 file to use it in your projects.
+                High-definition audio at 32kHz sample rate.
               </p>
             </div>
           </CardContent>
