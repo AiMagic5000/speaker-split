@@ -9,7 +9,7 @@ import { v4 as uuidv4 } from 'uuid'
 export const maxDuration = 600 // 10 minutes timeout for large audio files
 export const dynamic = 'force-dynamic'
 
-const UPLOAD_DIR = process.env.UPLOAD_DIR || './uploads'
+const UPLOAD_DIR = process.env.UPLOAD_DIR || '/tmp/uploads'
 const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:8000'
 
 export async function POST(request: NextRequest) {

@@ -10,7 +10,7 @@ import { auth } from '@clerk/nextjs/server'
 export const maxDuration = 300 // 5 minutes timeout
 export const dynamic = 'force-dynamic'
 
-const UPLOAD_DIR = process.env.UPLOAD_DIR || './uploads'
+const UPLOAD_DIR = process.env.UPLOAD_DIR || '/tmp/uploads'
 const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:8000'
 
 export async function POST(request: NextRequest) {

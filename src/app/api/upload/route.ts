@@ -3,7 +3,7 @@ import { writeFile, mkdir } from 'fs/promises'
 import { existsSync } from 'fs'
 import path from 'path'
 
-const UPLOAD_DIR = process.env.UPLOAD_DIR || './uploads'
+const UPLOAD_DIR = process.env.UPLOAD_DIR || '/tmp/uploads'
 const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:8000'
 
 export async function POST(request: NextRequest) {
