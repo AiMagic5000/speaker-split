@@ -1,6 +1,7 @@
 import { NextRequest } from 'next/server'
-import { writeFile, mkdir } from 'fs/promises'
+import { writeFile, mkdir, readFile } from 'fs/promises'
 import { existsSync } from 'fs'
+import { execSync } from 'child_process'
 import path from 'path'
 import { v4 as uuidv4 } from 'uuid'
 
@@ -44,7 +45,7 @@ function parseWav(buffer: Buffer): { sampleRate: number; channels: number; bitsP
   let sampleRate = 44100
   let channels = 1
   let bitsPerSample = 16
-  let dataBuffer = Buffer.alloc(0)
+  let dataBuffer: Buffer = Buffer.alloc(0)
 
   while (offset < buffer.length) {
     const chunkId = buffer.toString('ascii', offset, offset + 4)
@@ -55,7 +56,7 @@ function parseWav(buffer: Buffer): { sampleRate: number; channels: number; bitsP
       sampleRate = buffer.readUInt32LE(offset + 12)
       bitsPerSample = buffer.readUInt16LE(offset + 22)
     } else if (chunkId === 'data') {
-      dataBuffer = buffer.subarray(offset + 8, offset + 8 + chunkSize)
+      dataBuffer = Buffer.from(buffer.buffer, buffer.byteOffset + offset + 8, chunkSize)
     }
 
     offset += 8 + chunkSize
@@ -190,14 +191,12 @@ export async function POST(request: NextRequest) {
 
           try {
             // Try ffmpeg conversion
-            const { execSync } = require('child_process')
             const wavPath = path.join(jobDir, 'converted.wav')
             execSync(`ffmpeg -y -i "${filePath}" -acodec pcm_s16le -ar 16000 -ac 1 "${wavPath}"`, {
               timeout: 60000,
               stdio: 'pipe',
             })
-            const fs = require('fs')
-            const wavBuffer = fs.readFileSync(wavPath)
+            const wavBuffer = await readFile(wavPath)
             wavData = parseWav(wavBuffer)
           } catch {
             // ffmpeg not available - fall back to returning timestamps only with original audio
