@@ -1,16 +1,9 @@
 import { NextRequest } from 'next/server'
-import { writeFile, mkdir } from 'fs/promises'
-import { existsSync } from 'fs'
-import path from 'path'
-import { v4 as uuidv4 } from 'uuid'
 
-// Route segment config (App Router)
-// Note: Body size limit is handled by Next.js config, not route config
-export const maxDuration = 600 // 10 minutes timeout for large audio files
+export const maxDuration = 300
 export const dynamic = 'force-dynamic'
 
-const UPLOAD_DIR = process.env.UPLOAD_DIR || '/tmp/uploads'
-const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:8000'
+const DEEPGRAM_API_KEY = process.env.DEEPGRAM_API_KEY || ''
 
 export async function POST(request: NextRequest) {
   const encoder = new TextEncoder()
@@ -32,90 +25,119 @@ export async function POST(request: NextRequest) {
           return
         }
 
-        const jobId = uuidv4()
-        send({ progress: 5, stage: 'Uploading file...' })
-
-        // Create job directory
-        const jobDir = path.join(UPLOAD_DIR, jobId)
-        if (!existsSync(jobDir)) {
-          await mkdir(jobDir, { recursive: true })
+        if (!DEEPGRAM_API_KEY) {
+          send({ error: 'Transcription service not configured. Please contact support.' })
+          controller.close()
+          return
         }
 
-        // Save the file
+        send({ progress: 5, stage: 'Uploading audio...' })
+
+        // Read file into buffer
         const bytes = await file.arrayBuffer()
         const buffer = Buffer.from(bytes)
-        const filePath = path.join(jobDir, file.name)
-        await writeFile(filePath, buffer)
 
-        send({ progress: 20, stage: 'Starting transcription...' })
+        send({ progress: 15, stage: 'Sending to transcription service...' })
 
-        // Call backend for transcription only
-        try {
-          // Use AbortController with 10 minute timeout for large files
-          const abortController = new AbortController()
-          const timeoutId = setTimeout(() => abortController.abort(), 600000) // 10 minutes
+        // Determine MIME type
+        const mimeType = file.type || 'audio/mpeg'
 
-          const processResponse = await fetch(`${BACKEND_URL}/transcribe`, {
+        // Call Deepgram API with diarization
+        const dgResponse = await fetch(
+          `https://api.deepgram.com/v1/listen?model=nova-3&smart_format=true&diarize=true&punctuate=true&utterances=true&paragraphs=true`,
+          {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              jobId,
-              audioPath: filePath,
-              speakerCount: parseInt(speakerCount) || 2,
-              outputDir: path.join(jobDir, 'output'),
-            }),
-            signal: abortController.signal,
-          })
-
-          clearTimeout(timeoutId)
-
-          if (!processResponse.ok) {
-            const errorData = await processResponse.json().catch(() => ({}))
-            throw new Error(errorData.error || 'Transcription failed')
+            headers: {
+              'Authorization': `Token ${DEEPGRAM_API_KEY}`,
+              'Content-Type': mimeType,
+            },
+            body: buffer,
           }
+        )
 
-          // Stream progress from backend
-          const reader = processResponse.body?.getReader()
-          if (reader) {
-            const decoder = new TextDecoder()
-            while (true) {
-              const { done, value } = await reader.read()
-              if (done) break
+        if (!dgResponse.ok) {
+          const errText = await dgResponse.text().catch(() => '')
+          throw new Error(`Transcription failed: ${dgResponse.status} ${errText}`)
+        }
 
-              const text = decoder.decode(value)
-              const lines = text.split('\n').filter(line => line.trim())
+        send({ progress: 60, stage: 'Processing transcript...' })
 
-              for (const line of lines) {
-                try {
-                  const data = JSON.parse(line)
-                  send(data)
-                } catch {
-                  // Ignore parse errors
-                }
-              }
+        const result = await dgResponse.json()
+
+        // Extract transcript segments with speaker labels from utterances
+        const utterances = result.results?.utterances || []
+        const words = result.results?.channels?.[0]?.alternatives?.[0]?.words || []
+
+        let transcript: { speaker: string; text: string; start: number; end: number }[] = []
+
+        if (utterances.length > 0) {
+          // Use utterances (better speaker grouping)
+          transcript = utterances.map((utt: { speaker: number; transcript: string; start: number; end: number }) => ({
+            speaker: `SPEAKER_${String(utt.speaker).padStart(2, '0')}`,
+            text: utt.transcript,
+            start: utt.start,
+            end: utt.end,
+          }))
+        } else if (words.length > 0) {
+          // Fallback: group words by speaker
+          let currentSpeaker = words[0]?.speaker ?? 0
+          let currentText = ''
+          let segStart = words[0]?.start ?? 0
+          let segEnd = 0
+
+          for (const word of words) {
+            if (word.speaker !== currentSpeaker) {
+              transcript.push({
+                speaker: `SPEAKER_${String(currentSpeaker).padStart(2, '0')}`,
+                text: currentText.trim(),
+                start: segStart,
+                end: segEnd,
+              })
+              currentSpeaker = word.speaker
+              currentText = ''
+              segStart = word.start
             }
+            currentText += ` ${word.punctuated_word || word.word}`
+            segEnd = word.end
           }
-        } catch (error) {
-          console.error('Backend error:', error)
-          const errorMessage = error instanceof Error ? error.message : 'Unknown error'
-
-          // Check if backend is not running or endpoint not found
-          if (errorMessage.includes('fetch failed') || errorMessage.includes('ECONNREFUSED')) {
-            send({ error: 'Backend server is not running. The transcription service is currently unavailable. Please try again later or contact support.' })
-          } else if (errorMessage.includes('Transcription failed')) {
-            send({ error: 'Transcription endpoint not available. Please try again later.' })
-          } else {
-            send({ error: `Backend processing failed: ${errorMessage}` })
+          // Push last segment
+          if (currentText.trim()) {
+            transcript.push({
+              speaker: `SPEAKER_${String(currentSpeaker).padStart(2, '0')}`,
+              text: currentText.trim(),
+              start: segStart,
+              end: segEnd,
+            })
           }
         }
+
+        send({ progress: 90, stage: 'Formatting results...' })
+
+        if (transcript.length === 0) {
+          send({ error: 'No speech detected in the audio file. Please check the audio quality and try again.' })
+          controller.close()
+          return
+        }
+
+        send({
+          progress: 100,
+          stage: 'Complete',
+          transcript,
+        })
 
         controller.close()
       } catch (error) {
-        const send = (data: object) => {
-          controller.enqueue(encoder.encode(JSON.stringify(data) + '\n'))
+        const errMsg = error instanceof Error ? error.message : 'Processing failed'
+        try {
+          controller.enqueue(encoder.encode(JSON.stringify({ error: errMsg }) + '\n'))
+        } catch {
+          // Controller may already be closed
         }
-        send({ error: error instanceof Error ? error.message : 'Processing failed' })
-        controller.close()
+        try {
+          controller.close()
+        } catch {
+          // Already closed
+        }
       }
     }
   })
