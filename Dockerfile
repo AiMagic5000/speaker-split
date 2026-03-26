@@ -38,8 +38,9 @@ ENV CLERK_SECRET_KEY=$CLERK_SECRET_KEY
 ENV NEXT_PUBLIC_WHISPERX_API_URL=$NEXT_PUBLIC_WHISPERX_API_URL
 ENV ANTHROPIC_API_KEY=$ANTHROPIC_API_KEY
 
-# Build the application (--no-turbopack needed for Next.js 16+ in Docker)
-RUN npx next build --no-turbopack
+# Build with Webpack (Turbopack breaks Google Fonts in Docker)
+ENV NEXT_DISABLE_TURBOPACK=1
+RUN npm run build
 
 # Production image, copy all the files and run next
 FROM base AS runner
