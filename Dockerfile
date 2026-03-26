@@ -38,14 +38,17 @@ ENV CLERK_SECRET_KEY=$CLERK_SECRET_KEY
 ENV NEXT_PUBLIC_WHISPERX_API_URL=$NEXT_PUBLIC_WHISPERX_API_URL
 ENV ANTHROPIC_API_KEY=$ANTHROPIC_API_KEY
 
-# Build the application
-RUN npm run build
+# Build the application (--no-turbopack needed for Next.js 16+ in Docker)
+RUN npx next build --no-turbopack
 
 # Production image, copy all the files and run next
 FROM base AS runner
 WORKDIR /app
 
 ENV NODE_ENV=production
+
+# Install ffmpeg for audio format conversion (speaker split)
+RUN apk add --no-cache ffmpeg
 
 # Create non-root user for security
 RUN addgroup --system --gid 1001 nodejs
